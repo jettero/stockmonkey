@@ -6,3 +6,6 @@ t/02_macd.t
 t/02_sma.t
 MANIFEST
 Makefile.PL
+Changes
+README
+StockMonkey.pod
