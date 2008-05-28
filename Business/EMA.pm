@@ -3,7 +3,7 @@ package Math::Business::EMA;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('1.5');
+use version; our $VERSION = qv('1.9');
 use Carp;
 
 1;

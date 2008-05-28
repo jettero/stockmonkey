@@ -7,3 +7,11 @@ If you'd like to help, just let me know.
 
 Links to the algorithm are helpful as our spreadsheets with
 example calculations.
+
+Here's the tiny catalog so far:
+
+Math::Business::SMA             Simple Moving Average
+Math::Business::EMA             Exponential Moving Average
+Math::Business::MACD            Moving Average Convergence/Divergence
+Math::Business::RSI             Relative Strength Index
+Math::Business::BollingerBands  Bollinger Bands
