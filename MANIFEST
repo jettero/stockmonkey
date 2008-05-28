@@ -11,3 +11,5 @@ README
 StockMonkey.pod
 Business/RSI.pm
 t/04_rsi.t
+Business/BollingerBands.pm
+t/05_bollinger.t

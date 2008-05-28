@@ -20,6 +20,10 @@ sub new {
         days     => 0,
     }, $class;
 
+    if( @_ == 3 ) {
+        $this->set_days(@_);
+    }
+
     return $this;
 }
 
@@ -101,11 +105,12 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
 
   use Math::Business::MACD;
 
-  my $macd = new Math::Business::MACD;
-
   my ($slow, $fast, $trigger) = (26, 12, 9);
+  my $macd = new Math::Business::MACD;
+     $macd->set_days( $slow, $fast, $trigger );
 
-  $macd->set_days( $slow, $fast, $trigger );
+  # alternatively/equivelently
+  my $macd = new Math::Business::MACD( $slow, $fast, $trigger );
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 

@@ -6,7 +6,6 @@ use Math::Business::SMA;
 use Math::Business::EMA;
 
 use version; our $VERSION = qv("1.00");
-
 use Carp;
 
 1;
@@ -14,11 +13,16 @@ use Carp;
 sub new { 
     my $class = shift;
     my $this  = bless {
-        val => [],
         U   => Math::Business::EMA->new,
         D   => Math::Business::EMA->new,
         RSI => undef,
+        cy  => undef,
     }, $class;
+
+    my $days = shift;
+    if( defined $days ) {
+        $this->set_days( $days );
+    }
 
     return $this;
 }
@@ -134,12 +138,17 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   my $rsi = new Math::Business::RSI;
      $rsi->set_days(14);
 
+  # alternatively/equivilently
+  my $rsi = new Math::Business::RSI(14);
+
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
   );
 
+  # choose one: 
   $rsi->insert( @closing_values );
+  $rsi->insert( $_ ) for @closing_values;
 
   if( defined(my $q = $sma->query) ) {
       print "RSI: $q.\n";
@@ -155,6 +164,10 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   my $U  = $rsi->query_EMA_U;
   my $D  = $rsi->query_EMA_D;
   my $cy = $rsi->query_cy; # (close yesterday)
+
+=head1 Thanks
+
+Todd Litteken PhD <cl@xganon.com> 
 
 =head1 AUTHOR
 
