@@ -67,11 +67,10 @@ sub query {
 
 sub insert {
     my $this  = shift;
-    my $value = shift;;
 
     croak "You must set the number of days before you try to insert" if not $this->{days};
 
-    while( my $value = shift ) {
+    while( defined( my $value = shift ) ) {
         $this->{slow_EMA}->insert($value);
         $this->{fast_EMA}->insert($value);
 
