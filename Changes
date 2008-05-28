@@ -3,5 +3,6 @@
       one distribution
     - I made EMA faster and "better" and fixed the while(insert)
       where insert is 0
-    - refactored SMA to be smarter for long DBI calculations and
+    - Refactored SMA to be smarter for long DBI calculations and
       possibly less smart for huge multi scalar inserts
+    - Authored the RSI module to my tastes

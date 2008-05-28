@@ -32,8 +32,7 @@ sub set_standard {
         $this->{D} = Math::Business::EMA->new;
 
         if( my $d = $this->{days} ) {
-            $this->{U}->set_days( $d );
-            $this->{D}->set_days( $d );
+            $this->set_days($d);
         }
     }
 }
@@ -47,8 +46,7 @@ sub set_cutler {
         $this->{D} = Math::Business::SMA->new;
 
         if( my $d = $this->{days} ) {
-            $this->{U}->set_days( $d );
-            $this->{D}->set_days( $d );
+            $this->set_days($d);
         }
     }
 }
@@ -84,15 +82,11 @@ sub insert {
 
             } elsif( $delta < 0 ) {
                 $U = 0;
-                $D = $delta;
+                $D = abs $delta;
             }
-
 
             $EMA_U->insert($U);
             $EMA_D->insert($D);
-
-            our $inserted ++;
-            warn "inserted $inserted so far this UD($U,$D)";
         }
 
         if( defined(my $eu = $EMA_U->query) ) {
