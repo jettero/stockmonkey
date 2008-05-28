@@ -31,7 +31,7 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    delete $this->{val};
+    $this->{val} = [];
     delete $this->{SMA};
     $this->{days} = $arg;
 }
@@ -44,11 +44,11 @@ sub insert {
     croak "You must set the number of days before you try to insert" if not defined $N;
 
     while( defined(my $PM = shift) ) {
-        if( @$val >= $N ) {
-            my $old = shift @$val;
-            push @$val, $PM;
+        push @$val, $PM;
 
+        if( @$val >= $N ) {
             if( defined( my $s = $this->{SMA} ) ) {
+                my $old = shift @$val;
                 $this->{SMA} = $s - $old/$N + $PM/$N;
 
             } else {
@@ -57,9 +57,6 @@ sub insert {
 
                 $this->{SMA} = $sum/$N;
             }
-
-        } else {
-            push @$val, $PM;
         }
     }
 }
@@ -68,7 +65,7 @@ sub insert {
 sub query {
     my $this = shift;
 
-    return $this->{cur};
+    return $this->{SMA};
 }
 
 __END__
