@@ -137,4 +137,6 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 perl(1), Math::Business::EMA(3).
 
+L<http://en.wikipedia.org/wiki/Exponential_moving_average>
+
 =cut

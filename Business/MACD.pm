@@ -176,4 +176,6 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 perl(1)
 
+L<http://en.wikipedia.org/wiki/MACD>
+
 =cut
