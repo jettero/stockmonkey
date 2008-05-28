@@ -75,7 +75,7 @@ __END__
 
 =head1 NAME
 
-Math::Business::SMA - Perl extension for calculating simple moving averages.
+Math::Business::SMA - Technical Analysis: Simple Moving Average
 
 =head1 SYNOPSIS
 
@@ -107,12 +107,25 @@ Math::Business::SMA - Perl extension for calculating simple moving averages.
 
 =head1 AUTHOR
 
-Jettero Heller jettero@cpan.org
+Paul Miller <jettero@cpan.org>
 
-http://www.voltar.org
+I am using this software in my own projects...  If you find bugs, please please
+please let me know.
+
+I normally hang out on #perl on freenode, so you can try to get immediate
+gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+
+    perl -MSoftware::License::LGPL_2_1 \
+         -e '$l = Software::License::LGPL_2_1->new({
+             holder=>"Paul Miller"});
+             print $l->fulltext' | less
 
 =head1 SEE ALSO
 
-perl(1), Math::Business::SMA(3).
+perl(1)
 
 =cut

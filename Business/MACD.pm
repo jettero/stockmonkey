@@ -95,7 +95,7 @@ __END__
 
 =head1 NAME
 
-Math::Business::MACD - Perl extension for calculating MACDs
+Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
 
 =head1 SYNOPSIS
 
@@ -149,26 +149,31 @@ Math::Business::MACD - Perl extension for calculating MACDs
     This is going to be a compat buster for some of my graphs, but it has
     to be done for correctness.  :(
 
-=head1 AUTHOR
-
-Jettero Heller <jettero@cpan.org>
-
-http://www.voltar.org
-
 =head1 Thanks
 
 David Perry <David.Perry@ca.com>
 
-=head1 Special Thanks
+=head1 AUTHOR
 
-http://www.stockcharts.com/education/What/IndicatorAnalysis/indic_MACD1.html
+Paul Miller <jettero@cpan.org>
+
+I am using this software in my own projects...  If you find bugs, please please
+please let me know.
+
+I normally hang out on #perl on freenode, so you can try to get immediate
+gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+
+    perl -MSoftware::License::LGPL_2_1 \
+         -e '$l = Software::License::LGPL_2_1->new({
+             holder=>"Paul Miller"});
+             print $l->fulltext' | less
 
 =head1 SEE ALSO
 
-perl(1), Math::Business::EMA(3).
-
-=head1 Go Read this Page:
-
-http://www.stockcharts.com/education/What/IndicatorAnalysis/indic_MACD1.html
+perl(1)
 
 =cut
