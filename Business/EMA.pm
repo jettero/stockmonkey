@@ -46,14 +46,12 @@ sub insert {
     croak "You must set the number of days before you try to insert" if not $this->{R};
 
     my $retval = undef;
-    if( $this->{EMA} ) {
+    if( defined $this->{EMA} ) {
         $this->{EMA} = ( $arg * $this->{R} ) + ( $this->{EMA} * $this->{R1} );
 
     } else {
         $this->{SMA}->insert( $arg );
-        if( my $q = $this->{SMA}->query ) {
-            $this->{EMA} = $q;
-        }
+        $this->{EMA} = $this->{SMA}->query;
     }
 }
 

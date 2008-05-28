@@ -1,7 +1,9 @@
-package Math::Business::SMA;
+package Math::Business::RSI;
 
 use strict;
 use warnings;
+use Math::Business::SMA;
+use Math::Business::EMA;
 
 use version; our $VERSION = qv("1.00");
 
@@ -13,11 +15,32 @@ sub new {
     my $class = shift;
     my $this  = bless {
         val => [],
-        cur => undef,
+        mov => Math::Business::EMA->new,
         rec => 1,
+        cur => undef,
     }, $class;
 
     return $this;
+}
+
+sub set_standard {
+    my $this = shift;
+    my $rm   = ref $this->{mov};
+
+    if( $rm =~ m/SMA/ ) {
+        $this->{mov} = Math::Business::EMA->new;
+        $this->{mov}->set_days( $this->{days} ) if $this->{days};
+    }
+}
+
+sub set_cutler {
+    my $this = shift;
+    my $rm   = ref $this->{mov};
+
+    if( $rm =~ m/EMA/ ) {
+        $this->{mov} = Math::Business::SMA->new;
+        $this->{mov}->set_days( $this->{days} ) if $this->{days};
+    }
 }
 
 sub set_days { 
@@ -26,7 +49,7 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    $this->{days} = $arg;
+    $this->{mov}->set_days($this->{days} = $arg);
 }
 
 sub insert {
@@ -52,23 +75,7 @@ sub start_with {
 sub recalc {
     my $this = shift;
 
-    my $i = int(@{ $this->{val} });
-
-    shift @{ $this->{val} } while @{ $this->{val} } > $this->{days};
-
-    my $j = int(@{ $this->{val} });
-
-    if( @{ $this->{val} } == $this->{days} ) {
-        my $t = 0;
-        foreach my $v (@{ $this->{val} }) {
-            $t += $v;
-        }
-
-        $this->{cur} = ($t/$this->{days});
-    } elsif( defined($this->{cur}) ) {
-        $this->{cur} = undef;
-    }
-
+    $this->{cur} = undef;
     $this->{rec} = 0;
 }
 
@@ -76,7 +83,6 @@ sub query {
     my $this = shift;
 
     $this->recalc if $this->{rec};
-
     return $this->{cur};
 }
 
@@ -112,7 +118,7 @@ Math::Business::SMA - Technical Analysis: Simple Moving Average
   }
 
   # you may use this to kick start 
-  $sma->start_with( \@array_of_days_most_recent_on_right );
+  $sma->start_with( [@array_of_days_most_recent_on_right] );
 
 =head1 AUTHOR
 
@@ -137,6 +143,6 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 perl(1)
 
-L<http://en.wikipedia.org/wiki/Simple_moving_average>
+L<http://en.wikipedia.org/wiki/Relative_Strength_Index>
 
 =cut
