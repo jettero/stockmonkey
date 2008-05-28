@@ -3,7 +3,7 @@ package Math::Business::MACD;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('1.12');
+use version; our $VERSION = qv('2.0');
 
 use Carp;
 use Math::Business::EMA;
