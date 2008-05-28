@@ -42,7 +42,7 @@ sub insert {
 
     croak "You must set the number of days before you try to insert" if not $this->{R};
 
-    while( my $Yt  = shift ) {
+    while( defined(my $Yt  = shift) ) {
         if( defined(my $e = $this->{EMA}) ) {
             $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * $e );
 

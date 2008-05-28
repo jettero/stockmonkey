@@ -10,3 +10,4 @@ Changes
 README
 StockMonkey.pod
 Business/RSI.pm
+t/04_rsi.t

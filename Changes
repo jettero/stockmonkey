@@ -1,6 +1,7 @@
 1.0: Wed May 28 07:36:23 EDT 2008
     - I combined all the Math::Business::* modules I wrote into
       one distribution
-    - I made EMA faster and "better"
+    - I made EMA faster and "better" and fixed the while(insert)
+      where insert is 0
     - refactored SMA to be smarter for long DBI calculations and
       possibly less smart for huge multi scalar inserts

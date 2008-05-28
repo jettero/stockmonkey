@@ -15,9 +15,9 @@ sub new {
     my $class = shift;
     my $this  = bless {
         val => [],
-        mov => Math::Business::EMA->new,
-        rec => 1,
-        cur => undef,
+        U   => Math::Business::EMA->new,
+        D   => Math::Business::EMA->new,
+        RSI => undef,
     }, $class;
 
     return $this;
@@ -25,21 +25,31 @@ sub new {
 
 sub set_standard {
     my $this = shift;
-    my $rm   = ref $this->{mov};
+    my $rm   = ref $this->{U};
 
     if( $rm =~ m/SMA/ ) {
-        $this->{mov} = Math::Business::EMA->new;
-        $this->{mov}->set_days( $this->{days} ) if $this->{days};
+        $this->{U} = Math::Business::EMA->new;
+        $this->{D} = Math::Business::EMA->new;
+
+        if( my $d = $this->{days} ) {
+            $this->{U}->set_days( $d );
+            $this->{D}->set_days( $d );
+        }
     }
 }
 
 sub set_cutler {
     my $this = shift;
-    my $rm   = ref $this->{mov};
+    my $rm   = ref $this->{U};
 
     if( $rm =~ m/EMA/ ) {
-        $this->{mov} = Math::Business::SMA->new;
-        $this->{mov}->set_days( $this->{days} ) if $this->{days};
+        $this->{U} = Math::Business::SMA->new;
+        $this->{D} = Math::Business::SMA->new;
+
+        if( my $d = $this->{days} ) {
+            $this->{U}->set_days( $d );
+            $this->{D}->set_days( $d );
+        }
     }
 }
 
@@ -49,14 +59,53 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    $this->{mov}->set_days($this->{days} = $arg);
+    $this->{U}->set_days($this->{days} = $arg);
+    $this->{D}->set_days($arg);
+    delete $this->{cy};
+    delete $this->{RSI};
 }
 
 sub insert {
     my $this = shift;
-    my $arg  = shift;
+    my $close_yesterday = $this->{cy};
+
+    my $EMA_U = $this->{U};
+    my $EMA_D = $this->{D};
 
     croak "You must set the number of days before you try to insert" if not $this->{days};
+    while( defined( my $close_today = shift ) ) {
+        if( defined $close_yesterday ) {
+            my $delta = $close_today - $close_yesterday;
+
+            my ($U,$D) = (0,0);
+            if( $delta > 0 ) {
+                $U = $delta;
+                $D = 0;
+
+            } elsif( $delta < 0 ) {
+                $U = 0;
+                $D = $delta;
+            }
+
+
+            $EMA_U->insert($U);
+            $EMA_D->insert($D);
+
+            our $inserted ++;
+            warn "inserted $inserted so far this UD($U,$D)";
+        }
+
+        if( defined(my $eu = $EMA_U->query) ) {
+            my $ed = $EMA_D->query;
+            my $rs = (($ed == 0) ? 100 : $eu/$ed ); # NOTE: This is by definition apparently.
+
+            $this->{RSI} = 100 - 100/(1+$rs);
+        }
+
+        $close_yesterday = $close_today;
+    }
+
+    $this->{cy} = $close_yesterday;
 }
 
 sub start_with {
@@ -68,7 +117,7 @@ sub start_with {
 sub query {
     my $this = shift;
 
-    return $this->{cur};
+    return $this->{RSI};
 }
 
 __END__
