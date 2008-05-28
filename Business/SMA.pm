@@ -3,7 +3,7 @@ package Math::Business::SMA;
 use strict;
 use warnings;
 
-our $VERSION = "0.99";
+use version; our $VERSION = qv("1.00");
 
 use Carp;
 
