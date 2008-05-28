@@ -104,9 +104,16 @@ sub insert {
 
 sub start_with {
     my $this = shift;
+    my ($U,$D,$cy) = @_;
 
-    die "unfinished"
+    $this->{U}->start_with( $U );
+    $this->{D}->start_with( $U );
+    $this->{cy} = $cy;
 }
+
+sub query_EMA_U { my $this = shift; $this->{U}->query }
+sub query_EMA_D { my $this = shift; $this->{D}->query }
+sub query_cy    { my $this = shift; $this->{cy} }
 
 sub query {
     my $this = shift;
@@ -125,28 +132,29 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   use Math::Business::RSI;
 
   my $rsi = new Math::Business::RSI;
-
-  set_days $rsi 7;
+     $rsi->set_days(14);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
   );
 
-  foreach(@closing_values) {
-      $sma->insert( $_ );
-      if( defined(my $q = $sma->query) ) {
-          print "SMA value: $q.\n";
-      } else {
-          print "SMA value: n/a.\n";
+  $rsi->insert( @closing_values );
 
-          # note that a simple moving average is undefined before 
-          # there's enough days to calculate it.
-      }
+  if( defined(my $q = $sma->query) ) {
+      print "RSI: $q.\n";
+
+  } else {
+      print "RSI: n/a.\n";
   }
 
   # you may use this to kick start 
-  $sma->start_with( [@array_of_days_most_recent_on_right] );
+  $rsi->start_with( $U, $D, $cy );
+
+  # you may fetch those values with these
+  my $U  = $rsi->query_EMA_U;
+  my $D  = $rsi->query_EMA_D;
+  my $cy = $rsi->query_cy; # (close yesterday)
 
 =head1 AUTHOR
 

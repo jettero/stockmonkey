@@ -62,7 +62,6 @@ sub query {
     my $s = $this->query_slow_ema;
 
     return undef unless defined($f) and defined($s);
-
     return $f - $s;
 }
 
@@ -72,12 +71,14 @@ sub insert {
 
     croak "You must set the number of days before you try to insert" if not $this->{days};
 
-    $this->{slow_EMA}->insert($value);
-    $this->{fast_EMA}->insert($value);
+    while( my $value = shift ) {
+        $this->{slow_EMA}->insert($value);
+        $this->{fast_EMA}->insert($value);
 
-    my $m = $this->query;
+        my $m = $this->query;
 
-    $this->{trig_EMA}->insert( $m ) if defined($m);
+        $this->{trig_EMA}->insert( $m ) if defined($m);
+    }
 }
 
 sub query_histogram { 
@@ -105,39 +106,29 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
 
   my ($slow, $fast, $trigger) = (26, 12, 9);
 
-  set_days $macd $slow, $fast, $trigger;
+  $macd->set_days( $slow, $fast, $trigger );
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
   );
 
-  # This is probably a bad example.  It will produce quite a few
-  # warnings with the -w switch.  Note that the return will be
-  # undefined until there are enough values in the ema!
-  foreach(@closing_values) {
-      $macd->insert( $_ );
-      print "       MACD: ", $macd->query,          "\n",
-            "Trigger EMA: ", $macd->query_trig_ema, "\n",
-            "   Fast EMA: ", $macd->query_fast_ema, "\n",
-            "   Slow EMA: ", $macd->query_slow_ema, "\n";
-  }
+  # choose one:
+  $macd->insert( @closing_vlaues );
+  $macd->insert( $_ ) for @closing_values;
 
-  # to avoid recalculating huge lists when 
-  # you add a few new values on the end
+  print "       MACD: ", $macd->query,          "\n",
+        "Trigger EMA: ", $macd->query_trig_ema, "\n",
+        "   Fast EMA: ", $macd->query_fast_ema, "\n",
+        "   Slow EMA: ", $macd->query_slow_ema, "\n";
+
+To avoid recalculating huge lists when you add a few new values on the end:
 
   $ema->start_with( 
       $last_slow_ema,
       $last_fast_ema,
       $last_trig_ema,
   );
-
-  # then continue with a foreach over the newly
-  # inserted values
-
-  # unfortunately this means you'd have had to
-  # store the last slow, fast, and trigger ema's.
-  # somewhere
 
 =head1 EMA/SMA Note
 

@@ -4,7 +4,6 @@ use strict;
 use warnings;
 
 use version; our $VERSION = qv('1.1');
-
 use Carp;
 
 1;
@@ -78,30 +77,32 @@ Math::Business::SMA - Technical Analysis: Simple Moving Average
 
   use Math::Business::SMA;
 
-  my $sma = new Math::Business::SMA;
-
-  set_days $sma 7;
+  my $avg = new Math::Business::SMA;
+     $avg->set_days(7);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
   );
 
-  foreach(@closing_values) {
-      $sma->insert( $_ );
-      if( defined(my $q = $sma->query) ) {
-          print "SMA value: $q.\n";
-      } else {
-          print "SMA value: n/a.\n";
+  # choose one:
+  $avg->insert( @closing_values );
+  $avg->insert( $_ ) for @closing_values;
 
-          # note that a simple moving average is undefined before 
-          # there's enough days to calculate it.
-      }
+  if( defined(my $q = $avg->query) ) {
+      print "value: $q.\n";  
+
+  } else {
+      print "value: n/a.\n";
   }
 
-  # you may use this to kick start 
-  $sma->start_with( @array_of_days_most_recent_on_right ); 
-  # (until version 1.1, this used to take an arrayref, not an array)
+To avoid recalculating huge lists when you add a few new values on the end;
+
+  $avg->start_with( $the_last_calculated_value );
+
+For short, you can skip the set_days() by suppling the setting to new():
+
+  my $longer_avg = new Math::Business::SMA(10);
 
 =head1 AUTHOR
 

@@ -4,9 +4,7 @@ use strict;
 use warnings;
 
 use version; our $VERSION = qv('1.5');
-
 use Carp;
-use Math::Business::SMA;
 
 1;
 
@@ -84,37 +82,30 @@ Math::Business::EMA - Technical Analysis: Exponential Moving Average
 
   use Math::Business::EMA;
 
-  my $ema = new Math::Business::EMA;
-
-  set_days $ema 7;
+  my $avg = new Math::Business::EMA;
+     $avg->set_days(7);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
       6 6 6 6 7 7 7 8 8 8 8 
   );
 
-  foreach(@closing_values) {
-      $ema->insert( $_ );
-      if( defined(my $q = $ema->query) ) {
-          # The first entry is the value of the simple 
-          # moving average
-          print "EMA value: $q.\n";  
-      } else {
-          # this is undefined until there's at least
-          # $days worth of data...
-          print "EMA value: n/a.\n";
-      }
+  # choose one:
+  $avg->insert( @closing_values );
+  $avg->insert( $_ ) for @closing_values;
+
+  if( defined(my $q = $avg->query) ) {
+      print "value: $q.\n";  
+
+  } else {
+      print "value: n/a.\n";
   }
 
-  # to avoid recalculating huge lists when 
-  # you add a few new values on the end
+To avoid recalculating huge lists when you add a few new values on the end:
 
-  $ema->start_with( $the_last_calculated_value );
+  $avg->start_with( $the_last_calculated_value );
 
-  # then continue with a foreach over the newly
-  # inserted values
-
-  # For short, you can now skip the set_days() by suppling the setting to new():
+For short, you can skip the set_days() by suppling the setting to new():
 
   my $longer_ema = new Math::Business::EMA(10);
 
