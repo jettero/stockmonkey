@@ -86,7 +86,7 @@ Math::Business::EMA - Technical Analysis: Exponential Moving Average
 
   my $ema = new Math::Business::EMA;
 
-  set_days $ema 3;
+  set_days $ema 7;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 

@@ -98,7 +98,7 @@ Math::Business::SMA - Technical Analysis: Simple Moving Average
 
   my $sma = new Math::Business::SMA;
 
-  set_days $sma 3;
+  set_days $sma 7;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
