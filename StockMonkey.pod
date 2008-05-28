@@ -14,11 +14,13 @@ calculations.
 
 =head1 MODULES
 
-L<Math::Business::SMA>
+L<Math::Business::SMA> - Simple Moving Average
 
-L<Math::Business::EMA>
+L<Math::Business::EMA> - Exponential Moving Average
 
-L<Math::Business::MACD>
+L<Math::Business::MACD> - Moving Average Convergence/Divergence
+
+L<Math::Business::RSI> - Relative Strength Index
 
 =head1 AUTHOR
 
