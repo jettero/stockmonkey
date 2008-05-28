@@ -1,3 +1,4 @@
 1.0: Wed May 28 07:36:23 EDT 2008
     - I combined all the Math::Business::* modules I wrote into
       one distribution
+    - I made EMA faster and "better"
