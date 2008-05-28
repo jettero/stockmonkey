@@ -3,7 +3,7 @@ package Math::Business::SMA;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv("1.00");
+use version; our $VERSION = qv('1.1');
 
 use Carp;
 
@@ -31,57 +31,42 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
+    delete $this->{val};
+    delete $this->{SMA};
     $this->{days} = $arg;
 }
 
 sub insert {
     my $this = shift;
-    my @arg  = shift;
+    my $val  = $this->{val};
+    my $N    = $this->{days};
 
-    croak "You must set the number of days before you try to insert" if not $this->{days};
+    croak "You must set the number of days before you try to insert" if not defined $N;
 
-    push @{ $this->{val} }, @arg; 
+    while( defined(my $PM = shift) ) {
+        if( @$val >= $N ) {
+            my $old = shift @$val;
+            push @$val, $PM;
 
-    $this->{rec} = 1;
-}
+            if( defined( my $s = $this->{SMA} ) ) {
+                $this->{SMA} = $s - $old/$N + $PM/$N;
 
-sub start_with {
-    my $this        = shift;
-       $this->{val} = shift;
+            } else {
+                my $sum = 0;
+                   $sum += $_ for @$val;
 
-    croak "bad arg to start_with" unless ref($this->{val}) eq "ARRAY";
+                $this->{SMA} = $sum/$N;
+            }
 
-    $this->{rec} = 1;
-}
-
-sub recalc {
-    my $this = shift;
-
-    my $i = int(@{ $this->{val} });
-
-    shift @{ $this->{val} } while @{ $this->{val} } > $this->{days};
-
-    my $j = int(@{ $this->{val} });
-
-    if( @{ $this->{val} } == $this->{days} ) {
-        my $t = 0;
-        foreach my $v (@{ $this->{val} }) {
-            $t += $v;
+        } else {
+            push @$val, $PM;
         }
-
-        $this->{cur} = ($t/$this->{days});
-
-    } elsif( defined($this->{cur}) ) {
-        $this->{cur} = undef;
     }
-
-    $this->{rec} = 0;
 }
+*start_with = *insert;
 
 sub query {
     my $this = shift;
-
-    $this->recalc if $this->{rec};
 
     return $this->{cur};
 }
@@ -118,7 +103,8 @@ Math::Business::SMA - Technical Analysis: Simple Moving Average
   }
 
   # you may use this to kick start 
-  $sma->start_with( \@array_of_days_most_recent_on_right );
+  $sma->start_with( @array_of_days_most_recent_on_right ); 
+  # (until version 1.1, this used to take an arrayref, not an array)
 
 =head1 AUTHOR
 

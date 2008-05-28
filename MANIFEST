@@ -1,9 +1,9 @@
 Business/EMA.pm
 Business/MACD.pm
 Business/SMA.pm
+t/01_sma.t
 t/02_ema.t
-t/02_macd.t
-t/02_sma.t
+t/03_macd.t
 MANIFEST
 Makefile.PL
 Changes

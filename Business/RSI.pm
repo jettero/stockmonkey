@@ -57,32 +57,17 @@ sub insert {
     my $arg  = shift;
 
     croak "You must set the number of days before you try to insert" if not $this->{days};
-
-    push @{ $this->{val} }, $arg; 
-
-    $this->{rec} = 1;
 }
 
 sub start_with {
-    my $this        = shift;
-       $this->{val} = shift;
-
-    croak "bad arg to start_with" unless ref($this->{val}) eq "ARRAY";
-
-    $this->{rec} = 1;
-}
-
-sub recalc {
     my $this = shift;
 
-    $this->{cur} = undef;
-    $this->{rec} = 0;
+    die "unfinished"
 }
 
 sub query {
     my $this = shift;
 
-    $this->recalc if $this->{rec};
     return $this->{cur};
 }
 
@@ -90,15 +75,15 @@ __END__
 
 =head1 NAME
 
-Math::Business::SMA - Technical Analysis: Simple Moving Average
+Math::Business::RSI - Technical Analysis: Relative Strength Index
 
 =head1 SYNOPSIS
 
-  use Math::Business::SMA;
+  use Math::Business::RSI;
 
-  my $sma = new Math::Business::SMA;
+  my $rsi = new Math::Business::RSI;
 
-  set_days $sma 3;
+  set_days $rsi 7;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
