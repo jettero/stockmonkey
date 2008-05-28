@@ -3,7 +3,7 @@ package Math::Business::EMA;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('1.08');
+use version; our $VERSION = qv('1.5');
 
 use Carp;
 use Math::Business::SMA;
@@ -16,11 +16,9 @@ sub new {
         EMA => undef,
         R   => 0,
         R1  => 0,
-        SMA => Math::Business::SMA->new,
     }, $class;
 
     my $days = shift;
-
     if( defined $days ) {
         $this->set_days( $days );
     }
@@ -34,24 +32,32 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    $this->{R}   = 2.0 / (1.0 + $arg);
-    $this->{R1}  = (1 - $this->{R});
-    $this->{SMA}->set_days( $arg );
+    $this->{R}    = 2.0 / (1.0 + $arg);
+    $this->{R1}   = (1 - $this->{R});
+    $this->{days} = $arg;
 }
 
 sub insert {
     my $this = shift;
-    my $arg  = shift;
 
     croak "You must set the number of days before you try to insert" if not $this->{R};
 
-    my $retval = undef;
-    if( defined $this->{EMA} ) {
-        $this->{EMA} = ( $arg * $this->{R} ) + ( $this->{EMA} * $this->{R1} );
+    while( my $Yt  = shift ) {
+        if( defined $this->{EMA} ) {
+            $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * $this->{EMA} );
 
-    } else {
-        $this->{SMA}->insert( $arg );
-        $this->{EMA} = $this->{SMA}->query;
+        } else {
+            my ($p,$N);
+            if( ref($p = $this->{_p}) and (($N = @$p) >= $this->{days}-1) ) {
+                my $sum = 0;
+                   $sum += $_ for @$p;
+
+                $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * ($sum/$N) );
+
+            } else {
+                push @{$this->{_p}}, $Yt;
+            }
+        }
     }
 }
 

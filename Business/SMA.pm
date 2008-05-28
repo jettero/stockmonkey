@@ -17,6 +17,11 @@ sub new {
         rec => 1,
     }, $class;
 
+    my $days = shift;
+    if( defined $days ) {
+        $this->set_days( $days );
+    }
+
     return $this;
 }
 
@@ -31,11 +36,11 @@ sub set_days {
 
 sub insert {
     my $this = shift;
-    my $arg  = shift;
+    my @arg  = shift;
 
     croak "You must set the number of days before you try to insert" if not $this->{days};
 
-    push @{ $this->{val} }, $arg; 
+    push @{ $this->{val} }, @arg; 
 
     $this->{rec} = 1;
 }
@@ -65,6 +70,7 @@ sub recalc {
         }
 
         $this->{cur} = ($t/$this->{days});
+
     } elsif( defined($this->{cur}) ) {
         $this->{cur} = undef;
     }
