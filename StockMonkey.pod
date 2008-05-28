@@ -22,6 +22,8 @@ L<Math::Business::MACD> - Moving Average Convergence/Divergence
 
 L<Math::Business::RSI> - Relative Strength Index
 
+L<Math::Business::BollingerBands> - Bollinger Bands
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>

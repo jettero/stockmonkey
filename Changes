@@ -6,3 +6,4 @@
     - Refactored SMA to be smarter for long DBI calculations and
       possibly less smart for huge multi scalar inserts
     - Authored the RSI module to my tastes
+    - Authored the Bollinger Bands module
