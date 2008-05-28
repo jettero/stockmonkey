@@ -2,3 +2,5 @@
     - I combined all the Math::Business::* modules I wrote into
       one distribution
     - I made EMA faster and "better"
+    - refactored SMA to be smarter for long DBI calculations and
+      possibly less smart for huge multi scalar inserts
