@@ -10,9 +10,12 @@ use Carp;
 1;
 
 sub new { 
-    bless {
+    my $class = shift;
+    my $this  = bless {
         val => [],
-    } 
+    }, $class;
+
+    return $this;
 }
 
 sub set_days { 

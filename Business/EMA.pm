@@ -11,13 +11,13 @@ use Math::Business::SMA;
 1;
 
 sub new { 
-    my $this = shift;
-       $this = bless {
+    my $class = shift;
+    my $this = bless {
         EMA => undef,
         R   => 0,
         R1  => 0,
         SMA => Math::Business::SMA->new,
-    }, $this;
+    }, $class;
 
     my $days = shift;
 

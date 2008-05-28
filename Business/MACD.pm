@@ -11,14 +11,14 @@ use Math::Business::EMA;
 1;
 
 sub new { 
-    my $this = shift;
+    my $class = shift;
 
-    $this = bless {
+    my $this = bless {
         slow_EMA => new Math::Business::EMA,
         fast_EMA => new Math::Business::EMA,
         trig_EMA => new Math::Business::EMA,
         days     => 0,
-    }, $this;
+    }, $class;
 
     return $this;
 }
