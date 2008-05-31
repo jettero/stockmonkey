@@ -3,7 +3,7 @@ package Math::Business::BollingerBands;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv("1.00");
+use version; our $VERSION = qv("1.01");
 use Carp;
 
 1;
@@ -119,7 +119,7 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
      $bb->set_deviations(2);
 
   # alternatively/equivalently
-  my $bb = new Math::Business::BollingerBands;
+  my $bb = new Math::Business::BollingerBands(20, 2);
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
@@ -130,7 +130,7 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
   $bb->insert( @closing_values );
   $bb->insert( $_ ) for @closing_values;
 
-  my ($L,$M,$U) = $sma->query;
+  my ($L,$M,$U) = $bb->query;
   if( defined $M ) {
       print "BB: $L < $M < $U.\n";
 
