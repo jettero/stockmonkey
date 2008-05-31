@@ -150,7 +150,7 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   $rsi->insert( @closing_values );
   $rsi->insert( $_ ) for @closing_values;
 
-  if( defined(my $q = $sma->query) ) {
+  if( defined(my $q = $rsi->query) ) {
       print "RSI: $q.\n";
 
   } else {
