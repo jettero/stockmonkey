@@ -5,10 +5,16 @@ use warnings;
 use Math::Business::SMA;
 use Math::Business::EMA;
 
-use version; our $VERSION = qv("1.00");
+use version; our $VERSION = qv("1.2");
 use Carp;
 
 1;
+
+sub recommended {
+    my $class = shift;
+
+    $class->new(14);
+}
 
 sub new { 
     my $class = shift;
@@ -140,6 +146,9 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
 
   # alternatively/equivilently
   my $rsi = new Math::Business::RSI(14);
+
+  # or to just get the recommended model ... (14)
+  my $rsi = Math::Business::RSI->recommended;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 

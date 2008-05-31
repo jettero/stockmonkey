@@ -3,10 +3,16 @@ package Math::Business::BollingerBands;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv("1.01");
+use version; our $VERSION = qv("1.02");
 use Carp;
 
 1;
+
+sub recommended {
+    my $class = shift;
+
+    $class->new(20, 2);
+}
 
 sub new { 
     my $class = shift;
@@ -120,6 +126,9 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
 
   # alternatively/equivalently
   my $bb = new Math::Business::BollingerBands(20, 2);
+
+  # or to just get the recommended model ... (20, 2);
+  my $bb = Math::Business::BollingerBands->recommended;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 

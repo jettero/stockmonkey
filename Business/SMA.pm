@@ -8,6 +8,8 @@ use Carp;
 
 1;
 
+sub recommended { croak "no recommendation" }
+
 sub new { 
     my $class = shift;
     my $this  = bless {

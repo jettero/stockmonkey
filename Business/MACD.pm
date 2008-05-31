@@ -3,12 +3,18 @@ package Math::Business::MACD;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.0');
+use version; our $VERSION = qv('2.1');
 
 use Carp;
 use Math::Business::EMA;
 
 1;
+
+sub recommended {
+    my $class = shift;
+
+    $class->new(26, 12, 9);
+}
 
 sub new { 
     my $class = shift;
@@ -105,12 +111,19 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
 
   use Math::Business::MACD;
 
+  # WARNING: To clear up any confusion, Appel used 12-26-9 rather
+  # than the 26,12,9 shown here -- that is, he used
+  # fast-slow-trigger instead of slow-fast-trigger as used below.
+
   my ($slow, $fast, $trigger) = (26, 12, 9);
   my $macd = new Math::Business::MACD;
      $macd->set_days( $slow, $fast, $trigger );
 
   # alternatively/equivelently
   my $macd = new Math::Business::MACD( $slow, $fast, $trigger );
+
+  # or to just get the recommended model ... (26,12,9)
+  my $macd = Math::Business::MACD->recommended;
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
