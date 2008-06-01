@@ -82,7 +82,7 @@ sub insert {
                 my $PDI = $this->{PDI} = $aPDM / $ATR;
                 my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                my $DI = abs( $PDI - $MDI );
+                my $DI = abs( $PDI - $MDI ) || 0.000_000_000_6;
                 my $DX = $DI / ($PDI + $MDI);
 
                 $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
@@ -108,7 +108,7 @@ sub insert {
                     my $PDI = $this->{PDI} = $aPDM / $ATR;
                     my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                    my $DI = abs( $PDI - $MDI );
+                    my $DI = abs( $PDI - $MDI ) || 0.000_000_000_6;
                     my $DX = $DI / ($PDI + $MDI);
 
                     $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
