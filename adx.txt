@@ -1,0 +1,373 @@
+     * [1]Account Login
+     * I
+     * [2]Open an Account
+     * [3]Jump to content
+
+     * [4]FXLABS
+     * I
+     * [5]FXGLOBALTRANSFER
+     * I
+     * [6]FXTRADE
+     * I
+     * [7]OANDA
+
+                  [8]Redefining Forex Trading - OANDA FXTrade
+
+
+     *
+       [9]FOREX TRADING
+
+          * [10]Why Trade with OANDA
+          * [11]Who Uses FXTrade
+          * [12]FXTrade
+          * [13]FXGame
+          * [14]FXManager
+          * [15]OANDA Trading Practices
+
+     *
+       [16]TOOLS
+
+          * [17]FXCalculators
+          * [18]Statistical Information
+          * [19]Decision Support
+          * [20]Market Information
+          * [21]Currency Exchange Rates
+          * [22]FXLabs
+
+     *
+       [23]RESOURCES
+
+          * [24]Dean's FX Blog [25]RSS
+          * [26]Bill of Rights
+          * [27]Forex News
+          * [28]FXBooks and Articles
+
+     *
+       [29]SUPPORT
+
+          * [30]Customer Service
+          * [31]Live Help
+          * [32]FAQs
+          * [33]Platform User Guide
+          * [34]Troubleshooting
+          * [35]Technical Requirements
+
+     *
+       [36]LEARN
+
+          * [37]The Forex Market
+          * [38]Forex Trading Basics
+          * [39]Graphs
+          * [40]Glossary
+
+     *
+       [41]COMMUNITY
+
+          * [42]Forex Forums
+          * [43]Trader Stories
+
+     *
+       [44]YOUR ACCOUNT
+
+          * [45]Log In
+          * [46]FXTrade
+          * [47]FXGame
+
+     *
+       [48]ABOUT
+
+          * [49]About OANDA
+          * [50]Corporate Governance
+          * [51]Regulatory Compliance
+          * [52]OANDA Innovations
+          * [53]Careers
+          * [54]Contact Us
+          * [55]Clients and Partners
+          * [56]In the Press
+
+   [57][IMG] >  [58]learn >   >   >  [59]ADX: Average Directional Index
+   [60][IMG] [61][IMG] [62]__________________________ [63]Search
+
+                                      ADX
+
+Overview
+
+   Developed by J. Welles Wilder Jr., ADX stands for average directional
+   index. It is widely believed to confirm the presence of a price trend.
+
+Formula
+
+   Calculating ADX is very involved. For greater clarification of any of the
+   steps outlined, consult Wilder's book, New Concepts in Technical Trading
+   Systems:
+
+    1. Calculate the current period's Directional Movement (DM)
+
+       A = Today's High - Yesterday's High
+       B = Yesterday's Low - Today's Low
+
+       Depending upon the values of A and B, three possible scenarios are:
+
+       +-----------------------------------------+
+       | Values              | Scenarios         |
+       |---------------------+-------------------|
+       | Both A and B < 0    | +DM=0, -DM=0      |
+       |---------------------+-------------------|
+       | A > B               | +DM=A, -DM=0      |
+       |---------------------+-------------------|
+       | A < B               | +DM=0, -DM=B      |
+       +-----------------------------------------+
+
+       Note: +DM and -DM are two components in the ultimate calculation of
+       ADX. The positive and negative title, suggest highs and lows as
+       opposed to positive and negative numbers.
+
+    2. Calculate the true range (TR), see [64]ATR
+
+       Wilder suggested using a period of 14 for calculations:
+
+          * +DM14 = Wilder's exponential moving average* of +DM for 14
+            periods.
+          * -DM14 = Wilder's exponential moving average* of -DM for 14
+            periods.
+          * TR14 = Wilder's exponential moving average* of True Range for 14
+            periods.
+
+    3. Calculate the Directional Indicators
+
+       Positive Directional Indicator (+DI14) = +DM14 divided by TR14
+       Negative Directional Indicator (-DI14) = -DM14 divided by TR14
+
+    4. DI Difference = The absolute value of the difference between +DI14 and
+       -DI14.
+
+    5. Directional Index (DX) = DI Difference divided by the sum of +DI14 and
+       -DI14
+
+    6. ADX = EMA* of DX
+
+       *Wilder calculated moving average differently, owing to the need for
+       calculating averages quickly by hand. For example:
+
+         Current +DM14 = 13/14 (Previous +DM14) + 1/14 (Current +DM).
+
+       The first +DM14 value in the series, was simply the sum of the
+       previous fourteen -DM14 values divided by 14 (SMA).
+
+
+
+                              [65]GraphingFeatures
+
+     * [66]Currency Price Graphs
+
+          * [67]Ask Price, Average Price, Bid Price
+          * [68]Candlestick
+          * [69]Heikin-Ashi
+          * [70]Closing Price
+          * [71]HLC (High-Low-Close)
+          * [72]OHLC (Open-High-Low-Close)
+          * [73]Min/Max
+
+     * [74]Indicators
+
+          * [75]ADX: Average Directional Index
+          * [76]AO: Awesome Oscillator
+          * [77]ATR: Average True Range
+          * [78]CCI: Commodity Channel Index
+          * [79]Fast Stochastic
+          * [80]Full Stochastic
+          * [81]MACD: Moving Average Convergence/Divergence
+          * [82]Momentum
+          * [83]ROC: Rate of Change
+          * [84]RSI: Relative Strength Index
+          * [85]Standard Deviation
+          * [86]Slow Stochastic
+          * [87]Stochastic RSI
+          * [88]Ultimate Oscillator
+          * [89]Williams %R
+
+     * [90]Overlays
+
+          * [91]Bollinger Bands
+          * [92]EMA: Exponential Moving Average
+          * [93]Ichimoku Kinko Hyo
+          * [94]Parabolic SAR
+          * [95]Pivot Points
+          * [96]SMA: Simple Moving Average
+          * [97]STARC
+          * [98]WMA: Weighted Moving Average
+
+     * [99]Trend Lines
+
+          * [100]Draw Simple Trend Lines
+          * [101]Draw Advanced Trend Lines
+          * [102]Fibonacci Trend Lines
+          * [103]Pivot Point Trend Lines
+          * [104]Speed Lines
+
+     * More on FXTrade:
+     * [105]Forex Account
+     * I
+     * [106]Forex News
+     * I
+     * [107]Practice Forex Trading
+     * I
+     * [108]Margin Calculator
+     * I
+     * [109]Forex Calculators
+     * I
+     * [110]Learn Forex Trading
+
+     * OANDA Services:
+     * [111]Forex Trading
+     * I
+     * [112]Global Payments
+     * I
+     * [113]Forex Blog
+     * I
+     * [114]Forex Wiki
+     * I
+     * [115]Forex Forums
+     * I
+     * [116]Currency Converter
+
+     * [117]Terms of Use
+     * I
+     * [118]Privacy Policy
+     * I
+     * [119]Register
+     * I
+     * [120]Contact Us
+     * I
+     * [121]Legal
+     * I
+     * [122]Site Map
+
+   (c) 1996 - 2008 OANDA Corporation. All rights reserved. All Registered
+   Trade Marks used on this Website, whether marked as Trade Marks or not
+   marked, are declared to belong to their respective owner(s). OANDA
+   Corporation owns Trade Marks of all its "FX" products.
+
+References
+
+   Visible links
+   1. http://fxtrade.oanda.com/your_account/login.shtml
+   2. http://fxtrade.oanda.com/your_account/fxtrade/open_account.shtml
+   3. http://fxtrade.oanda.com/learn/graphs/indicators/adx.shtml#content
+   4. http://fxlabs.oanda.com/
+   5. http://fxglobaltransfer.oanda.com/
+   6. http://fxtrade.oanda.com/
+   7. http://www.oanda.com/
+   8. http://fxtrade.oanda.com/
+   9. http://fxtrade.oanda.com/forex_trading/index.shtml
+  10. http://fxtrade.oanda.com/forex_trading/why_trade_with_oanda/index.shtml
+  11. http://fxtrade.oanda.com/forex_trading/who_should_use_fxtrade/index.shtml
+  12. http://fxtrade.oanda.com/forex_trading/fxtrade/index.shtml
+  13. http://fxtrade.oanda.com/forex_trading/fxgame/index.shtml
+  14. http://fxtrade.oanda.com/forex_trading/fxmanager/index.shtml
+  15. http://fxtrade.oanda.com/forex_trading/oanda_trading_practices/index.shtml
+  16. http://fxtrade.oanda.com/tools/index.shtml
+  17. http://fxtrade.oanda.com/tools/fxcalculators/index.shtml
+  18. http://fxtrade.oanda.com/tools/statistical_information/index.shtml
+  19. http://fxtrade.oanda.com/tools/decision_support/index.shtml
+  20. http://fxtrade.oanda.com/tools/market_info/index.shtml
+  21. http://fxtrade.oanda.com/tools/currency_exchange_rates/index.shtml
+  22. http://fxlabs.oanda.com/cgi/fxlabs.pl
+  23. http://fxtrade.oanda.com/resources/index.shtml
+  24. http://fxtrade.oanda.com/resources/rss.shtml
+  25. http://fxtrade.oanda.com/resources/rss.shtml
+  26. http://fxtrade.oanda.com/resources/bill_of_rights/index.shtml
+  27. http://fxtrade.oanda.com/resources/forex_news/index.shtml
+  28. http://fxtrade.oanda.com/resources/fxbooks_and_articles/index.shtml
+  29. http://fxtrade.oanda.com/support/index.shtml
+  30. http://fxtrade.oanda.com/support/customer_service.shtml
+  31. http://server.iad.liveperson.net/hc/5807093/?cmd=file&file=visitorWantsToChat&site=5807093&byhref=1&SESSIONVAR%21skill=Customer%20Service&imageUrl=https://www.oanda.com/share/i/
+  32. http://fxtrade.oanda.com/support/faqs.shtml
+  33. javascript:pop_up_window('1000','600','/fileadmin/third_party/FXTrade_Platform_User_Guide/');
+  34. http://fxtrade.oanda.com/support/troubleshooting/index.shtml
+  35. http://fxtrade.oanda.com/support/technical_requirements.shtml
+  36. http://fxtrade.oanda.com/learn/index.shtml
+  37. http://fxtrade.oanda.com/learn/what_is_forex/index.shtml
+  38. http://fxtrade.oanda.com/learn/basics/index.shtml
+  39. http://fxtrade.oanda.com/learn/graphs/index.shtml
+  40. http://fxtrade.oanda.com/learn/glossary.shtml
+  41. http://fxtrade.oanda.com/community/index.shtml
+  42. http://fxtrade.oanda.com/community/forex_forums.shtml
+  43. http://fxtrade.oanda.com/community/trader_stories/index.shtml
+  44. http://fxtrade.oanda.com/your_account/index.shtml
+  45. http://fxtrade.oanda.com/your_account/login.shtml
+  46. http://fxtrade.oanda.com/your_account/fxtrade/index.shtml
+  47. http://fxtrade.oanda.com/your_account/fxgame/index.shtml
+  48. http://fxtrade.oanda.com/about/index.shtml
+  49. http://fxtrade.oanda.com/about/about_oanda.shtml
+  50. http://fxtrade.oanda.com/about/corporate_governance.shtml
+  51. http://fxtrade.oanda.com/about/corporate_regulation.shtml
+  52. http://fxtrade.oanda.com/about/oanda_innovations.shtml
+  53. http://fxtrade.oanda.com/about/careers.shtml
+  54. http://fxtrade.oanda.com/about/contact_us.shtml
+  55. http://fxtrade.oanda.com/about/partners.shtml
+  56. http://fxtrade.oanda.com/about/press/in_the_press.shtml
+  57. http://fxtrade.oanda.com/
+  58. http://fxtrade.oanda.com/learn/
+  59. http://fxtrade.oanda.com/learn/graphs/indicators/adx.shtml
+  60. javascript:Clickheretoprint()
+  61. http://fxtrade.oanda.com/general/email_page.shtml
+  64. http://fxtrade.oanda.com/learn/graphs/indicators/adx.shtml#atr
+  65. http://fxtrade.oanda.com/learn/graphs/index.shtml
+  66. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/index.shtml
+  67. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/ask_price_avg_price_bid_price.shtml
+  68. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/candlestick.shtml
+  69. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/heikinashi.shtml
+  70. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/close_price.shtml
+  71. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/hlc.shtml
+  72. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/ohlc.shtml
+  73. http://fxtrade.oanda.com/learn/graphs/currency_price_graphs/min_max_chart.shtml
+  74. http://fxtrade.oanda.com/learn/graphs/indicators/index.shtml
+  75. http://fxtrade.oanda.com/learn/graphs/indicators/adx.shtml
+  76. http://fxtrade.oanda.com/learn/graphs/indicators/ao.shtml
+  77. http://fxtrade.oanda.com/learn/graphs/indicators/atr.shtml
+  78. http://fxtrade.oanda.com/learn/graphs/indicators/cci.shtml
+  79. http://fxtrade.oanda.com/learn/graphs/indicators/fast_stochastic.shtml
+  80. http://fxtrade.oanda.com/learn/graphs/indicators/full_stochastic.shtml
+  81. http://fxtrade.oanda.com/learn/graphs/indicators/macd.shtml
+  82. http://fxtrade.oanda.com/learn/graphs/indicators/momentum.shtml
+  83. http://fxtrade.oanda.com/learn/graphs/indicators/roc.shtml
+  84. http://fxtrade.oanda.com/learn/graphs/indicators/rsi.shtml
+  85. http://fxtrade.oanda.com/learn/graphs/indicators/standard_deviation.shtml
+  86. http://fxtrade.oanda.com/learn/graphs/indicators/slow_stochastic.shtml
+  87. http://fxtrade.oanda.com/learn/graphs/indicators/stochastic_rsi.shtml
+  88. http://fxtrade.oanda.com/learn/graphs/indicators/ultimate_oscillator.shtml
+  89. http://fxtrade.oanda.com/learn/graphs/indicators/williams_r.shtml
+  90. http://fxtrade.oanda.com/learn/graphs/overlays/index.shtml
+  91. http://fxtrade.oanda.com/learn/graphs/overlays/bollinger_bands.shtml
+  92. http://fxtrade.oanda.com/learn/graphs/overlays/ema.shtml
+  93. http://fxtrade.oanda.com/learn/graphs/overlays/ichimoku_kinko_hyo.shtml
+  94. http://fxtrade.oanda.com/learn/graphs/overlays/parabolic_sar.shtml
+  95. http://fxtrade.oanda.com/learn/graphs/overlays/pivot_points.shtml
+  96. http://fxtrade.oanda.com/learn/graphs/overlays/sma.shtml
+  97. http://fxtrade.oanda.com/learn/graphs/overlays/starc.shtml
+  98. http://fxtrade.oanda.com/learn/graphs/overlays/wma.shtml
+  99. http://fxtrade.oanda.com/learn/graphs/trend_lines/index.shtml
+ 100. http://fxtrade.oanda.com/learn/graphs/trend_lines/draw_simple_trend_lines.shtml
+ 101. http://fxtrade.oanda.com/learn/graphs/trend_lines/draw_advanced_trend_lines.shtml
+ 102. http://fxtrade.oanda.com/learn/graphs/trend_lines/fibonacci_trend_lines.shtml
+ 103. http://fxtrade.oanda.com/learn/graphs/trend_lines/pivot_point_trend_lines.shtml
+ 104. http://fxtrade.oanda.com/learn/graphs/trend_lines/speed_lines.shtml
+ 105. http://fxtrade.oanda.com/your_account/fxtrade/open_account.shtml
+ 106. http://fxtrade.oanda.com/resources/forex_news/
+ 107. http://fxtrade.oanda.com/forex_trading/fxgame/
+ 108. http://fxtrade.oanda.com/tools/fxcalculators/margin_calculator.shtml
+ 109. http://fxtrade.oanda.com/tools/fxcalculators/
+ 110. http://fxtrade.oanda.com/learn/
+ 111. http://fxtrade.oanda.com/
+ 112. http://fxglobaltransfer.oanda.com/
+ 113. http://fxtrade.oanda.com/resources/rss.shtml
+ 114. http://www.fxpedia.com/
+ 115. http://fxtrade.oanda.com/community/forex_forums.shtml
+ 116. http://www.oanda.com/convert/classic
+ 117. http://fxtrade.oanda.com/legal/terms_of_use.shtml
+ 118. http://fxtrade.oanda.com/legal/privacy_policy.shtml
+ 119. http://fxtrade.oanda.com/your_account/fxtrade/open_account.shtml
+ 120. http://fxtrade.oanda.com/about/contact_us.shtml
+ 121. http://fxtrade.oanda.com/legal/
+ 122. http://fxtrade.oanda.com/general/sitemap.shtml

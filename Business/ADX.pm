@@ -39,6 +39,19 @@ sub set_days {
 sub insert {
     my $this = shift;
 
+    # +DI is 
+    #   The difference between today's high and yesterday's high
+
+    # -DI is 
+    #   The difference between today's low and yesterday's low
+
+    # the true range is:
+    #  1) always positive
+    #  2) biggest difference among
+    #     a) today's highest price minus today's lowest price
+    #     b) today's highest price minus yesterday's closing price
+    #     c) today's lowest price minus yesterday's closing price
+
     die; # TODO
 }
 
@@ -71,7 +84,7 @@ __END__
 
 =head1 NAME
 
-Math::Business::ADX - Technical Analysis: Average Directional Index
+Math::Business::ADX - Technical Analysis: Directional Movement Index
 
 =head1 SYNOPSIS
 
@@ -113,6 +126,10 @@ Math::Business::ADX - Technical Analysis: Average Directional Index
   # you may use this to kick start 
   $adx->start_with( blah blah blah ); # TODO
 
+=head1 RESEARCHER
+
+The ADX was designed by J. Welles Wilder Jr circa 1978.
+
 =head1 Thanks
 
 Todd Litteken PhD <cl@xganon.com> 
@@ -140,6 +157,6 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 perl(1)
 
-L<http://en.wikipedia.org/wiki/Relative_Strength_Index>
+L<http://fxtrade.oanda.com/learn/graphs/indicators/adx.shtml>
 
 =cut

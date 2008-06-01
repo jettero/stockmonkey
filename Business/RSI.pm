@@ -174,6 +174,10 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   my $D  = $rsi->query_EMA_D;
   my $cy = $rsi->query_cy; # (close yesterday)
 
+=head1 RESEARCHER
+
+The RSI was designed by J. Welles Wilder Jr in 1978.
+
 =head1 Thanks
 
 Todd Litteken PhD <cl@xganon.com> 
