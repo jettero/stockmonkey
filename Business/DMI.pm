@@ -77,7 +77,7 @@ sub insert {
                 my $aPDM = $this->{aPDM} = $R * $pdm + $R1 * $PDM;
                 my $aMDM = $this->{aMDM} = $R * $mdm + $R1 * $MDM;
 
-                my $ATR = $atr->query;
+                my $ATR = $atr->query || 0.000_000_000_6; # NOTE: a rather weak way to solve divide by zero
 
                 my $PDI = $this->{PDI} = $aPDM / $ATR;
                 my $MDI = $this->{MDI} = $aMDM / $ATR;
@@ -103,7 +103,7 @@ sub insert {
                     my $aPDM = $this->{aPDM} = $psum / $N;
                     my $aMDM = $this->{aMDM} = $msum / $N;
 
-                    my $ATR = $atr->query;
+                    my $ATR = $atr->query || 0.000_000_000_6; # NOTE: a rather weak way to solve divide by zero
 
                     my $PDI = $this->{PDI} = $aPDM / $ATR;
                     my $MDI = $this->{MDI} = $aMDM / $ATR;
