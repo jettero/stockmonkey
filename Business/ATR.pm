@@ -149,7 +149,7 @@ Math::Business::ATR - Technical Analysis: Average True Range
   }
 
   # you may use this to kick start 
-  $atr->start_with( $old_atr );
+  $atr->start_with( $yesterday_close, $old_atr );
 
 =head1 RESEARCHER
 
