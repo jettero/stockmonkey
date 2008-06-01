@@ -514,7 +514,8 @@ my @data_points = (
 
 my $adx = recommended Math::Business::DMI;
 
-plan tests => int @data_points;
+my $EP = 1;
+plan tests => 3*$EP + @data_points; $EP *= -1;
 
 my $m = 14;
 my @q;
@@ -534,7 +535,15 @@ for my $p (@data_points) {
     }
 }
 
-warn "@q";
-warn "ADX: 12 13 13 14 13 12 12 11 11 11 11 10 11 11 10 11 10 10 10 10";
-warn "PDI: 21 19 17 18 23 23 22 21 22 20 19 19 18 19 18 17 17 18 21 23";
-warn "MDI: 24 27 26 25 22 21 20 20 19 24 23 23 24 23 21 21 20 19 18 17";
+my @ADX = (qw(12 13 13 14 13 12 12 11 11 11 11 10 11 11 10 11 10 10 10 10))[ $EP .. -1 ];
+my @PDI = (qw(21 19 17 18 23 23 22 21 22 20 19 19 18 19 18 17 17 18 21 23))[ $EP .. -1 ];
+my @MDI = (qw(24 27 26 25 22 21 20 20 19 24 23 23 24 23 21 21 20 19 18 17))[ $EP .. -1 ];
+
+my @QT = @q[ $EP .. -1 ];
+die "grrr argh" unless @QT == @ADX;
+
+for my $i (0 .. $#QT) {
+    ok( int(100* $QT[$i][0]), $PDI[$i] );
+    ok( int(100* $QT[$i][1]), $MDI[$i] );
+    ok( int(100* $QT[$i][2]), $ADX[$i] );
+}
