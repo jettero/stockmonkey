@@ -532,3 +532,5 @@ for my $p (@data_points) {
         ok( $m >= 0 );
     }
 }
+
+warn "@q";
