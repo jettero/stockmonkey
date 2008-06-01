@@ -1,4 +1,3 @@
-# vi:syntax=perl:
 
 use strict;
 use Test;

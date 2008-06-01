@@ -1,5 +1,3 @@
-# vi:fdm=marker fdl=0 syntax=perl:
-# $Id: main.t,v 1.1 2004/12/02 21:11:53 jettero Exp $
 
 use Test;
 
