@@ -46,7 +46,8 @@ sub insert {
     my $point = shift; croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point = 3;
     my ($t_high, $t_low, $t_close) = @$point;
 
-    $this->{ATR}->insert($point);
+    my $atr = $this->{ATR};
+       $atr->insert($point);
 
     return unless my $y_point = $this->{y};
 
@@ -71,11 +72,24 @@ sub insert {
         die "hrm, unexpected if-block failure";
     }
 
-    if( defined(my $pdi = $this->{PDI}) ) {
-        my $mdi = $this->{MDI};
+    if( defined(my $pdm = $this->{PDM}) ) {
+        my $mdm = $this->{MDM};
 
-        $this->{PDI} = $this->{R} * $pdi + $this->{R1} * $PDM;
-        $this->{MDI} = $this->{R} * $mdi + $this->{R1} * $MDM;
+        my $R  = $this->{R};
+        my $R1 = $this->{R1};
+
+        my $aPDM = $this->{aPDM} = $R * $pdm + $R1 * $PDM;
+        my $aMDM = $this->{aMDM} = $R * $mdm + $R1 * $MDM;
+
+        my $ATR = $atr->query;
+
+        my $PDI = $aPDM / $ATR;
+        my $MDI = $aMDM / $ATR;
+
+        my $DI = abs( $PDI - $MDI );
+        my $DX = $DI / ($PDI + $MDI);
+
+        $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
 
     } else {
         my $p;
@@ -85,14 +99,23 @@ sub insert {
                $psum += $_ for @$p;
                $psum += $PDM;
 
-            $this->{PDI} = $psum / $N;
-
             my $m = $this->{_m};
             my $msum = 0;
                $msum += $_ for @$m;
                $msum += $MDM;
 
-            $this->{MDI} = $msum / $N;
+            my $aPDM = $this->{aPDM} = $psum / $N;
+            my $aMDM = $this->{aMDM} = $msum / $N;
+
+            my $ATR = $atr->query;
+
+            my $PDI = $aPDM / $ATR;
+            my $MDI = $aMDM / $ATR;
+
+            my $DI = abs( $PDI - $MDI );
+            my $DX = $DI / ($PDI + $MDI);
+
+            $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
 
         } else {
             push @{$this->{_p}}, $PDM;
