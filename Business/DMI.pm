@@ -85,8 +85,8 @@ sub insert {
 
                 my $ATR = $atr->query;
 
-                my $PDI = $aPDM / $ATR;
-                my $MDI = $aMDM / $ATR;
+                my $PDI = $this->{PDI} = $aPDM / $ATR;
+                my $MDI = $this->{MDI} = $aMDM / $ATR;
 
                 my $DI = abs( $PDI - $MDI );
                 my $DX = $DI / ($PDI + $MDI);
@@ -111,8 +111,8 @@ sub insert {
 
                     my $ATR = $atr->query;
 
-                    my $PDI = $aPDM / $ATR;
-                    my $MDI = $aMDM / $ATR;
+                    my $PDI = $this->{PDI} = $aPDM / $ATR;
+                    my $MDI = $this->{MDI} = $aMDM / $ATR;
 
                     my $DI = abs( $PDI - $MDI );
                     my $DX = $DI / ($PDI + $MDI);
@@ -141,7 +141,7 @@ sub start_with {
 sub query_pdi {
     my $this = shift;
 
-    return $this->{PDi};
+    return $this->{PDI};
 }
 
 sub query_mdi {
