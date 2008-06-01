@@ -1,12 +1,6 @@
 
-The stockmonkey distribution is supposed to contain all the
-technical analysis tools you'd ever want.  It has a few things,
-but it's sadly lacking.
-
-If you'd like to help, just let me know.
-
-Links to the algorithm are helpful as our spreadsheets with
-example calculations.
+The stockmonkey distribution is supposed to contain all the technical analysis
+tools you'd ever want.  It has a few things, but it's sadly lacking.
 
 Here's the tiny catalog so far:
 
@@ -15,3 +9,12 @@ Math::Business::EMA             Exponential Moving Average
 Math::Business::MACD            Moving Average Convergence/Divergence
 Math::Business::RSI             Relative Strength Index
 Math::Business::BollingerBands  Bollinger Bands
+Math::Business::ATR             Average True Value
+Math::Business::DMI             Directional Movement Index (aka ADX)
+
+If you'd like to help, or even just *suggest* a module, just let me know.
+
+Links to the algorithm are helpful as our spreadsheets with example
+calculations, but they are not necessary.
+
+ - jettero@cpan.org

@@ -161,7 +161,7 @@ __END__
 
 =head1 NAME
 
-Math::Business::DMI - Technical Analysis: Directional Movement Index
+Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
 
 =head1 SYNOPSIS
 
