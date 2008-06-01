@@ -45,8 +45,8 @@ sub insert {
     my $this = shift;
 
     my $y_close = $this->{y_close};
-    while( defined( my $point = shift ) {
-        croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point = 3;
+    while( defined( my $point = shift ) ) {
+        croak "insert takes three touples [high, low, close]" unless ref $point eq "ARRAY" and @$point == 3;
         my ($t_high, $t_low, $t_close) = @$point;
 
         if( defined $y_close ) {
@@ -62,8 +62,9 @@ sub insert {
                 $this->{ATR} = $this->{R} * $atr + $this->{R1} * $true_range;
 
             } else {
-                my ($p,$N);
-                if( ref($p = $this->{_p}) and (@$p >= ($N = $this->{days})-1) ) {
+                my $p;
+                my $N = $this->{days};
+                if( ref($p = $this->{_p}) and (@$p >= $N-1) ) {
                     my $sum = 0;
                        $sum += $_ for @$p;
                        $sum += $true_range;
@@ -74,6 +75,19 @@ sub insert {
                     push @{$this->{_p}}, $true_range;
                 }
             }
+
+        } else {
+            my $true_range = $t_high - $t_low;
+
+            # NOTE: _p shouldn't exist because this initializer is only used for the very first entry
+            die "something is clearly wrong, see note below above line" if exists $this->{_p};
+
+            # NOTE: this initializer sucks because the calculation is done
+            # differently than it would be if you had data from the day before.
+            # IMO, we should just return undef for an extra day, but this
+            # appears to be by definition, so we do it:
+
+            $this->{_p} = [$true_range];
         }
 
         $y_close = $t_close;
@@ -84,7 +98,7 @@ sub insert {
 
 sub start_with {
     my $this = shift;
-    croak "you must provide a two touple: (yesterday's close, yesterday's ATR)" unless @_ == 2;
+    croak "you must provide: (yesterday's close, yesterday's ATR)" unless @_ == 2;
 
     $this->{y_close} = shift;
     $this->{ATR}     = shift;

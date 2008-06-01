@@ -38,19 +38,33 @@ sub set_days {
 
 sub insert {
     my $this = shift;
+    my $point = shift; croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point = 3;
+    my ($t_high, $t_low, $t_close) = @$point;
 
-    # +DI is 
-    #   The difference between today's high and yesterday's high
+    return unless my $y_point = $this->{y};
 
-    # -DI is 
-    #   The difference between today's low and yesterday's low
+    my ($y_high, $y_low, $y_close) = @$y_point;
 
-    # the true range is:
-    #  1) always positive
-    #  2) biggest difference among
-    #     a) today's highest price minus today's lowest price
-    #     b) today's highest price minus yesterday's closing price
-    #     c) today's lowest price minus yesterday's closing price
+    my ($PDM, $MDM); ##-------------------------------------------
+    my $A = $t_high - $y_high;
+    my $B = $y_low  - $t_low;
+
+    if( $A < 0 and $B < 0 ) {
+        $MDM = $PDM = 0;
+
+    } elsif( $A > $B ) {
+        $PDM = $A;
+        $MDM = 0;
+
+    } elsif( $B < $A ) {
+        $PDM = 0;
+        $MDM = $B;
+
+    } else {
+        die "hrm, unexpected if-block failure";
+    }
+
+    my $true_range;
 
     die; # TODO
 }
