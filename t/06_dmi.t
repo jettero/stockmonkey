@@ -1,7 +1,7 @@
 
 use Test;
 use strict;
-use Math::Business::ADX;
+use Math::Business::DMI;
 
 # SYK from 5/31/06 -> 5/30/08 {{{
 my @data_points = (
@@ -512,7 +512,7 @@ my @data_points = (
 );
 # }}}
 
-my $adx = recommended Math::Business::ADX;
+my $adx = recommended Math::Business::DMI;
 
 plan tests => int @data_points;
 
@@ -522,10 +522,11 @@ for my $p (@data_points) {
     $adx->insert($p);
 
     my $q = $adx->query;
+    my @a = $adx->query;
 
     if( defined $q ) {
         ok( $q>=0 and $q<=1 );
-        push @q, $q;
+        push @q, \@a;
 
     } else {
         $m --;
@@ -535,3 +536,5 @@ for my $p (@data_points) {
 
 warn "@q";
 warn "ADX: 12 13 13 14 13 12 12 11 11 11 11 10 11 11 10 11 10 10 10 10";
+warn "PDI: 21 19 17 18 23 23 22 21 22 20 19 19 18 19 18 17 17 18 21 23";
+warn "MDI: 24 27 26 25 22 21 20 20 19 24 23 23 24 23 21 21 20 19 18 17";

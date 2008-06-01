@@ -13,7 +13,7 @@ Business/RSI.pm
 t/04_rsi.t
 Business/BollingerBands.pm
 t/05_bollinger.t
-Business/ADX.pm
+Business/DMI.pm
 Business/ATR.pm
-t/06_adx.t
+t/06_dmi.t
 t/06_atr.t

@@ -1,4 +1,4 @@
-package Math::Business::ADX;
+package Math::Business::DMI;
 
 use strict;
 use warnings;
@@ -161,20 +161,20 @@ __END__
 
 =head1 NAME
 
-Math::Business::ADX - Technical Analysis: Directional Movement Index
+Math::Business::DMI - Technical Analysis: Directional Movement Index
 
 =head1 SYNOPSIS
 
-  use Math::Business::ADX;
+  use Math::Business::DMI;
 
-  my $adx = new Math::Business::ADX;
-     $adx->set_days(14);
+  my $dmi = new Math::Business::DMI;
+     $dmi->set_days(14);
 
   # alternatively/equivilently
-  my $adx = new Math::Business::ADX(14);
+  my $dmi = new Math::Business::DMI(14);
 
   # or to just get the recommended model ... (14)
-  my $adx = Math::Business::ADX->recommended;
+  my $dmi = Math::Business::DMI->recommended;
 
   my @data_points = (
       [ 5, 3, 4 ], # high, low, close
@@ -183,15 +183,15 @@ Math::Business::ADX - Technical Analysis: Directional Movement Index
   );
 
   # choose one: 
-  $adx->insert( @data_points );
-  $adx->insert( $_ ) for @data_points;
+  $dmi->insert( @data_points );
+  $dmi->insert( $_ ) for @data_points;
 
-  my $adi = $adx->query;     # the composite
-  my $pdi = $adx->query_pdi; # the DI+
-  my $mdi = $adx->query_mdi; # the DI-
+  my $adx = $dmi->query;     # the composite
+  my $pdi = $dmi->query_pdi; # the +DI
+  my $mdi = $dmi->query_mdi; # the -DI
 
   # or
-  my ($pdi, $mdi, $adx) = $adx->query;
+  my ($pdi, $mdi, $adx) = $dmi->query;
 
   if( defined $adi ) {
       print "ADX: $adi.\n";
@@ -201,15 +201,11 @@ Math::Business::ADX - Technical Analysis: Directional Movement Index
   }
 
   # you may use this to kick start 
-  $adx->start_with( blah blah blah ); # TODO
+  $dmi->start_with( blah blah blah ); # TODO
 
 =head1 RESEARCHER
 
-The ADX was designed by J. Welles Wilder Jr circa 1978.
-
-=head1 Thanks
-
-Todd Litteken PhD <cl@xganon.com> 
+The ADX/DMI was designed by J. Welles Wilder Jr circa 1978.
 
 =head1 AUTHOR
 

@@ -155,10 +155,6 @@ Math::Business::ATR - Technical Analysis: Average True Range
 
 The ATR was designed by J. Welles Wilder Jr circa 1978.
 
-=head1 Thanks
-
-Todd Litteken PhD <cl@xganon.com> 
-
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>
