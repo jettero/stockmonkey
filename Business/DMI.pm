@@ -79,13 +79,19 @@ sub insert {
 
                 my $ATR = $atr->query;
 
-                my $PDI = $this->{PDI} = $aPDM / $ATR;
-                my $MDI = $this->{MDI} = $aMDM / $ATR;
+                if( $ATR == 0 ) {
+                    my $DX = $this->{PDI} = $this->{MDI} = 0;
+                    $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
 
-                my $DI = abs( $PDI - $MDI );
-                my $DX = $DI / ($PDI + $MDI);
+                } else {
+                    my $PDI = $this->{PDI} = $aPDM / $ATR;
+                    my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
+                    my $DI = abs( $PDI - $MDI );
+                    my $DX = $DI / ($PDI + $MDI);
+
+                    $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
+                }
 
             } else {
                 my $p;
@@ -104,14 +110,18 @@ sub insert {
                     my $aMDM = $this->{aMDM} = $msum / $N;
 
                     my $ATR = $atr->query;
+                    if( $ATR == 0 ) {
+                        $this->{PDI} = $this->{MDI} = $this->{ADX} = 0;
 
-                    my $PDI = $this->{PDI} = $aPDM / $ATR;
-                    my $MDI = $this->{MDI} = $aMDM / $ATR;
+                    } else {
+                        my $PDI = $this->{PDI} = $aPDM / $ATR;
+                        my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                    my $DI = abs( $PDI - $MDI );
-                    my $DX = $DI / ($PDI + $MDI);
+                        my $DI = abs( $PDI - $MDI );
+                        my $DX = $DI / ($PDI + $MDI);
 
-                    $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
+                        $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
+                    }
 
                 } else {
                     push @{$this->{_p}}, $PDM;
