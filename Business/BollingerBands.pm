@@ -150,6 +150,10 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
   # you may use this to kick start 
   $bb->start_with( @closes );
 
+=head1 RESEARCHER
+
+The Bollinger Bands were designed by John Bollinger in the 1980s.
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>

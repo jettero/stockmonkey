@@ -147,15 +147,9 @@ To avoid recalculating huge lists when you add a few new values on the end:
       $last_trig_ema,
   );
 
-=head1 EMA/SMA Note
+=head1 RESEARCHER
 
-    As of SMA 0.99, EMA 1.06, MACD 1.10, the MACD will now return 
-    'undef' where there is not yet enough data to calculate the EMAs.
-    Further, the trigger and histogram values will not be available until
-    the trigger EMA has enough data.
-
-    This is going to be a compat buster for some of my graphs, but it has
-    to be done for correctness.  :(
+The MACD was designed by Gerald Appel in the 1960s.
 
 =head1 Thanks
 
