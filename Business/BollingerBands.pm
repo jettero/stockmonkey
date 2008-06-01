@@ -3,7 +3,7 @@ package Math::Business::BollingerBands;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv("1.02");
+use version; our $VERSION = qv("1.3");
 use Carp;
 
 1;
@@ -77,7 +77,7 @@ sub insert {
                 my $d = $this->{d};
                 $this->{d} = $d = $d - $old/$N + $new/$N;
 
-                my $k_stddev = $K * sqrt($d);
+                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
 
@@ -93,7 +93,7 @@ sub insert {
 
                 $this->{d} = my $d = $sum/$N;
 
-                my $k_stddev = $K * sqrt($d);
+                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
             }
