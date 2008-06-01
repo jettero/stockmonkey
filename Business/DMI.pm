@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Math::Business::ATR;
 
-use version; our $VERSION = qv("1.0");
+use version; our $VERSION = qv("1.1");
 use Carp;
 
 1;
@@ -55,23 +55,17 @@ sub insert {
 
             my ($y_high, $y_low, $y_close) = @$y_point;
 
-            my ($PDM, $MDM); ##-------------------------------------------
+            my ($PDM, $MDM) = (0,0);
             my $A = $t_high - $y_high;
             my $B = $y_low  - $t_low;
 
-            if( $A < 0 and $B < 0 ) {
-                $MDM = $PDM = 0;
-
-            } elsif( $A > $B ) {
+            if( $A > 0 and $A > $B ) {
                 $PDM = $A;
                 $MDM = 0;
 
-            } elsif( $A < $B ) {
+            } elsif( $B > 0 and $B > $A ) {
                 $PDM = 0;
                 $MDM = $B;
-
-            } else {
-                die "hrm, unexpected if-block failure A=$A; B=$B";
             }
 
             if( defined(my $pdm = $this->{aPDM}) ) {
