@@ -77,12 +77,12 @@ sub insert {
                 my $aPDM = $this->{aPDM} = $R * $pdm + $R1 * $PDM;
                 my $aMDM = $this->{aMDM} = $R * $mdm + $R1 * $MDM;
 
-                my $ATR = $atr->query || 0.000_000_000_6; # NOTE: a rather weak way to solve divide by zero
+                my $ATR = $atr->query;
 
                 my $PDI = $this->{PDI} = $aPDM / $ATR;
                 my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                my $DI = abs( $PDI - $MDI ) || 0.000_000_000_6;
+                my $DI = abs( $PDI - $MDI );
                 my $DX = $DI / ($PDI + $MDI);
 
                 $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
@@ -103,12 +103,12 @@ sub insert {
                     my $aPDM = $this->{aPDM} = $psum / $N;
                     my $aMDM = $this->{aMDM} = $msum / $N;
 
-                    my $ATR = $atr->query || 0.000_000_000_6; # NOTE: a rather weak way to solve divide by zero
+                    my $ATR = $atr->query;
 
                     my $PDI = $this->{PDI} = $aPDM / $ATR;
                     my $MDI = $this->{MDI} = $aMDM / $ATR;
 
-                    my $DI = abs( $PDI - $MDI ) || 0.000_000_000_6;
+                    my $DI = abs( $PDI - $MDI );
                     my $DX = $DI / ($PDI + $MDI);
 
                     $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
