@@ -1,0 +1,113 @@
+                           Average Directional Index
+
+   The ADX, developed by Welles Wilder, measures the strength of a prevailing
+   trend, and determines whether there is a movement or direction in the
+   market. A strong trend is indicated by a rising ADX, whereas a
+   non-trending market is marked by a falling ADX. Note that the ADX does not
+   suggest whether a trend is up or down.
+
+
+
+   The ADX can be employed to determine sideways (non-trending) markets,
+   which offer less capital than trending markets, to filter out trades
+   during a market's non-trending period, and to indicate the beginning of an
+   upswing in movement.
+
+
+
+   Investors also employ the ADX to confirm the signals from other indicators
+   or filter out indicators that they might use to analyze either trending or
+   non-trending markets.
+
+
+
+   The ADX considers every possible configuration that could occur between
+   two days of trading relative to the Directional Movement Index. The
+   largest part of today's high or low that is outside of yesterday's high or
+   low range is calculated. If the largest part of today's range is above
+   yesterday's, then the value is marked as PDI, while the largest part of
+   today's range below yesterday's yields a value denoted as MDI. The range
+   increment is today's True Range. The Directional Movement is divided by
+   the True Range in order to make directional movement relative to true
+   range.
+
+
+
+   Pane: Bottom
+
+
+
+   Formula
+
+
+
+   Calculating the ADI involves two steps. First of all, the difference of
+   PDI and MDI is divided by the sum of PDI and MDI, and the quotient is
+   multiplied by 100. The term for the result is symbolized as DX. Next, the
+   ADI is calculated by taking the modified Moving Average of DX.
+
+
+
+   DX = 100 * ((PDI - MDI) / (PDI + MDI))
+
+
+
+   ADI = modified Moving Average of DX
+
+   PDI = Current Plus Directional Movement
+
+   DX = Current DX
+
+   MDI = Current Minus Directional Movement
+
+
+
+   Properties
+
+
+
+   High: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "High".
+
+
+
+   Low: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "Low".
+
+
+
+   Close: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "Close".
+
+
+
+   Period. The number of bars in a chart. If the chart displays daily data,
+   then period denotes days; in weekly charts, the period will stand for
+   weeks, and so on. Workstation uses a default period of 14 for the Average
+   Directional Index. Note that if you are simultaneously using the
+   Directional Movement Index, you may set both period parameters at
+   identical levels.
+
+
+
+   Interpretation
+
+
+
+   An ADX line usually ranges from below 20 to above 40. A line that has
+   fallen below 20 suggests a non-trending market with low volatility, while
+   a line that suddenly breaks out above 20 may suggest the beginning of an
+   important trend. When an ADX line is well above 40 and begins to fall, it
+   usually indicates a trend that is slowing down.
+
+
+
+   Literature
+
+
+
+     o Wilder, J. Welles. New Concepts in Technical Trading Systems.
+       Greensboro, NC: Trend Research, 1978.
+
+     o Murphy, John J. The Visual Investor. New York, NY: John Wiley & Sons,
+       Inc. 1996.

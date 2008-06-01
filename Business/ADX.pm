@@ -48,22 +48,22 @@ sub start_with {
     die; # TODO
 }
 
-sub query_DIP {
+sub query_pdi {
     my $this = shift;
 
-    return $this->{DIP};
+    return $this->{PDi};
 }
 
-sub query_DIM {
+sub query_mdi {
     my $this = shift;
 
-    return $this->{DIM};
+    return $this->{MDI};
 }
 
 sub query {
     my $this = shift;
 
-    return ($this->{DIP}, $this->{DIM}, $this->{ADX}) if wantarray;
+    return ($this->{PDI}, $this->{MDI}, $this->{ADX}) if wantarray;
     return $this->{ADX};
 }
 
@@ -97,11 +97,11 @@ Math::Business::ADX - Technical Analysis: Average Directional Index
   $adx->insert( $_ ) for @data_points;
 
   my $adi = $adx->query;     # the composite
-  my $dip = $adx->query_dip; # the DI+
-  my $dim = $adx->query_dim; # the DI-
+  my $pdi = $adx->query_pdi; # the DI+
+  my $mdi = $adx->query_mdi; # the DI-
 
   # or
-  my ($dip, $dim, $adx) = $adx->query;
+  my ($pdi, $mdi, $adx) = $adx->query;
 
   if( defined $adi ) {
       print "ADX: $adi.\n";

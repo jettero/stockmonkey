@@ -1,0 +1,148 @@
+                           Directional Movement Index
+
+   The concept of Directional Movement is based on the assumption that in an
+   upward trend today's highest price is higher than yesterday's highest
+   price, and in a downward trend today's lowest price is lower than
+   yesterday's lowest price. If this is the case, it is a matter of the
+   so-called Outside Days. The difference between today's high and
+   yesterday's high corresponds to the Plus Directional Movement (+DI). The
+   difference between today's low and yesterday's low is the Minus
+   Directional Movement (-DI). These Outside Days consist of a +DI as well as
+   an -DI.
+
+
+
+   Days in which yesterday's highest price or yesterday's lowest price are
+   not exceeded are described as Inside Days and contain a +DI and a -DI, or
+   zero. Do not let the plus or minus sign designation mislead you. They only
+   indicate upward or downward movement, not values. The directional movement
+   value is always a positive number of absolute value, regardless of upward
+   or downward movement. In the Directional Movement calculation, Inside Days
+   are consequently not taken into account. It is possible for the
+   directional movement to be zero. This occurs when the current trading
+   range is inside the previous trading range, or when the trading ranges,
+   current versus previous, are equal.
+
+
+
+   To calculate the Directional Indicators (+DI and -DI), further calculation
+   of the True Range is necessary. The true range is always positive and is
+   defined as the current highest value of the difference among today's
+   highest price minus today's lowest price; today's highest price minus
+   yesterday's closing price; and today's lowest price minus yesterday's
+   closing price. Wilder used a constant value of 14 on daily data. His logic
+   for using this value is that it represented an average half-cycle period.
+   When this task is accomplished for the specified interval, you compute the
+   average value of PDI, MDI, and TRUE_RANGE.
+
+
+
+   The Plus Directional Movement is now calculated. The sum of the +DI over
+   the observation period is divided by the sum of the True Range over the
+   same period. The calculation of the -DI is analogous. The Directional
+   Movement Index (DI) is calculated by dividing the difference between the
+   +DI and -DI by the sum of both figures. The result is a percentage, with
+   which the extent and/or intensity or the trend is quantified. By smoothing
+   this DI, an Average Directional Index (ADX) results.
+
+
+
+   Pane: Bottom
+
+
+
+   Properties
+
+
+
+   High: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "High".
+
+
+
+   Low: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "Low".
+
+
+
+   Close: The Symbol field on which the study will be calculated. The
+   application uses the Aspect "Close".
+
+
+
+   Period: The number of bars in a chart. If the chart displays daily data,
+   then period denotes days; in weekly charts, the period will stand for
+   weeks, and so on. The application uses a default of 14.
+
+
+
+   Interpretation
+
+
+
+   The DI, Directional Movement Index, is a trend following system. The
+   Average Directional Index, or ADX, determines the market trend. When used
+   with the up and down directional study values, +DI and -DI, the DI is an
+   exact trading system.
+
+
+
+   The rules for using the DI are simple. You establish a long position
+   whenever the +DI crosses above the -DI. You reverse that position,
+   liquidate the long position and establish a short position, when the -DI
+   crosses above the +DI.
+
+
+
+   In addition to the crossover rules, you must also follow the extreme point
+   rule. When a crossover occurs, use the extreme price as the reverse point.
+   For a short position, use the high made during the trading interval of the
+   crossover. Conversely, reverse a long position using the low made during
+   the trading interval of the crossover.
+
+
+
+   You maintain the reverse point, the high or low, as your market entry or
+   exit price, even if the +DI and the -DI remain crossed for several trading
+   intervals. This is supposed to keep you from getting whipsawed in the
+   market.
+
+
+
+   For some traders, the most significant use of the ADX is the turning point
+   concept. First, the ADX must be above both DI lines. When the ADX turns
+   lower, the market often reverses the current trend. The ADX serves as a
+   warning for a market about to change direction. The main exception to this
+   rule is a strong bull market during a blow-off stage. The ADX turns lower
+   only to turn higher a few days later.
+
+
+
+   According to the developer of the DI, you should stop using any
+   trend-following system when the ADX is below both DI lines. The market is
+   in a choppy sidewise range with no discernible trend.
+
+
+
+   Literature
+
+
+
+     o Wilder, J. Welles. New Concepts in Technical Trading Systems.
+       Greensboro, NC: Trend Research, 1978.
+
+     o Babcock, Bruce. The Dow Jones - Irwing Guide to Trading Systems. 1989.
+
+     o Colby, Robert F., Myers, Thomas. A. The Encyclopedia of Technical
+       Market Indicators. Dow Jones - Irwin. Homewood, IL. 1988.
+
+     o Le Beau C., Lucas D. W. Computer Analysis of the Futures Market. 1992.
+
+     o Murphy, John J. The Visual Investor. New York, NY: John Wiley & Sons,
+       Inc. 1996.
+
+     o Kaufman, Perry J. The Commodity Trading Systems & Methods. NY: John
+       Wiley & Sons, Inc. 1978.
+
+     o Jobman, Darrel R. The Handbook of Technical Analysis. Irwin
+       Professional Publishing. 1995.
