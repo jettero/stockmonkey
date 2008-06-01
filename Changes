@@ -2,6 +2,7 @@
     - doc bugs in the Bollinger Bands
     - added $class->recommended instantiaters.
     - sqrt(-2.07093e-20) in Bollinger Bands
+    - ATR added
 
 1.2: Wed May 28 16:13:43 EDT 2008
     - version hell still
