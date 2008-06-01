@@ -43,85 +43,93 @@ sub set_days {
 
 sub insert {
     my $this = shift;
-    my $point = shift; croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point = 3;
-    my ($t_high, $t_low, $t_close) = @$point;
 
-    my $atr = $this->{ATR};
-       $atr->insert($point);
+    my $y_point = $this->{y};
+    while( defined( my $point = shift ) ) {
+        croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+        my ($t_high, $t_low, $t_close) = @$point;
 
-    return unless my $y_point = $this->{y};
+        if( defined $y_point ) {
+            my $atr = $this->{ATR};
+               $atr->insert($point);
 
-    my ($y_high, $y_low, $y_close) = @$y_point;
+            my ($y_high, $y_low, $y_close) = @$y_point;
 
-    my ($PDM, $MDM); ##-------------------------------------------
-    my $A = $t_high - $y_high;
-    my $B = $y_low  - $t_low;
+            my ($PDM, $MDM); ##-------------------------------------------
+            my $A = $t_high - $y_high;
+            my $B = $y_low  - $t_low;
 
-    if( $A < 0 and $B < 0 ) {
-        $MDM = $PDM = 0;
+            if( $A < 0 and $B < 0 ) {
+                $MDM = $PDM = 0;
 
-    } elsif( $A > $B ) {
-        $PDM = $A;
-        $MDM = 0;
+            } elsif( $A > $B ) {
+                $PDM = $A;
+                $MDM = 0;
 
-    } elsif( $B < $A ) {
-        $PDM = 0;
-        $MDM = $B;
+            } elsif( $A < $B ) {
+                $PDM = 0;
+                $MDM = $B;
 
-    } else {
-        die "hrm, unexpected if-block failure";
-    }
+            } else {
+                die "hrm, unexpected if-block failure A=$A; B=$B";
+            }
 
-    if( defined(my $pdm = $this->{PDM}) ) {
-        my $mdm = $this->{MDM};
+            if( defined(my $pdm = $this->{PDM}) ) {
+                my $mdm = $this->{MDM};
 
-        my $R  = $this->{R};
-        my $R1 = $this->{R1};
+                my $R  = $this->{R};
+                my $R1 = $this->{R1};
 
-        my $aPDM = $this->{aPDM} = $R * $pdm + $R1 * $PDM;
-        my $aMDM = $this->{aMDM} = $R * $mdm + $R1 * $MDM;
+                my $aPDM = $this->{aPDM} = $R * $pdm + $R1 * $PDM;
+                my $aMDM = $this->{aMDM} = $R * $mdm + $R1 * $MDM;
 
-        my $ATR = $atr->query;
+                my $ATR = $atr->query;
 
-        my $PDI = $aPDM / $ATR;
-        my $MDI = $aMDM / $ATR;
+                my $PDI = $aPDM / $ATR;
+                my $MDI = $aMDM / $ATR;
 
-        my $DI = abs( $PDI - $MDI );
-        my $DX = $DI / ($PDI + $MDI);
+                my $DI = abs( $PDI - $MDI );
+                my $DX = $DI / ($PDI + $MDI);
 
-        $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
+                $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
 
-    } else {
-        my $p;
-        my $N = $this->{days};
-        if( ref($p = $this->{_p}) and (@$p >= $N-1) ) {
-            my $psum = 0;
-               $psum += $_ for @$p;
-               $psum += $PDM;
+            } else {
+                my $p;
+                my $N = $this->{days};
+                if( ref($p = $this->{_p}) and (@$p >= $N-1) ) {
+                    my $psum = 0;
+                       $psum += $_ for @$p;
+                       $psum += $PDM;
 
-            my $m = $this->{_m};
-            my $msum = 0;
-               $msum += $_ for @$m;
-               $msum += $MDM;
+                    my $m = $this->{_m};
+                    my $msum = 0;
+                       $msum += $_ for @$m;
+                       $msum += $MDM;
 
-            my $aPDM = $this->{aPDM} = $psum / $N;
-            my $aMDM = $this->{aMDM} = $msum / $N;
+                    my $aPDM = $this->{aPDM} = $psum / $N;
+                    my $aMDM = $this->{aMDM} = $msum / $N;
 
-            my $ATR = $atr->query;
+                    my $ATR = $atr->query;
 
-            my $PDI = $aPDM / $ATR;
-            my $MDI = $aMDM / $ATR;
+                    my $PDI = $aPDM / $ATR;
+                    my $MDI = $aMDM / $ATR;
 
-            my $DI = abs( $PDI - $MDI );
-            my $DX = $DI / ($PDI + $MDI);
+                    my $DI = abs( $PDI - $MDI );
+                    my $DX = $DI / ($PDI + $MDI);
 
-            $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
+                    $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
 
-        } else {
-            push @{$this->{_p}}, $PDM;
-            push @{$this->{_m}}, $MDM;
+                } else {
+                    push @{$this->{_p}}, $PDM;
+                    push @{$this->{_m}}, $MDM;
+                }
+            }
         }
+
+        $y_point = $point;
     }
+
+    $this->{y} = $y_point;
 }
 
 sub start_with {
