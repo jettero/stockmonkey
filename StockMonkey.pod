@@ -24,6 +24,9 @@ L<Math::Business::RSI> - Relative Strength Index
 
 L<Math::Business::BollingerBands> - Bollinger Bands
 
+L<Math::Business::ATR> - Average True Value
+L<Math::Business::DMI> - Directional Movement Index (aka ADX)
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>
