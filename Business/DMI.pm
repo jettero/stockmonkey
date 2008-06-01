@@ -74,8 +74,8 @@ sub insert {
                 die "hrm, unexpected if-block failure A=$A; B=$B";
             }
 
-            if( defined(my $pdm = $this->{PDM}) ) {
-                my $mdm = $this->{MDM};
+            if( defined(my $pdm = $this->{aPDM}) ) {
+                my $mdm = $this->{aMDM};
 
                 my $R  = $this->{R};
                 my $R1 = $this->{R1};
@@ -186,14 +186,14 @@ Math::Business::DMI - Technical Analysis: Directional Movement Index
   $dmi->insert( @data_points );
   $dmi->insert( $_ ) for @data_points;
 
-  my $adx = $dmi->query;     # the composite
-  my $pdi = $dmi->query_pdi; # the +DI
-  my $mdi = $dmi->query_mdi; # the -DI
+  my $adx = $dmi->query;     # ADX
+  my $pdi = $dmi->query_pdi; # +DI
+  my $mdi = $dmi->query_mdi; # -DI
 
   # or
   my ($pdi, $mdi, $adx) = $dmi->query;
 
-  if( defined $adi ) {
+  if( defined $adx ) {
       print "ADX: $adi.\n";
 
   } else {
