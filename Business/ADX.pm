@@ -2,6 +2,7 @@ package Math::Business::ADX;
 
 use strict;
 use warnings;
+use Math::Business::ATR;
 
 use version; our $VERSION = qv("1.0");
 use Carp;
@@ -17,6 +18,7 @@ sub recommended {
 sub new { 
     my $class = shift;
     my $this  = bless {
+        ATR => new Math::Business::ATR,
     }, $class;
 
     my $days = shift;
@@ -33,13 +35,18 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    die; # TODO
+    $this->{ATR}->set_days($arg);
+    $this->{days} = $arg;
+    $this->{R}  = ($arg-1)/$arg;
+    $this->{R1} = 1/$arg;
 }
 
 sub insert {
     my $this = shift;
     my $point = shift; croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point = 3;
     my ($t_high, $t_low, $t_close) = @$point;
+
+    $this->{ATR}->insert($point);
 
     return unless my $y_point = $this->{y};
 
@@ -64,9 +71,34 @@ sub insert {
         die "hrm, unexpected if-block failure";
     }
 
-    my $true_range;
+    if( defined(my $pdi = $this->{PDI}) ) {
+        my $mdi = $this->{MDI};
 
-    die; # TODO
+        $this->{PDI} = $this->{R} * $pdi + $this->{R1} * $PDM;
+        $this->{MDI} = $this->{R} * $mdi + $this->{R1} * $MDM;
+
+    } else {
+        my $p;
+        my $N = $this->{days};
+        if( ref($p = $this->{_p}) and (@$p >= $N-1) ) {
+            my $psum = 0;
+               $psum += $_ for @$p;
+               $psum += $PDM;
+
+            $this->{PDI} = $psum / $N;
+
+            my $m = $this->{_m};
+            my $msum = 0;
+               $msum += $_ for @$m;
+               $msum += $MDM;
+
+            $this->{MDI} = $msum / $N;
+
+        } else {
+            push @{$this->{_p}}, $PDM;
+            push @{$this->{_m}}, $MDM;
+        }
+    }
 }
 
 sub start_with {
