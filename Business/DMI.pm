@@ -139,7 +139,7 @@ sub insert {
 sub start_with {
     my $this = shift;
 
-    die; # TODO
+    die "TODO"; # TODO
 }
 
 sub query_pdi {
@@ -205,7 +205,7 @@ Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
   }
 
   # you may use this to kick start 
-  $dmi->start_with( blah blah blah ); # TODO
+  # $dmi->start_with( not finished ); # TODO
 
 =head1 RESEARCHER
 
