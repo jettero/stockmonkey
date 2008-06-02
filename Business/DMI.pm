@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Math::Business::ATR;
 
-use version; our $VERSION = qv("1.1");
+use version; our $VERSION = qv("1.2");
 use Carp;
 
 1;
