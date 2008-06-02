@@ -155,6 +155,13 @@ Math::Business::ATR - Technical Analysis: Average True Range
 
 The ATR was designed by J. Welles Wilder Jr circa 1978.
 
+The ATR is meant to be a measure of the volatility of the stock price.  It
+does not provide any indication of the direction of the moves, only how
+erratic the moves may be.
+
+Wilder felt that large ranges meant traders are willing to I<continue>
+bidding up (or selling down) a stock.
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>

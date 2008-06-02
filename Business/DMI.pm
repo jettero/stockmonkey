@@ -211,6 +211,23 @@ Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
 
 The ADX/DMI was designed by J. Welles Wilder Jr circa 1978.
 
+The +DI and -DI signals measure the force of directional changes.  When the
++DI crosses above the -DI it may indicate that it's time to buy and when
+the -DI crosses above the +DI it may be time to sell.
+
+The ADX tries to combine the two.  It may indicate the strength of the
+current trend (but not it's direction).  When it moves above 20 it may be
+the beginning of a trend and when it falls below 40, it may be the end of
+it.
+
+The DMI uses the ATR to try to measure volatility.
+
+NOTE: The +DI, -DI and ADX returned by this module are probabilities ranging
+from 0 to 1.  Most sources seem to show the DMI values as numbers from 0 to
+100.  Simply multiply the three touple by 100 to get this result.
+
+    my @DMI = map { 100*$_ } = $dmi->query;
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>

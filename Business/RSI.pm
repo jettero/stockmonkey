@@ -178,6 +178,17 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
 
 The RSI was designed by J. Welles Wilder Jr in 1978.
 
+According to Wilder, a security is "overbought" it the RSI reaches an upper
+bound of 0.70 and is "oversold" when it moves below 0.30.  Some sources also
+use thresholds of 80 and 20.
+
+NOTE: The result returned by this RSI module is a probability ranging from 0 to
+1.  Most sources seem to show the RSI as a number ranging from 0 to 100.  If
+you wish to have this effect Simply multiply the numbers by 100 to get this
+result.
+
+    my $rsi = 100 * $rsi->query;
+
 =head1 Thanks
 
 Todd Litteken PhD <cl@xganon.com> 

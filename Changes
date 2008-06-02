@@ -1,3 +1,6 @@
+1.4: Mon Jun  2 06:52:18 EDT 2008
+    - more documentation: what are these for?
+
 1.4: Sun Jun  1 18:21:49 EDT 2008
     - fixed an irritating pseudo-bug in the ADX logic.
     - fixed a divide by zero bug in ADX... grrz.

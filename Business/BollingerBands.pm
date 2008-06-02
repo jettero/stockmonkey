@@ -154,6 +154,18 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
 
 The Bollinger Bands were designed by John Bollinger in the 1980s.
 
+The bands provide a high and low water mark for the closing price.
+Volatility determines the width of the bands.
+
+Conventional wisdom dictates that when prices consistently touch the upper
+band they are "overbought" and when they continually touch the lower band
+they are "oversold."
+
+When the prices "bounce" off the lower band and cross the middle line, it
+is thought to indicate a buy-signal.  The same (but opposite) could be said
+about bouncing off the upper band and crossing the middle line on the way
+down.
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>

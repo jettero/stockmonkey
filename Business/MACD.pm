@@ -65,13 +65,23 @@ sub query_trig_ema { my $this = shift; return $this->{trig_EMA}->query }
 sub query_slow_ema { my $this = shift; return $this->{slow_EMA}->query }
 sub query_fast_ema { my $this = shift; return $this->{fast_EMA}->query }
 
+sub query_histogram { 
+    my $this = shift; 
+
+    my $m = $this->query;
+    my $t = $this->query_trig_ema;
+
+    return unless $m and $t;
+    return $m - $t;
+}
+
 sub query {
     my $this = shift;
 
     my $f = $this->query_fast_ema;
     my $s = $this->query_slow_ema;
 
-    return undef unless defined($f) and defined($s);
+    return unless defined($f) and defined($s);
     return $f - $s;
 }
 
@@ -88,17 +98,6 @@ sub insert {
 
         $this->{trig_EMA}->insert( $m ) if defined($m);
     }
-}
-
-sub query_histogram { 
-    my $this = shift; 
-
-    my $m = $this->query;
-    my $t = $this->query_trig_ema;
-
-    return undef unless $m and $t;
-
-    return $m - $t;
 }
 
 __END__
@@ -134,10 +133,11 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
   $macd->insert( @closing_vlaues );
   $macd->insert( $_ ) for @closing_values;
 
-  print "       MACD: ", $macd->query,          "\n",
-        "Trigger EMA: ", $macd->query_trig_ema, "\n",
-        "   Fast EMA: ", $macd->query_fast_ema, "\n",
-        "   Slow EMA: ", $macd->query_slow_ema, "\n";
+  print "       MACD: ", $macd->query,           "\n",
+        "Trigger EMA: ", $macd->query_trig_ema,  "\n",
+        "   Fast EMA: ", $macd->query_fast_ema,  "\n",
+        "   Slow EMA: ", $macd->query_slow_ema,  "\n";
+        "  Histogram: ", $macd->query_histogram, "\n";
 
 To avoid recalculating huge lists when you add a few new values on the end:
 
@@ -150,6 +150,22 @@ To avoid recalculating huge lists when you add a few new values on the end:
 =head1 RESEARCHER
 
 The MACD was designed by Gerald Appel in the 1960s.
+
+MACD graphs usually show: 
+
+    1. The MACD=ema[fast]-ema[slow] -- query()
+    2. The signal=ema[trig]         -- query_trig_ema()
+    3. The histogram=MACD-signal    -- query_histogram()
+
+Appel designed the MACD to spot tend changes.
+
+It is believed that when the MACD crosses the signal line on the way up, it
+signals a buy condition and when the MACD crosses the signal line on the
+way down, it's time to sell.  The histogram can help to visualize when a
+crossing is going to occur.
+
+A upward crossing of the MACD through the zero-line indicates a bullish
+situation and vice versa.
 
 =head1 Thanks
 
