@@ -71,7 +71,7 @@ sub query_histogram {
     my $m = $this->query;
     my $t = $this->query_trig_ema;
 
-    return unless $m and $t;
+    return unless defined($m) and defined($t);
     return $m - $t;
 }
 
@@ -84,7 +84,7 @@ sub query {
     return unless defined($f) and defined($s);
     if( wantarray ) {
         my $m = $f-$s;
-        my $t = $this->query_trig_ema;
+        my $t = $this->query_trig_ema; return unless defined $t;
         my $h = $m-$t;
 
         return ( $m, $f, $s, $t, $h );
