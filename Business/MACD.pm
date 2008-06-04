@@ -3,7 +3,7 @@ package Math::Business::MACD;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('2.1');
+use version; our $VERSION = qv('2.2');
 
 use Carp;
 use Math::Business::EMA;
@@ -82,6 +82,13 @@ sub query {
     my $s = $this->query_slow_ema;
 
     return unless defined($f) and defined($s);
+    if( wantarray ) {
+        my $m = $f-$s;
+        my $t = $this->query_trig_ema;
+        my $h = $m-$t;
+
+        return ( $m, $f, $s, $t, $h );
+    }
     return $f - $s;
 }
 
@@ -138,6 +145,13 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
         "   Fast EMA: ", $macd->query_fast_ema,  "\n",
         "   Slow EMA: ", $macd->query_slow_ema,  "\n";
         "  Histogram: ", $macd->query_histogram, "\n";
+
+  my @macd = $macd->query;
+  # $macd[0] is the MACD
+  # $macd[1] is the Fast
+  # $macd[2] is the Slow
+  # $macd[3] is the Trigger
+  # $macd[4] is the Histogram
 
 To avoid recalculating huge lists when you add a few new values on the end:
 

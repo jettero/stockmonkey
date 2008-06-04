@@ -1,3 +1,6 @@
+1.5: Wed Jun  4 10:19:33 EDT 2008
+    - added a wantarray return to MACD query
+
 1.4: Mon Jun  2 06:52:18 EDT 2008
     - more documentation: what are these for?
     - finished the DMI start_with() function
