@@ -3,7 +3,7 @@
     - fixed minor return() bug in MACD (boolean $m verses boolean
       defined($m))
     - minor doc-fix for RSI
-    - change to a package-only version number
+    - unified versions
 
 1.4: Mon Jun  2 06:52:18 EDT 2008
     - more documentation: what are these for?
