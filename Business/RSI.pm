@@ -2,11 +2,10 @@ package Math::Business::RSI;
 
 use strict;
 use warnings;
+use Carp;
+
 use Math::Business::SMA;
 use Math::Business::EMA;
-
-use version; our $VERSION = qv("1.2");
-use Carp;
 
 1;
 
@@ -181,6 +180,9 @@ The RSI was designed by J. Welles Wilder Jr in 1978.
 According to Wilder, a security is "overbought" it the RSI reaches an upper
 bound of 0.70 and is "oversold" when it moves below 0.30.  Some sources also
 use thresholds of 80 and 20.
+
+Therefore, moving above the upper threshold is a selling signal, whlie moving
+below the lower threshold is a signal to buy.
 
 NOTE: The result returned by this RSI module is a probability ranging from 0 to
 1.  Most sources seem to show the RSI as a number ranging from 0 to 100.  If

@@ -2,10 +2,8 @@ package Math::Business::MACD;
 
 use strict;
 use warnings;
-
-use version; our $VERSION = qv('2.2');
-
 use Carp;
+
 use Math::Business::EMA;
 
 1;

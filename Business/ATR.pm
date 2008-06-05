@@ -2,8 +2,6 @@ package Math::Business::ATR;
 
 use strict;
 use warnings;
-
-use version; our $VERSION = qv("1.0");
 use Carp;
 
 1;
