@@ -1,3 +1,11 @@
+2.1: Wed Jun  4 19:19:33 EDT 2008
+    - responding to a bug report from Greg Jessup
+      ... seems the example in the MACD module is frelled in
+      various ways.   Fixed.
+    - improved the t/03_macd test
+    - lost the use version since I'm using a floating point
+      version
+
 2.0: Wed Jun  4 19:19:33 EDT 2008
     - added a wantarray return to MACD query
     - fixed minor return() bug in MACD (boolean $m verses boolean

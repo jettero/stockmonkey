@@ -3,7 +3,8 @@ package Math::Business::RSI;
 use strict;
 use warnings;
 use Carp;
-use version; our $VERSION = qv("2.0");
+
+our $VERSION = 2.1;
 
 use Math::Business::SMA;
 use Math::Business::EMA;

@@ -3,7 +3,8 @@ package Math::Business::MACD;
 use strict;
 use warnings;
 use Carp;
-use version; our $VERSION = qv("2.0");
+
+our $VERSION = 2.1;
 
 use Math::Business::EMA;
 
@@ -101,7 +102,6 @@ sub insert {
         $this->{fast_EMA}->insert($value);
 
         my $m = $this->query;
-
         $this->{trig_EMA}->insert( $m ) if defined($m);
     }
 }
@@ -130,16 +130,13 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
   # or to just get the recommended model ... (26,12,9)
   my $macd = Math::Business::MACD->recommended;
 
-  my @closing_values = qw(
-      3 4 4 5 6 5 6 5 5 5 5 
-      6 6 6 6 7 7 7 8 8 8 8 
-  );
+  my @closing_values = map { 3+ int rand 27 } 1 .. $slow+$fast;
 
   # choose one:
-  $macd->insert( @closing_vlaues );
+  $macd->insert( @closing_values );
   $macd->insert( $_ ) for @closing_values;
 
-  print "       MACD: ", $macd->query,           "\n",
+  print "       MACD: ", scalar $macd->query,    "\n",
         "Trigger EMA: ", $macd->query_trig_ema,  "\n",
         "   Fast EMA: ", $macd->query_fast_ema,  "\n",
         "   Slow EMA: ", $macd->query_slow_ema,  "\n";
