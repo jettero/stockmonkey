@@ -8,13 +8,15 @@ use Data::Dump qw(dump);
 
 my $ema = new Math::Business::EMA(20);
 my $rsi = new Math::Business::RSI(14); 
- # $rsi->set_cutler;
+my $cut = new Math::Business::RSI(14); 
+   $cut->set_cutler;
 
 if( -f "qdump.txt" ) {
     my @close = do "qdump.txt";
 
     $ema->insert( @close );
     $rsi->insert( @close );
+    $cut->insert( @close );
 
 } else {
     my @close;
@@ -25,6 +27,7 @@ if( -f "qdump.txt" ) {
 
         $ema->insert( $close );
         $rsi->insert( $close );
+        $cut->insert( $close );
     }
 
     open my $d, ">qdump.txt";
@@ -32,16 +35,6 @@ if( -f "qdump.txt" ) {
     close $d;
 }
 
-if( defined(my $q = $ema->query) ) {
-    print "EMA value: $q.\n";
-
-} else {
-    print "EMA value: n/a.\n";
-}
-
-if( defined(my $q = $rsi->query) ) {
-    print "RSI: $q.\n";
-
-} else {
-    print "RSI: n/a.\n";
-}
+print "EMA: ", $ema->query, ".\n";
+print "RSI: ", $rsi->query, ".\n";
+print "CUT: ", $cut->query, ".\n";
