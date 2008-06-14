@@ -186,13 +186,6 @@ use thresholds of 80 and 20.
 Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
 
-NOTE: The result returned by this RSI module is a probability ranging from 0 to
-1.  Most sources seem to show the RSI as a number ranging from 0 to 100.  If
-you wish to have this effect Simply multiply the numbers by 100 to get this
-result.
-
-    my $rsi = 100 * $rsi->query;
-
 =head1 Thanks
 
 Todd Litteken PhD <cl@xganon.com> 
