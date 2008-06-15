@@ -1,3 +1,7 @@
+2.3: Sun Jun 15 19:01:53 EDT 2008
+    - Doc bug...  Forgot to add
+      set_alpha(14) = set_days(27)
+
 2.2: Sat Jun 14 20:22:05 EDT 2008
     - RSI(14) really means EMA[27]/EMA[27]
       (indirectly suggested by Amit Dutt)

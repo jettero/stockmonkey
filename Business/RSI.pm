@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.2;
+our $VERSION = 2.3;
 
 use Math::Business::SMA;
 use Math::Business::EMA;
@@ -196,6 +196,13 @@ use thresholds of 80 and 20.
 
 Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
+
+Oddly, RSI(14) uses a "smoothing period" of 14 days -- referring to an alpha of
+1/14.  This means the EMA[N]u/EMA[N]d has N set to 27!
+
+Therefore, in addition to the usual C<set_days()> there is also a C<set_alpha()>
+(which is used by C<new()>).  C<set_days(27)> is equivelent to C<set_alpha(14)> or
+C<new(14)>.
 
 =head2 Cutler
 
