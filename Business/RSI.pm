@@ -153,12 +153,13 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   use Math::Business::RSI;
 
   my $rsi = new Math::Business::RSI;
-     $rsi->set_days(14);
+     $rsi->set_alpha(14); # issues a set days of 2*14-1
+     $rsi->set_days(27);  # equivilent to set_alpha(14)
 
-  # alternatively/equivilently
+  # equivelent to set_days(27)/set_alpha(14):
   my $rsi = new Math::Business::RSI(14);
 
-  # or to just get the recommended model ... (14)
+  # or to just get the recommended model ... set_alpha(14)
   my $rsi = Math::Business::RSI->recommended;
 
   my @closing_values = qw(
