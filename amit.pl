@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -Iblib/lib
 
 use strict;
 use Math::Business::EMA;
@@ -23,11 +23,12 @@ if( -f "qdump.txt" ) {
     my $q = Finance::QuoteHist->new(symbols => 'MSFT', start_date => '10/30/2005', end_date => '06/14/2008' );
     for my $row ($q->quotes()) {
         my ($symbol, $date, $open, $high, $low, $close, $volume, $xclose) = @$row;
-        push @close, $close;
 
         $ema->insert( $close );
         $rsi->insert( $close );
         $cut->insert( $close );
+
+        push @close, $close;
     }
 
     open my $d, ">qdump.txt";

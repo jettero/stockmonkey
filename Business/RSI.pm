@@ -26,12 +26,24 @@ sub new {
         cy  => undef,
     }, $class;
 
-    my $days = shift;
-    if( defined $days ) {
-        $this->set_days( $days );
+    my $alpha = shift;
+    if( defined $alpha ) {
+        $this->set_alpha( $alpha );
     }
 
     return $this;
+}
+
+sub set_alpha {
+    my $this  = shift;
+    my $alpha = shift;
+
+    my $days = 2*$alpha - 1;
+
+    warn "alpha=$alpha; days=$days";
+
+    eval { $this->set_days( $days ) };
+    croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
 }
 
 sub set_standard {
@@ -180,15 +192,31 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
 The RSI was designed by J. Welles Wilder Jr in 1978.
 
 According to Wilder, a security is "overbought" it the RSI reaches an upper
-bound of 0.70 and is "oversold" when it moves below 0.30.  Some sources also
+bound of 70 and is "oversold" when it moves below 30.  Some sources also
 use thresholds of 80 and 20.
 
 Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
 
+=head2 Cutler
+
+There are differing schools of thought on how to calculate this and how
+important it is to stick to precisely the formula Wilder used.  Cutler used
+simple moving averages instead of exponential moving averages.
+
+You can switch between Wilder and Cutler mode with these:
+
+    $rsi->set_cutler; # for simple moving averages
+    $rsi->set_standard; # for exponential moving averages
+
+WARNING: Both of these clear out the value queue!  If you need to track
+both, you'll need two objects. 
+
 =head1 Thanks
 
-Todd Litteken PhD <cl@xganon.com> 
+Todd Litteken <cl@xganon.com> 
+
+Amit Dutt <amit_dutt@hotmail.com>                                                                                       
 
 =head1 AUTHOR
 
