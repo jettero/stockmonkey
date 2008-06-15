@@ -1,3 +1,7 @@
+2.2: Sat Jun 14 20:22:05 EDT 2008
+    - RSI(14) really means EMA[27]/EMA[27]
+      (indirectly suggested by Amit Dutt)
+
 2.1: Mon Jun  9 13:39:44 EDT 2008
     - responding to a bug report from Greg Jessup
       ... seems the example in the MACD module is frelled in
