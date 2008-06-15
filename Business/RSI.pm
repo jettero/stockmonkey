@@ -40,8 +40,6 @@ sub set_alpha {
 
     my $days = 2*$alpha - 1;
 
-    warn "alpha=$alpha; days=$days";
-
     eval { $this->set_days( $days ) };
     croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
 }

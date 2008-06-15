@@ -11,9 +11,11 @@ README
 StockMonkey.pod
 Business/RSI.pm
 t/04_rsi.t
+t/04_rsi_amit.t
 Business/BollingerBands.pm
 t/05_bollinger.t
 Business/DMI.pm
 Business/ATR.pm
 t/06_dmi.t
 t/06_atr.t
+msft_6-13-8.txt
