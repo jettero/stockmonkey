@@ -3,6 +3,7 @@
 use Test;
 use Math::Business::EMA;
 use Math::Business::RSI;
+use Data::Dumper;
 
 plan tests => 3;
 
@@ -10,13 +11,13 @@ my $rsi = new Math::Business::RSI(14);
 my $rec = recommended Math::Business::RSI;
 
 if( -f "msft_6-13-8.txt" ) {
-    my @close = do "msft_6-13-8.txt";
+    my $close = do "msft_6-13-8.txt";
     die $! if $!;
     die $@ if $@;
-    die "unknown error" unless @close > 10;
+    die "unknown error: " . Dumper($close) unless ref($close) and @$close > 10;
 
-    $rsi->insert( @close );
-    $rec->insert( @close );
+    $rsi->insert( @$close );
+    $rec->insert( @$close );
 }
 
 my $r = $rsi->query;
