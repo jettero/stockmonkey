@@ -1,3 +1,9 @@
+2.4: Sun Jun 15 22:04:12 EDT 2008
+    - fixed a do {} useless context "bug" so the amit test will
+      pass on perl 5.6
+    - I have been version-ing each module up each time I change
+      the dist version, but I'm going to stop doing that now.
+
 2.3: Sun Jun 15 19:01:53 EDT 2008
     - Doc bug...  Forgot to add
       set_alpha(14) = set_days(27)
