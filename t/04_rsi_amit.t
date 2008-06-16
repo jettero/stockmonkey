@@ -11,6 +11,9 @@ my $rec = recommended Math::Business::RSI;
 
 if( -f "msft_6-13-8.txt" ) {
     my @close = do "msft_6-13-8.txt";
+    die $! if $!;
+    die $@ if $@;
+    die "unknown error" unless @close > 10;
 
     $rsi->insert( @close );
     $rec->insert( @close );
