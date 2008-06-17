@@ -50,9 +50,10 @@ sub insert {
     croak "must set_alpha(as,am) before inserting data" unless defined( $am = $this->{am} ) and defined( $as = $this->{as} );
 
     while( defined( my $ar = shift ) ) {
-        croak "arguments to insert must be three touples (low,high,close)" unless ref($ar) eq "ARRAY" and @$ar==3 and $ar->[0]<$ar->[1];
-        my ($low, $high, $close) = @$ar;
+        croak "arguments to insert must be three touples (low,high,close)"
+            unless ref($ar) eq "ARRAY" and @$ar==3 and $ar->[0]<$ar->[1];
 
+        my ($low, $high, $close) = @$ar;
         if( defined( my $ls = $this->{ls} ) ) {
             my $alpha = $this->{a};
             my $ep    = $this->{ep};
@@ -88,7 +89,7 @@ sub insert {
                 }
             }
 
-            $this->{sar} = $sar + $alpha * ($ep - $sar);
+            $this->{sar} = $sar;
             $this->{lh}  = [ $low, $high ];
 
             $alpha += $as;
