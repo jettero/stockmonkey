@@ -18,7 +18,7 @@ sub recommended {
        $class->new(0.02, 0.20);
 }
 
-sub new { 
+sub new {
     my $class = shift;
     my $this  = bless {}, $class;
 
@@ -62,7 +62,7 @@ sub insert {
             if( $ls == LONG ) {
                 $this->{ep} = $ep = $high if $high>$ep;
 
-                $sar = $sar + $alpha * ($ep - $sar); 
+                $sar = $sar + $alpha * ($ep - $sar);
 
                 if( $sar > $low ) {
                     $sar = $low;
@@ -74,10 +74,21 @@ sub insert {
                 }
 
             } else {
-                die;
+                $this->{ep} = $ep = $low if $low < $ep;
+
+                $sar = $sar + $alpha * ($ep - $sar);
+
+                if( $sar < $high ) {
+                    $sar = $high;
+                    $this->{ls} = LONG;
+
+                } elsif( $sar < $lh->[1] ) {
+                    $sar = $lh->[1];
+                    $this->{ls} = LONG;
+                }
             }
 
-            $this->{sar} = $sar + $alpha * ($ep - $sar); 
+            $this->{sar} = $sar + $alpha * ($ep - $sar);
             $this->{lh}  = [ $low, $high ];
 
             $alpha += $as;
@@ -100,7 +111,7 @@ sub insert {
 
                 $this->{ep}  = $ep = ($high > $lh->[1] ? $high : $lh->[1]);
 
-                $sar = $lh->[0] + $alpha * ($ep - $lh->[0]); 
+                $sar = $lh->[0] + $alpha * ($ep - $lh->[0]);
 
                 # * "If tomorrow's SAR value lies within (or beyond) today's or
                 #    yesterday's price range, the SAR must be set to the
@@ -128,7 +139,7 @@ sub insert {
             } else {
                 $this->{ep}  = $ep = ($low < $lh->[0] ? $low : $lh->[0]);
 
-                $sar = $lh->[1] + $alpha * ($ep - $lh->[1]); 
+                $sar = $lh->[1] + $alpha * ($ep - $lh->[1]);
 
                 if( $sar < $high ) {
                     $sar = $high;
@@ -193,7 +204,7 @@ Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)
       [ 5, 4, 4.5 ],
   );
 
-  # choose one: 
+  # choose one:
   $dmi->insert( @data_points );
   $dmi->insert( $_ ) for @data_points;
 
@@ -211,7 +222,7 @@ Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)
       print "ADX: n/a.\n";
   }
 
-  # you may use this to kick start 
+  # you may use this to kick start
   $dmi->start_with($aPDM, $aMDM, $adx;
 
   # aPDM and aMDM are internals, to fetch them, use these
