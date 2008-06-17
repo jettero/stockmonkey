@@ -19,3 +19,4 @@ Business/ATR.pm
 t/06_dmi.t
 t/06_atr.t
 msft_6-13-8.txt
+Business/ParabolicSAR.pm
