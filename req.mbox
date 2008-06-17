@@ -1,0 +1,112 @@
+From cl@xganon.com Tue Jun 17 12:31:00 2008
+Delivered-To: paul@voltar.org
+Received: by 10.86.90.16 with SMTP id n16cs127098fgb;
+        Tue, 17 Jun 2008 09:31:01 -0700 (PDT)
+Received: by 10.143.19.16 with SMTP id w16mr3071678wfi.223.1213720260428;
+        Tue, 17 Jun 2008 09:31:00 -0700 (PDT)
+Return-Path: <cl@xganon.com>
+Received: from cdptpa-omtalb.mail.rr.com (cdptpa-omtalb.mail.rr.com [75.180.132.121])
+        by mx.google.com with ESMTP id 30si2081067wfa.10.2008.06.17.09.30.59;
+        Tue, 17 Jun 2008 09:31:00 -0700 (PDT)
+Received-SPF: neutral (google.com: 75.180.132.121 is neither permitted nor denied by best guess record for domain of cl@xganon.com) client-ip=75.180.132.121;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 75.180.132.121 is neither permitted nor denied by best guess record for domain of cl@xganon.com) smtp.mail=cl@xganon.com
+Received: from new.xganon.com ([76.186.169.156])
+          by cdptpa-omta06.mail.rr.com with ESMTP
+          id <20080617163058.HUOF28655.cdptpa-omta06.mail.rr.com@new.xganon.com>
+          for <paul@voltar.org>; Tue, 17 Jun 2008 16:30:58 +0000
+Received: from new.xganon.com (localhost.localdomain [127.0.0.1])
+	by new.xganon.com (8.14.2/8.14.2) with ESMTP id m5HF86ZL008526
+	for <paul@voltar.org>; Tue, 17 Jun 2008 10:08:06 -0500
+Received: (from apache@localhost)
+	by new.xganon.com (8.14.2/8.14.2/Submit) id m5HF855Z008524;
+	Tue, 17 Jun 2008 10:08:05 -0500
+Received: from 207.45.45.41
+        (SquirrelMail authenticated user cl)
+        by www.xganon.com with HTTP;
+        Tue, 17 Jun 2008 10:08:05 -0500 (CDT)
+Message-ID: <63221.207.45.45.41.1213715285.squirrel@www.xganon.com>
+In-Reply-To: <20080616102049.GA28218@corky>
+References: <BLU123-W3575038C501699EEC018CC90AF0@phx.gbl>
+    <20080615000010.GA17612@corky>
+    <37200.76.186.169.156.1213563072.squirrel@www.xganon.com>
+    <20080615225503.GA19815@corky>
+    <44001.76.186.169.156.1213580920.squirrel@www.xganon.com>
+    <20080616102049.GA28218@corky>
+Date: Tue, 17 Jun 2008 10:08:05 -0500 (CDT)
+Subject: Re: Math::Business::RSI module
+From: "Todd Litteken PhD" <cl@xganon.com>
+To: "Paul Miller" <paul@voltar.org>
+User-Agent: SquirrelMail/1.4.13-1.fc8
+MIME-Version: 1.0
+Content-Type: text/plain;charset=iso-8859-1
+Content-Transfer-Encoding: 8bit
+X-Priority: 3 (Normal)
+Importance: Normal
+Status: RO
+Content-Length: 2062
+Lines: 63
+
+I can understand that.
+
+ My thought was that with the number of times I call the calculation, and
+the number of different programs where I would use it, it would be easier
+and more efficient to have a single call to add to any program to get the
+number.
+
+There are several technical indicators that are simple to calculate but
+the advantage of having a module (IMHO) would out way any losses in speed
+of the calculation. All of the stuff I am working on is modular because I
+am utilizing a simple distributed environment to increase the amount of
+available processor time. Thus the addition of the calculation into a Perl
+module means that each system has the same set of calls available.
+
+Here are a few more indicators and Oscillator I have found.
+
+Stochastic Oscillator (Fast, Slow, and Full)
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:stochastic_oscillator
+
+Williams %R
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:williams_r
+
+PPO and APO
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:price_oscillators_pp
+
+On Balance Volume (OBV)
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:on_balance_volume
+
+Acceleration
+Formula:
+
+ACC=MOMt - MOMt-n
+
+Where:
+
+ACC = current acceleration value
+
+MOMt = current momentum value
+
+MOMt-n = momentum value n periods ago
+
+
+Ultimate Oscillator
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:ultimate_oscillator
+
+ROC and Momentum
+http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:rate_of_change_roc_a
+
+
+
+
+> On Sun, Jun 15, 2008 at 08:48:40PM -0500, Todd Litteken PhD wrote:
+>> (((Close_Price - Open_Price) / Open_Price) * 100)
+>
+> The percent change might even be too simple.  Calling subs is the
+> slowest thing perl does besides disk io.  Creating a module to do
+> that would likely slow it down quite a bit.
+>
+> --
+> If riding in an airplane is flying, then riding in a boat is swimming.
+> 85 jumps, 36.0 minutes of freefall, 69.1 freefall miles.
+>
+
+
