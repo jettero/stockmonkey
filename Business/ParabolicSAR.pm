@@ -15,28 +15,144 @@ our $VERSION = 1.0;
 
 sub recommended {
     my $class = shift;
-
-    $class->new(0.02, 0.20);
+       $class->new(0.02, 0.20);
 }
 
 sub new { 
     my $class = shift;
-    my $this  = bless {
-        sp  => undef,
-        ep  => undef,
-        sar => undef,
-        ls  => 
-    }, $class;
+    my $this  = bless {}, $class;
+
+    if( @_ ) {
+       eval { $this->set_alpha(@_) };
+       croak $@ if $@;
+    }
 
     return $this;
+}
+
+sub set_alpha {
+    my $this = shift;
+    my ($as,$am) = @_;
+
+    croak "set_alpha(as,am) takes two arguments, the alpha start (0<as<1) and the alpha max (0<as<am<1)"
+        unless 0 < $as and $as < $am and $am < 1;
+
+    $this->{as} = $as;
+    $this->{am} = $am;
+
+    return;
 }
 
 sub insert {
     my $this = shift;
 
-    my $y_point = $this->{y};
-    while( defined( my $point = shift ) ) {
-        croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+    my ($as,$am);
+    croak "must set_alpha(as,am) before inserting data" unless defined( $am = $this->{am} ) and defined( $as = $this->{as} );
+
+    while( defined( my $ar = shift ) ) {
+        croak "arguments to insert must be three touples (low,high,close)" unless ref($ar) eq "ARRAY" and @$ar==3 and $ar->[0]<$ar->[1];
+        my ($low, $high, $close) = @$ar;
+
+        if( defined( my $ls = $this->{ls} ) ) {
+            my $alpha = $this->{a};
+            my $ep    = $this->{ep};
+            my $sar   = $this->{sar};
+            my $lh    = $this->{lh};
+
+            if( $ls == LONG ) {
+                $this->{ep} = $ep = $high if $high>$ep;
+
+                $sar = $sar + $alpha * ($ep - $sar); 
+
+                if( $sar > $low ) {
+                    $sar = $low;
+                    $this->{ls} = SHORT;
+
+                } elsif( $sar > $lh->[0] ) {
+                    $sar = $lh->[0];
+                    $this->{ls} = SHORT;
+                }
+
+            } else {
+                die;
+            }
+
+            $this->{sar} = $sar + $alpha * ($ep - $sar); 
+            $this->{lh}  = [ $low, $high ];
+
+            $alpha += $as;
+            $alpha = $am if $alpha > $am;
+            $this->{a} = $alpha;
+
+        } elsif( defined( my $lh = $this->{lh} ) ) {
+            my $alpha = $as;
+            my ($ep, $sar);
+
+            if( $close > $lh->[2] ) {
+                # "If the market has recently moved lower and is now above the
+                # lows of that move, assume a long. Call the lowest point of the
+                # previous trade the SAR initial point (SIP) because it will be
+                # the starting point for the SAR calculation (SARI = SIP)."
+                # -- pricemotion.com
+
+                # really, we're assuming long if our close is greater than
+                # yesterday's close
+
+                $this->{ep}  = $ep = ($high > $lh->[1] ? $high : $lh->[1]);
+
+                $sar = $lh->[0] + $alpha * ($ep - $lh->[0]); 
+
+                # * "If tomorrow's SAR value lies within (or beyond) today's or
+                #    yesterday's price range, the SAR must be set to the
+                #    closest price bound. For example, if in an uptrend, the
+                #    new SAR value is calculated and it results to be greater
+                #    than today's or yesterday's lowest price, the SAR must be
+                #    set equal to that lower boundary.
+                # * "If tomorrow's SAR value lies within (or beyond) tomorrow's
+                #   price range, a new trend direction is then signaled, and
+                #   the SAR must 'switch sides.'"
+                # --wikipedia
+
+                if( $sar > $low ) {
+                    $sar = $low;
+                    $this->{ls} = SHORT;
+
+                } elsif( $sar > $lh->[0] ) {
+                    $sar = $lh->[0];
+                    $this->{ls} = SHORT;
+
+                } else {
+                    $this->{ls} = LONG;
+                }
+
+            } else {
+                $this->{ep}  = $ep = ($low < $lh->[0] ? $low : $lh->[0]);
+
+                $sar = $lh->[1] + $alpha * ($ep - $lh->[1]); 
+
+                if( $sar < $high ) {
+                    $sar = $high;
+                    $this->{ls} = LONG;
+
+                } elsif( $sar < $lh->[1] ) {
+                    $sar = $lh->[1];
+                    $this->{ls} = LONG;
+
+                } else {
+                    $this->{ls} = SHORT;
+                }
+            }
+
+            $this->{lh}  = [ $low, $high ];
+            $this->{sar} = $sar;
+
+            $alpha += $as;
+            $alpha = $am if $alpha > $am;
+            $this->{a} = $alpha;
+
+        } else {
+            $this->{lh} = $ar;
+        }
     }
 }
 
