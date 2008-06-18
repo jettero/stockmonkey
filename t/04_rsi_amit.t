@@ -18,6 +18,9 @@ if( -f "msft_6-13-8.txt" ) {
 
     $rsi->insert( @$close );
     $rec->insert( @$close );
+
+} else {
+    die "bad MANIFEST?";
 }
 
 my $r = $rsi->query;

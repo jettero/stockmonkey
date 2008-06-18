@@ -3,10 +3,11 @@ package Math::Business::ParabolicSAR;
 use strict;
 use warnings;
 use Carp;
-use vars qw($x); # like our, but at compile time so these constants work
 use constant {
-    LONG  => $x++,
-    SHORT => $x++,
+    LONG  => 7,
+    SHORT => 9,
+    HP    => 1,
+    LP    => 0,
 };
 
 our $VERSION = 1.0;
@@ -20,7 +21,7 @@ sub recommended {
 
 sub new {
     my $class = shift;
-    my $this  = bless {}, $class;
+    my $this  = bless {e=>[], y=>[]}, $class;
 
     if( @_ ) {
        eval { $this->set_alpha(@_) };
@@ -49,123 +50,90 @@ sub insert {
     my ($as,$am);
     croak "must set_alpha(as,am) before inserting data" unless defined( $am = $this->{am} ) and defined( $as = $this->{as} );
 
-    while( defined( my $ar = shift ) ) {
-        croak "arguments to insert must be three touples (low,high,close)"
-            unless ref($ar) eq "ARRAY" and @$ar==3 and $ar->[0]<$ar->[1];
+    my ($y_low, $y_high) = @{$this->{y}};
+    my ($open,$high,$low,$close);
 
-        my ($low, $high, $close) = @$ar;
-        if( defined( my $ls = $this->{ls} ) ) {
-            my $alpha = $this->{a};
-            my $ep    = $this->{ep};
-            my $sar   = $this->{sar};
-            my $lh    = $this->{lh};
+    my $S;
+    my $P = $this->{S};
+    my $A = $this->{A};
+    my $e = $this->{e};
+
+    my $ls = $this->{ls};
+
+    while( defined( my $ar = shift ) ) {
+        croak "arguments to insert must be four touples (open,high,low,close)"
+            unless ref($ar) eq "ARRAY" and @$ar==4 and $ar->[2]<$ar->[1];
+
+        # NOTE: we really only use open and close to initialize ...
+        ($open,$high,$low,$close) = @$ar;
+
+        if( defined $ls ) {
+            $e->[HP] = $high if $high > $e->[HP]; # the highest point during the trend
+            $e->[LP] = $low  if $low  < $e->[LP]; # the  lowest point during the trend
+
+            # calculate sar_t
+            # The Encyclopedia of Technical Market Indicators - Page 495
 
             if( $ls == LONG ) {
-                $this->{ep} = $ep = $high if $high>$ep;
+                $S = $P + $A*($e->[HP] - $P); # adjusted upwards from the reset like so
 
-                $sar = $sar + $alpha * ($ep - $sar);
+                if( $S > $low or $S > $y_low ) {
+                    $S = $e->[HP];
+                    $A = $as;
 
-                if( $sar > $low ) {
-                    $sar = $low;
-                    $this->{ls} = SHORT;
+                    $e->[HP] = ($high>$y_high ? $high : $y_high);
+                    $e->[LP] = ($low <$y_low  ? $low  : $y_low );
 
-                } elsif( $sar > $lh->[0] ) {
-                    $sar = $lh->[0];
-                    $this->{ls} = SHORT;
+                } else {
+                    $A += $as;
+                    $A = $am if $A > $am;
                 }
 
             } else {
-                $this->{ep} = $ep = $low if $low < $ep;
+                $S = $P - $A*($e->[LP] - $P); # adjusted downwards from the reset like so
 
-                $sar = $sar + $alpha * ($ep - $sar);
+                if( $S < $high or $S < $y_high ) {
+                    $S = $e->[LP];
+                    $A = $as;
 
-                if( $sar < $high ) {
-                    $sar = $high;
-                    $this->{ls} = LONG;
+                    $e->[HP] = ($high>$y_high ? $high : $y_high);
+                    $e->[LP] = ($low <$y_low  ? $low  : $y_low );
 
-                } elsif( $sar < $lh->[1] ) {
-                    $sar = $lh->[1];
-                    $this->{ls} = LONG;
+                } else {
+                    $A += $as;
+                    $A = $am if $A > $am;
                 }
             }
 
-            $this->{sar} = $sar;
-            $this->{lh}  = [ $low, $high ];
-
-            $alpha += $as;
-            $alpha = $am if $alpha > $am;
-            $this->{a} = $alpha;
-
-        } elsif( defined( my $lh = $this->{lh} ) ) {
-            my $alpha = $as;
-            my ($ep, $sar);
-
-            if( $close > $lh->[2] ) {
-                # "If the market has recently moved lower and is now above the
-                # lows of that move, assume a long. Call the lowest point of the
-                # previous trade the SAR initial point (SIP) because it will be
-                # the starting point for the SAR calculation (SARI = SIP)."
-                # -- pricemotion.com
-
-                # really, we're assuming long if our close is greater than
-                # yesterday's close
-
-                $this->{ep}  = $ep = ($high > $lh->[1] ? $high : $lh->[1]);
-
-                $sar = $lh->[0] + $alpha * ($ep - $lh->[0]);
-
-                # * "If tomorrow's SAR value lies within (or beyond) today's or
-                #    yesterday's price range, the SAR must be set to the
-                #    closest price bound. For example, if in an uptrend, the
-                #    new SAR value is calculated and it results to be greater
-                #    than today's or yesterday's lowest price, the SAR must be
-                #    set equal to that lower boundary.
-                # * "If tomorrow's SAR value lies within (or beyond) tomorrow's
-                #   price range, a new trend direction is then signaled, and
-                #   the SAR must 'switch sides.'"
-                # --wikipedia
-
-                if( $sar > $low ) {
-                    $sar = $low;
-                    $this->{ls} = SHORT;
-
-                } elsif( $sar > $lh->[0] ) {
-                    $sar = $lh->[0];
-                    $this->{ls} = SHORT;
-
-                } else {
-                    $this->{ls} = LONG;
-                }
-
-            } else {
-                $this->{ep}  = $ep = ($low < $lh->[0] ? $low : $lh->[0]);
-
-                $sar = $lh->[1] + $alpha * ($ep - $lh->[1]);
-
-                if( $sar < $high ) {
-                    $sar = $high;
-                    $this->{ls} = LONG;
-
-                } elsif( $sar < $lh->[1] ) {
-                    $sar = $lh->[1];
-                    $this->{ls} = LONG;
-
-                } else {
-                    $this->{ls} = SHORT;
-                }
-            }
-
-            $this->{lh}  = [ $low, $high ];
-            $this->{sar} = $sar;
-
-            $alpha += $as;
-            $alpha = $am if $alpha > $am;
-            $this->{a} = $alpha;
 
         } else {
-            $this->{lh} = $ar;
+            # initialize somehow
+            # (never did find a good description of how to initialize this mess,
+            #   I think you're supposed to tell it how to start)
+            # this is the only time we use open/close and it's not even in the definition
+
+            if( $open < $close ) {
+                $ls = LONG;
+                $S  = $low;
+
+            } else {
+                $ls = SHORT;
+                $S  = $high;
+            }
+
+            $e->[HP] = $high;
+            $e->[LP] = $low;
         }
+
+        $P = $S;
+
+        ($y_low, $y_high) = ($low, $high);
     }
+
+    $this->{S} = $S;
+    $this->{A} = $A;
+
+    @{$this->{y}} = ($y_low, $y_high);
 }
 
 sub start_with {
@@ -177,7 +145,7 @@ sub start_with {
 sub query {
     my $this = shift;
 
-    die "todo";
+    $this->{S};
 }
 
 __END__
@@ -276,6 +244,6 @@ perl(1)
 
 L<http://en.wikipedia.org/wiki/Parabolic_SAR>
 
-L<http://www.pricemotion.com/Forex-and-Stock-Market-Educational-Trading-Games--Parabolic-SAR.htm>
+The Encyclopedia of Technical Market Indicators - Page 495
 
 =cut
