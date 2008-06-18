@@ -82,7 +82,7 @@ sub insert {
                 # inside the price range for the last *two* periods.  Amazon,
                 # Yahoo! and stockcharts dont' seem to do it that way.
 
-                if( $S > $low ) { # or $S > $y_low ) {
+                if( $S > $low ) {
                     $ls = SHORT; # new short position
 
                     $S  = $e->[HP];
@@ -90,6 +90,9 @@ sub insert {
 
                     $e->[HP] = ($high>$y_high ? $high : $y_high);
                     $e->[LP] = ($low <$y_low  ? $low  : $y_low );
+
+                } elsif( $S > $y_low ) {
+                    $S = $y_low;
 
                 } elsif( $oe[HP] != $e->[HP] ) {
                     $A += $as;
@@ -103,7 +106,7 @@ sub insert {
                 # inside the price range for the last *two* periods.  Amazon,
                 # Yahoo! and stockcharts dont' seem to do it that way.
 
-                if( $S < $high ) { # or $S < $y_high ) {
+                if( $S < $high ) {
                     $ls = LONG; # new long position
 
                     $S  = $e->[LP];
@@ -111,6 +114,9 @@ sub insert {
 
                     $e->[HP] = ($high>$y_high ? $high : $y_high);
                     $e->[LP] = ($low <$y_low  ? $low  : $y_low );
+
+                } elsif( $S < $y_high ) {
+                    $S = $y_high;
 
                 } elsif( $oe[LP] != $e->[LP] ) {
                     $A += $as;
