@@ -156,68 +156,41 @@ Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)
 
 =head1 SYNOPSIS
 
-  use Math::Business::DMI;
+  use Math::Business::ParabolicSAR;
 
-  my $dmi = new Math::Business::DMI;
-     $dmi->set_days(14);
+  my $sar = new Math::Business::ParabolicSAR;
+     $sar->set_alpha(0.02, 0.2);
 
   # alternatively/equivilently
-  my $dmi = new Math::Business::DMI(14);
+  my $sar = new Math::Business::ParabolicSAR(0.02, 0.2);
 
-  # or to just get the recommended model ... (14)
-  my $dmi = Math::Business::DMI->recommended;
+  # or to just get the recommended model ... (0.02, 0.2)
+  my $sar = Math::Business::ParabolicSAR->recommended;
 
   my @data_points = (
-      [ 5, 3, 4 ], # high, low, close
-      [ 6, 4, 5 ],
-      [ 5, 4, 4.5 ],
+      ["35.0300", "35.1300", "34.3600", "34.3900"],
+      ["34.6400", "35.0000", "34.2100", "34.7400"],
+      ["34.6900", "35.1400", "34.3800", "34.7900"],
+      ["35.2900", "35.7900", "35.0800", "35.5200"],
+      ["35.9000", "36.0600", "35.7500", "36.0600"],
+      ["36.1300", "36.7200", "36.0500", "36.5800"],
+      ["36.4100", "36.6400", "36.2600", "36.6100"],
+      ["36.3500", "36.5500", "35.9400", "35.9700"],
   );
 
   # choose one:
-  $dmi->insert( @data_points );
-  $dmi->insert( $_ ) for @data_points;
+  $sar->insert( @data_points );
+  $sar->insert( $_ ) for @data_points;
 
-  my $adx = $dmi->query;     # ADX
-  my $pdi = $dmi->query_pdi; # +DI
-  my $mdi = $dmi->query_mdi; # -DI
-
-  # or
-  my ($pdi, $mdi, $adx) = $dmi->query;
-
-  if( defined $adx ) {
-      print "ADX: $adi.\n";
-
-  } else {
-      print "ADX: n/a.\n";
-  }
+  my $sar = $sar->query;
+  print "SAR: $sar\n";
 
   # you may use this to kick start
-  $dmi->start_with($aPDM, $aMDM, $adx;
-
-  # aPDM and aMDM are internals, to fetch them, use these
-  my $aPDM = $dmi->query_apdm;
-  my $aMDM = $dmi->query_amdm;
+  # TODO $sar->start_with($aPDM, $aMDM, $adx;
 
 =head1 RESEARCHER
 
-The ADX/DMI was designed by J. Welles Wilder Jr circa 1978.
-
-The +DI and -DI signals measure the force of directional changes.  When the
-+DI crosses above the -DI it may indicate that it's time to buy and when
-the -DI crosses above the +DI it may be time to sell.
-
-The ADX tries to combine the two.  It may indicate the strength of the
-current trend (but not it's direction).  When it moves above 20 it may be
-the beginning of a trend and when it falls below 40, it may be the end of
-it.
-
-The DMI uses the ATR to try to measure volatility.
-
-NOTE: The +DI, -DI and ADX returned by this module are probabilities ranging
-from 0 to 1.  Most sources seem to show the DMI values as numbers from 0 to
-100.  Simply multiply the three touple by 100 to get this result.
-
-    my @DMI = map { 100*$_ } = $dmi->query;
+The Parabolic Stop and Reversal was designed by J. Welles Wilder Jr circa 1978.
 
 =head1 AUTHOR
 
