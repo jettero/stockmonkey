@@ -171,6 +171,16 @@ sub query {
     $this->{S};
 }
 
+sub long {
+    my $this = shift;
+    $this->{ls} == LONG;
+}
+
+sub short {
+    my $this = shift;
+    $this->{ls} == SHORT;
+}
+
 __END__
 
 =head1 NAME
@@ -208,12 +218,27 @@ Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)
   my $sar = $sar->query;
   print "SAR: $sar\n";
 
-  # you may use this to kick start
-  # TODO $sar->start_with($aPDM, $aMDM, $adx;
+  # Briefly, the SAR is below the price data when you're meant to be holding
+  # stocks (long) and above it when you're meant to be on margin (short).
+
+  print "The SAR is long  today.\n" if $sar->long;
+  print "The SAR is short today.\n" if $sar->short;
+
+  # You may use this to kick start
+  # TODO $sar->start_with(????);
 
 =head1 RESEARCHER
 
 The Parabolic Stop and Reversal was designed by J. Welles Wilder Jr circa 1978.
+
+The SAR is meant to be used to "stop loss" on a position.  It assumes you always
+have a position in the market (long if you're holding stocks and short when
+you're on margin).  When the SAR crosses the price data, it signals a sell (when
+you're long) or a buy (when you're short).
+
+Wilder himself felt the SAR was particularly vulnerable to "whipsaws" and
+recommended only using the SAR when the ADX is above 30 -- that is, when there
+is a strong trend going.
 
 =head1 AUTHOR
 
