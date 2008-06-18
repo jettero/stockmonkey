@@ -1,5 +1,11 @@
 #!/usr/bin/perl -Iblib/lib
 
+BEGIN {
+    my @mtime = map {(stat $_)[9]} qw(Makefile Makefile.PL);
+    system (qw(perl Makefile.PL)) if $mtime[0] != $mtime[1];
+    system (qw(make -f Makefile));
+}
+
 use strict;
 use Math::Business::ParabolicSAR;
 use Math::Business::EMA;
@@ -7,7 +13,7 @@ use GD::Graph::mixed;
 use List::Util qw(min max);;
 
 my $sar = Math::Business::ParabolicSAR->recommended;
-my $ema = Math::Business::EMA->new(15);
+my $ema = Math::Business::EMA->new(27);
 
 my @ohlc = @{do "msft_6-16-8.txt"}; shift @ohlc while @ohlc>100;
 my @data = ([ 0 .. $#ohlc ]); # [0]
@@ -25,7 +31,7 @@ for my $p (@ohlc) {
     push @{$data[$x++]}, $ema->query; # [4]
 }
 
-my $graph = GD::Graph::mixed->new(800, 600);
+my $graph = GD::Graph::mixed->new(1000, 500);
    $graph->set(
        y_label           => 'Dollahz',
        transparent       => 0,
@@ -45,7 +51,7 @@ binmode $img;
 print $img $gd->png;
 close $img;
 
-system(qw(eog -f sar.png));
+system(qw(eog sar.png));
 
 __END__
 This controls the order of markers in points and linespoints graphs.  This should be a reference to an array of
