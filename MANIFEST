@@ -20,3 +20,7 @@ t/06_dmi.t
 t/06_atr.t
 msft_6-13-8.txt
 Business/ParabolicSAR.pm
+t/07_sar.t
+msft_6-16-8.txt
+req.mbox
+slurp.pl
