@@ -11,6 +11,7 @@ Math::Business::RSI             Relative Strength Index
 Math::Business::BollingerBands  Bollinger Bands
 Math::Business::ATR             Average True Value
 Math::Business::DMI             Directional Movement Index (aka ADX)
+Math::Business::ParabolicSAR    Parabolic Stop and Reversal
 
 If you'd like to help, or even just *suggest* a module, just let me know.
 
