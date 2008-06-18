@@ -8,7 +8,7 @@ MANIFEST
 Makefile.PL
 Changes
 README
-StockMonkey.pod
+Business/StockMonkey.pod
 Business/RSI.pm
 t/04_rsi.t
 t/04_rsi_amit.t
@@ -21,6 +21,5 @@ t/06_atr.t
 msft_6-13-8.txt
 Business/ParabolicSAR.pm
 t/07_sar.t
-msft_6-16-8.txt
-req.mbox
+msft_6-17-8.txt
 graph_sar
