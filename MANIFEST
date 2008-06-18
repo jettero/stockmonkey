@@ -23,4 +23,4 @@ Business/ParabolicSAR.pm
 t/07_sar.t
 msft_6-16-8.txt
 req.mbox
-slurp.pl
+graph_sar

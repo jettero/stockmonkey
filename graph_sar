@@ -8,37 +8,41 @@ BEGIN {
 
 use strict;
 use Math::Business::ParabolicSAR;
-use Math::Business::EMA;
 use GD::Graph::mixed;
-use List::Util qw(min max);;
+use List::Util qw(min max);
 
 my $sar = Math::Business::ParabolicSAR->recommended;
-my $ema = Math::Business::EMA->new(27);
 
-my @ohlc = @{do "msft_6-16-8.txt"}; shift @ohlc while @ohlc>100;
-my @data = ([ 0 .. $#ohlc ]); # [0]
+my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
+my @data;
 
 for my $p (@ohlc) {
+    my $d = shift @$p;
+
     $sar->insert($p);
-    $ema->insert($p->[3]);
 
-    my $x = 1;
+    my $x = 0;
 
+    push @{$data[$x++]}, $d;      # date  [0]
     push @{$data[$x++]}, $p->[3]; # close [1]
     push @{$data[$x++]}, $p->[1]; # high  [2]
     push @{$data[$x++]}, $p->[2]; # low   [3]
     push @{$data[$x++]}, $sar->query; # [4]
-    push @{$data[$x++]}, $ema->query; # [4]
 }
+
+my @all_points = grep {defined $_} map {@$_} @data[1 .. $#data]; use Data::Dump qw(dump);
+my $min_point  = min(@all_points);
+my $max_point  = max(@all_points);
 
 my $graph = GD::Graph::mixed->new(1000, 500);
    $graph->set(
-       y_label           => 'Dollahz',
+       y_label           => 'dollars',
+       x_label           => 'date',
        transparent       => 0,
        markers           => [qw(7 3 9 8)],
        dclrs             => [qw(black lgreen lred lblue)],
-       y_max_value       => (max(@{$data[2]})+0.1),
-       y_min_value       => (min(@{$data[3]})-0.1),
+       y_min_value       => $min_point-0.2,
+       y_max_value       => $max_point+0.2,
        y_number_format   => '%0.2f',
        x_labels_vertical => 1,
        types             => [qw(linespoints points points points)],

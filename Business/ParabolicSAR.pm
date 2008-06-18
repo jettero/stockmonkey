@@ -68,49 +68,63 @@ sub insert {
         ($open,$high,$low,$close) = @$ar;
 
         if( defined $ls ) {
-            $e->[HP] = $high if $high > $e->[HP]; # the highest point during the trend
-            $e->[LP] = $low  if $low  < $e->[LP]; # the  lowest point during the trend
-
             # calculate sar_t
             # The Encyclopedia of Technical Market Indicators - Page 495
+
+            my @oe = @$e;
+            $e->[HP] = $high if $high > $e->[HP]; # the highest point during the trend
+            $e->[LP] = $low  if $low  < $e->[LP]; # the  lowest point during the trend
 
             if( $ls == LONG ) {
                 $S = $P + $A*($e->[HP] - $P); # adjusted upwards from the reset like so
 
-                if( $S > $low or $S > $y_low ) {
-                    $S = $e->[HP];
-                    $A = $as;
+                # NOTE: many sources say you should flop short/long if you get
+                # inside the price range for the last *two* periods.  Amazon,
+                # Yahoo! and stockcharts dont' seem to do it that way.
+
+                if( $S > $low ) { # or $S > $y_low ) {
+                    $ls = SHORT; # new short position
+
+                    $S  = $e->[HP];
+                    $A  = $as;
 
                     $e->[HP] = ($high>$y_high ? $high : $y_high);
                     $e->[LP] = ($low <$y_low  ? $low  : $y_low );
 
-                } else {
+                } elsif( $oe[HP] != $e->[HP] ) {
                     $A += $as;
                     $A = $am if $A > $am;
                 }
 
             } else {
-                $S = $P - $A*($e->[LP] - $P); # adjusted downwards from the reset like so
+                $S = $P + $A*($e->[LP] - $P); # adjusted downwards from the reset like so
 
-                if( $S < $high or $S < $y_high ) {
-                    $S = $e->[LP];
-                    $A = $as;
+                # NOTE: many sources say you should flop short/long if you get
+                # inside the price range for the last *two* periods.  Amazon,
+                # Yahoo! and stockcharts dont' seem to do it that way.
+
+                if( $S < $high ) { # or $S < $y_high ) {
+                    $ls = LONG; # new long position
+
+                    $S  = $e->[LP];
+                    $A  = $as;
 
                     $e->[HP] = ($high>$y_high ? $high : $y_high);
                     $e->[LP] = ($low <$y_low  ? $low  : $y_low );
 
-                } else {
+                } elsif( $oe[LP] != $e->[LP] ) {
                     $A += $as;
                     $A = $am if $A > $am;
                 }
             }
-
 
         } else {
             # initialize somehow
             # (never did find a good description of how to initialize this mess,
             #   I think you're supposed to tell it how to start)
             # this is the only time we use open/close and it's not even in the definition
+
+            $A = $as;
 
             if( $open < $close ) {
                 $ls = LONG;
@@ -130,8 +144,11 @@ sub insert {
         ($y_low, $y_high) = ($low, $high);
     }
 
-    $this->{S} = $S;
-    $this->{A} = $A;
+    ## DEBUG ## warn "{S}=$S; {A}=$A";
+
+    $this->{S}  = $S;
+    $this->{A}  = $A;
+    $this->{ls} = $ls;
 
     @{$this->{y}} = ($y_low, $y_high);
 }
