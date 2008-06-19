@@ -1,6 +1,8 @@
 2.7: Thu Jun 19 06:24:27 EDT 2008
     - rearranged the distribution a little... the ::cookbook and
       ::faq pods weren't indexing right on search.cpan.org
+    - perl5.6.x needs constant 1.05 (or at least greater than
+      1.02) so I can use that nice constant { NAME => 1 } block.
 
 2.6: Wed Jun 18 18:48:20 EDT 2008
     - finished the Parabolic SAR
