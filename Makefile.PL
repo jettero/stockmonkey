@@ -5,5 +5,5 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'Math::Business',
     DISTNAME     => 'stockmonkey',
-    VERSION      => '2.6',
+    VERSION      => '2.7',
 );

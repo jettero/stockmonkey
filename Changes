@@ -1,3 +1,7 @@
+2.7: Thu Jun 19 06:24:27 EDT 2008
+    - rearranged the distribution a little... the ::cookbook and
+      ::faq pods weren't indexing right on search.cpan.org
+
 2.6: Wed Jun 18 18:48:20 EDT 2008
     - finished the Parabolic SAR
 
