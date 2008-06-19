@@ -30,7 +30,7 @@ for my $p (@ohlc) {
     push @{$data[$x++]}, $sar->query; # [4]
 }
 
-my @all_points = grep {defined $_} map {@$_} @data[1 .. $#data]; use Data::Dump qw(dump);
+my @all_points = grep {defined $_} map {@$_} @data[1 .. $#data];
 my $min_point  = min(@all_points);
 my $max_point  = max(@all_points);
 
