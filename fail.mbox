@@ -1,0 +1,205 @@
+From slaven@rezic.de Thu Jun 19 09:48:26 2008
+Delivered-To: japh@voltar-confed.org
+Received: by 10.86.90.16 with SMTP id n16cs20152fgb;
+        Thu, 19 Jun 2008 06:48:32 -0700 (PDT)
+Received: by 10.114.95.1 with SMTP id s1mr2575149wab.221.1213883310865;
+        Thu, 19 Jun 2008 06:48:30 -0700 (PDT)
+Return-Path: <slaven@rezic.de>
+Received: from x1.develooper.com (x1.develooper.com [63.251.223.170])
+        by mx.google.com with SMTP id j63si4863rne.15.2008.06.19.06.48.24;
+        Thu, 19 Jun 2008 06:48:30 -0700 (PDT)
+Received-SPF: neutral (google.com: 63.251.223.170 is neither permitted nor denied by best guess record for domain of slaven@rezic.de) client-ip=63.251.223.170;
+Authentication-Results: mx.google.com; spf=neutral (google.com: 63.251.223.170 is neither permitted nor denied by best guess record for domain of slaven@rezic.de) smtp.mail=slaven@rezic.de
+Received: (qmail 3493 invoked by uid 225); 19 Jun 2008 13:48:23 -0000
+Delivered-To: JETTERO@cpan.org
+Received: (qmail 3488 invoked by alias); 19 Jun 2008 13:48:23 -0000
+X-Spam-Status: No, hits=-5.7 required=8.0
+	tests=BAYES_00,PERLBUG_CONF,SARE_MLH_Stock1
+X-Spam-Check-By: la.mx.develooper.com
+Received: from la.mx.develooper.com (HELO x1.develooper.com) (63.251.223.176)
+    by la.mx.develooper.com (qpsmtpd/0.28) with SMTP; Thu, 19 Jun 2008 06:48:09 -0700
+Received: (qmail 3395 invoked from network); 19 Jun 2008 13:48:06 -0000
+Received: from x16.dev (10.0.100.26)
+  by x1.dev with QMQP; 19 Jun 2008 13:48:06 -0000
+X-Spam-Level: *
+Received: from mail3.ixls.de (HELO mail3.ixls.de) (78.47.208.109)
+    by 16.mx.develooper.com (qpsmtpd/0.43rc1) with ESMTP; Thu, 19 Jun 2008 06:47:45 -0700
+Received: from e178109134.adsl.alicedsl.de ([85.178.109.134] helo=localhost.localdomain)
+	by mail3.ixls.de with esmtpa (Exim 4.63)
+	id 1K9KTr-0008NW-0E; Thu, 19 Jun 2008 15:47:15 +0200
+Received: from biokovo.herceg.de (localhost [127.0.0.1])
+	by biokovo.herceg.de (8.13.6/8.13.6) with ESMTP id m5JDgcjV068911;
+	Thu, 19 Jun 2008 15:42:38 +0200 (CEST)
+	(envelope-from srezic@cpan.org)
+Date: Thu, 19 Jun 2008 15:42:38 +0200
+Subject: FAIL stockmonkey-2.6 i386-freebsd 6.1-release
+From: srezic@cpan.org
+To: cpan-testers@perl.org
+Cc: JETTERO@cpan.org
+Message-ID: <1213882958.bD0dD8A0.69798@biokovo.herceg.de>
+X-Reported-Via: Test::Reporter 1.4001, via CPAN::Reporter 1.15
+X-Virus-Checked: Checked
+X-Old-Spam-Check-By: 16.mx.develooper.com
+X-Old-Spam-Status: No, hits=-5.7 required=8.0
+	tests=BAYES_00,PERLBUG_CONF,SARE_MLH_Stock1
+Status: RO
+Content-Length: 10812
+Lines: 159
+
+This distribution has been tested as part of the cpan-testers
+effort to test as many new uploads to CPAN as possible.  See
+http://testers.cpan.org/
+
+
+--
+Dear Paul Miller,
+    
+This is a computer-generated report for stockmonkey-2.6
+on perl 5.6.2, created by CPAN-Reporter-1.15. 
+
+Thank you for uploading your work to CPAN.  However, there was a problem
+testing your distribution.
+
+If you think this report is invalid, please consult the CPAN Testers Wiki
+for suggestions on how to avoid getting FAIL reports for missing library
+or binary dependencies, unsupported operating systems, and so on:
+
+http://cpantest.grango.org/wiki/CPANAuthorNotes
+
+Sections of this report:
+
+    * Tester comments
+    * Program output
+    * Prerequisites
+    * Environment and other context
+
+------------------------------
+TESTER COMMENTS
+------------------------------
+
+Additional comments from tester: 
+
+none provided
+
+------------------------------
+PROGRAM OUTPUT
+------------------------------
+
+Output from '/usr/bin/make test':
+
+PERL_DL_NONLAZY=1 /usr/local/bin/perl5.6.2 "-MExtUtils::Command::MM" "-e" "test_harness(0, 'blib/lib', 'blib/arch')" t/*.t
+t/01_sma.t..........ok
+t/02_ema.t..........ok
+t/03_macd.t.........ok
+t/04_rsi.t..........ok
+t/04_rsi_amit.t.....ok
+t/05_bollinger.t....ok
+t/06_atr.t..........ok
+t/06_dmi.t..........ok
+t/07_sar.t..........Constant name 'HASH(0x8155850)' has invalid characters at /var/tmp/CPAN-build/stockmonkey-2.6-q0ZPmM/blib/lib/Math/Business/ParabolicSAR.pm line 7
+BEGIN failed--compilation aborted at /var/tmp/CPAN-build/stockmonkey-2.6-q0ZPmM/blib/lib/Math/Business/ParabolicSAR.pm line 11.
+Compilation failed in require at t/07_sar.t line 4.
+BEGIN failed--compilation aborted at t/07_sar.t line 4.
+ Dubious, test returned 255 (wstat 65280, 0xff00)
+ No subtests run 
+
+Test Summary Report
+-------------------
+t/07_sar.t      (Wstat: 65280 Tests: 0 Failed: 0)
+  Non-zero exit status: 255
+  Parse errors: No plan found in TAP output
+Files=9, Tests=622,  0 wallclock secs ( 0.05 usr  0.04 sys +  0.12 cusr  0.23 csys =  0.44 CPU)
+Result: FAIL
+Failed 1/9 test programs. 0/622 subtests failed.
+*** Error code 35
+
+Stop in /var/tmp/CPAN-build/stockmonkey-2.6-q0ZPmM.
+
+------------------------------
+PREREQUISITES
+------------------------------
+
+Prerequisite modules loaded:
+
+    No requirements found
+
+------------------------------
+ENVIRONMENT AND OTHER CONTEXT
+------------------------------
+
+Environment variables:
+
+    PATH = /usr/local/bin:/usr/X11R6/bin:/usr/X11/bin:/usr/perl5.8.0/bin:/usr/bin:/bin:/usr/local/sbin:/usr/sbin:/sbin:/usr/local/pilot/bin:/home/cpansand/bin/freebsd6.1:/home/cpansand/bin/sh:/home/cpansand/bin:/usr/X386/bin:/usr/games:/home/cpansand/devel:/usr/home/e/eserte/work/srezic-misc/scripts
+    PERL5LIB = /usr/local/src/CPAN/build/XML-Parser-Lite-Tree-0.03-ZVIJR0/blib/arch:/usr/local/src/CPAN/build/XML-Parser-Lite-Tree-0.03-ZVIJR0/blib/lib:/usr/local/src/CPAN/build/SOAP-Lite-0.710.07-e6eirZ/blib/arch:/usr/local/src/CPAN/build/SOAP-Lite-0.710.07-e6eirZ/blib/lib:/usr/local/src/CPAN/build/Acme-Spinner-0.03-Q5Bcqa/blib/arch:/usr/local/src/CPAN/build/Acme-Spinner-0.03-Q5Bcqa/blib/lib:/usr/local/src/CPAN/build/Module-Load-Conditional-0.26-IxE7TS/blib/arch:/usr/local/src/CPAN/build/Module-Load-Conditional-0.26-IxE7TS/blib/lib:/usr/local/src/CPAN/build/Params-Check-0.26-WObTMr/blib/arch:/usr/local/src/CPAN/build/Params-Check-0.26-WObTMr/blib/lib:/usr/local/src/CPAN/build/Locale-Maketext-Simple-0.18-xK2tXy/blib/arch:/usr/local/src/CPAN/build/Locale-Maketext-Simple-0.18-xK2tXy/blib/lib:/usr/local/src/CPAN/build/version-0.7501-nj6OcH/blib/arch:/usr/local/src/CPAN/build/version-0.7501-nj6OcH/blib/lib:/usr/local/src/CPAN/build/Module-Load-0.12-Lmeq5p/blib/arch:/usr/local/src/CPAN/build/Module-Load-0.12-Lmeq5p/blib/lib:/usr/local/src/CPAN/build/Time-Duration-Parse-0.06-5P4cM3/blib/arch:/usr/local/src/CPAN/build/Time-Duration-Parse-0.06-5P4cM3/blib/lib:/usr/local/src/CPAN/build/Time-Duration-1.06-y4ohQM/blib/arch:/usr/local/src/CPAN/build/Time-Duration-1.06-y4ohQM/blib/lib:/usr/local/src/CPAN/build/Test-Pod-Coverage-1.08-nMHWqB/blib/arch:/usr/local/src/CPAN/build/Test-Pod-Coverage-1.08-nMHWqB/blib/lib:/usr/local/src/CPAN/build/Pod-Coverage-0.19-ELhwvc/blib/arch:/usr/local/src/CPAN/build/Pod-Coverage-0.19-ELhwvc/blib/lib:/usr/local/src/CPAN/build/Exporter-Lite-0.02-3WMIQ7/blib/arch:/usr/local/src/CPAN/build/Exporter-Lite-0.02-3WMIQ7/blib/lib:/usr/local/src/CPAN/build/Module-Find-0.06-8b9AL2/blib/arch:/usr/local/src/CPAN/build/Module-Find-0.06-8b9AL2/blib/lib:/usr/local/src/CPAN/build/Data-UUID-1.148-FRLzMq/blib/arch:/usr/local/src/CPAN/build/Data-UUID-1.148-FRLzMq/blib/lib:/usr/local/src/CPAN/build/Test-Class-0.30-eY1EMJ/blib/arch:/usr/local/src/CPAN/build/Test-Class-0.30-eY1EMJ/blib/lib:/usr/local/src/CPA!
+ N/build/
+Devel-Symdump-2.08-cVH56G/blib/arch:/usr/local/src/CPAN/build/Devel-Symdump-2.08-cVH56G/blib/lib:/usr/local/src/CPAN/build/IO-1.2301-G1vqSv/blib/arch:/usr/local/src/CPAN/build/IO-1.2301-G1vqSv/blib/lib:/usr/local/src/CPAN/build/Test-Simple-0.80-38b8iP/blib/arch:/usr/local/src/CPAN/build/Test-Simple-0.80-38b8iP/blib/lib:/usr/local/src/CPAN/build/Test-LongString-0.11-ZfFSbH/blib/arch:/usr/local/src/CPAN/build/Test-LongString-0.11-ZfFSbH/blib/lib:/usr/local/src/CPAN/build/Filter-1.34-UKcxF5/blib/arch:/usr/local/src/CPAN/build/Filter-1.34-UKcxF5/blib/lib:/usr/local/src/CPAN/build/Sub-Exporter-0.979-2qnFEs/blib/arch:/usr/local/src/CPAN/build/Sub-Exporter-0.979-2qnFEs/blib/lib:/usr/local/src/CPAN/build/Data-OptList-0.103-lTMbQP/blib/arch:/usr/local/src/CPAN/build/Data-OptList-0.103-lTMbQP/blib/lib:/usr/local/src/CPAN/build/Sub-Install-0.924-aW9Y6S/blib/arch:/usr/local/src/CPAN/build/Sub-Install-0.924-aW9Y6S/blib/lib:/usr/local/src/CPAN/build/Params-Util-0.33-lAS6zO/blib/arch:/usr/local/src/CPAN/build/Params-Util-0.33-lAS6zO/blib/lib:/usr/local/src/CPAN/build/MRO-Compat-0.09-hsP4ss/blib/arch:/usr/local/src/CPAN/build/MRO-Compat-0.09-hsP4ss/blib/lib:/usr/local/src/CPAN/build/Class-C3-0.19-LMKKdG/blib/arch:/usr/local/src/CPAN/build/Class-C3-0.19-LMKKdG/blib/lib:/usr/local/src/CPAN/build/Algorithm-C3-0.07-WcJrjV/blib/arch:/usr/local/src/CPAN/build/Algorithm-C3-0.07-WcJrjV/blib/lib:/usr/local/src/CPAN/build/Class-C3-XS-0.08-NtRnd4/blib/arch:/usr/local/src/CPAN/build/Class-C3-XS-0.08-NtRnd4/blib/lib:/usr/local/src/CPAN/build/Sub-Identify-0.03-7NLSd7/blib/arch:/usr/local/src/CPAN/build/Sub-Identify-0.03-7NLSd7/blib/lib:/usr/local/src/CPAN/build/Digest-JHash-0.05-RWbyDL/blib/arch:/usr/local/src/CPAN/build/Digest-JHash-0.05-RWbyDL/blib/lib:/usr/local/src/CPAN/build/File-Slurp-9999.13-ljRRQp/blib/arch:/usr/local/src/CPAN/build/File-Slurp-9999.13-ljRRQp/blib/lib:/usr/local/src/CPAN/build/Hash-MoreUtils-0.01-hoLv5n/blib/arch:/usr/local/src/CPAN/build/Hash-MoreUtils-0.01-hoLv5n/blib/lib:/usr/local/src/CPAN/build/List-MoreU!
+ tils-0.2
+2-3ivn5R/blib/arch:/usr/local/src/CPAN/build/List-MoreUtils-0.22-3ivn5R/blib/lib:/usr/local/src/CPAN/build/ExtUtils-MakeMaker-6.44-97WOC5/blib/arch:/usr/local/src/CPAN/build/ExtUtils-MakeMaker-6.44-97WOC5/blib/lib:/usr/local/src/CPAN/build/Test-Most-0.04-0pScA0/blib/arch:/usr/local/src/CPAN/build/Test-Most-0.04-0pScA0/blib/lib:/usr/local/src/CPAN/build/Test-Warn-0.10-2p9dpd/blib/arch:/usr/local/src/CPAN/build/Test-Warn-0.10-2p9dpd/blib/lib:/usr/local/src/CPAN/build/Tree-DAG_Node-1.06-216oLC/blib/arch:/usr/local/src/CPAN/build/Tree-DAG_Node-1.06-216oLC/blib/lib:/usr/local/src/CPAN/build/Array-Compare-1.15-2mnRAP/blib/arch:/usr/local/src/CPAN/build/Array-Compare-1.15-2mnRAP/blib/lib:/usr/local/src/CPAN/build/Test-Harness-3.11-lXZ7Lr/blib/arch:/usr/local/src/CPAN/build/Test-Harness-3.11-lXZ7Lr/blib/lib:/usr/local/src/CPAN/build/Test-Command-0.02-p2mnPa/blib/arch:/usr/local/src/CPAN/build/Test-Command-0.02-p2mnPa/blib/lib:/usr/local/src/CPAN/build/CPAN-1.92_63-IWINpJ/blib/arch:/usr/local/src/CPAN/build/CPAN-1.92_63-IWINpJ/blib/lib:/usr/local/src/CPAN/build/HOP-Stream-0.02-sPLayZ/blib/arch:/usr/local/src/CPAN/build/HOP-Stream-0.02-sPLayZ/blib/lib
+    PERL5OPT = 
+    PERL5_CPANPLUS_IS_RUNNING = 69798
+    PERL5_CPAN_IS_RUNNING = 69798
+    PERL5_CPAN_IS_RUNNING_IN_RECURSION = 5912,69798
+    PERL_EXTUTILS_AUTOINSTALL = --defaultdeps
+    PERL_HTML_DISPLAY_CLASS = HTML::Display::Mozilla
+    SHELL = /usr/local/bin/zsh
+    TERM = screen
+
+Perl special variables (and OS-specific diagnostics, for MSWin32):
+
+    $^X = /usr/local/bin/perl5.6.2
+    $UID/$EUID = 1023 / 1023
+    $GID = 1023 1023 1023
+    $EGID = 1023 1023 1023
+
+Perl module toolchain versions installed:
+
+    Module              Have     
+    ------------------- ---------
+    CPAN                1.92_63  
+    Cwd                 3.25     
+    ExtUtils::CBuilder  n/a      
+    ExtUtils::Command   1.13     
+    ExtUtils::Install   1.45     
+    ExtUtils::MakeMaker 6.44     
+    ExtUtils::Manifest  1.51     
+    ExtUtils::ParseXS   n/a      
+    File::Spec          3.25     
+    Module::Build       0.2808_01
+    Module::Signature   n/a      
+    Test::Harness       3.11     
+    Test::More          0.80     
+    YAML                0.39     
+    YAML::Syck          0.99     
+    version             0.7501   
+
+
+--
+
+Summary of my perl5 (revision 5.0 version 6 subversion 2) configuration:
+  Platform:
+    osname=freebsd, osvers=6.1-release, archname=i386-freebsd
+    uname='freebsd biokovo.herceg.de 6.1-release freebsd 6.1-release #0: sun may 7 04:32:43 utc 2006 root@opus.cse.buffalo.edu:usrobjusrsrcsysgeneric i386 '
+    config_args='-Dprefix=/usr/perl5.6.2 -D cc=ccache cc -Dgccansipedantic -Duse64bit -de -D hintfile=myfreebsd'
+    hint=recommended, useposix=true, d_sigaction=define
+    usethreads=undef use5005threads=undef useithreads=undef usemultiplicity=undef
+    useperlio=undef d_sfio=undef uselargefiles=define usesocks=undef
+    use64bitint=undef use64bitall=undef uselongdouble=undef
+  Compiler:
+    cc='ccache cc', ccflags ='-DHAS_FPSETMASK -DHAS_FLOATINGPOINT_H -fno-strict-aliasing -I/usr/local/include',
+    optimize='-O2 -mtune=athlon64 -pipe',
+    cppflags='-DHAS_FPSETMASK -DHAS_FLOATINGPOINT_H -fno-strict-aliasing -I/usr/local/include'
+    ccversion='', gccversion='3.4.4 [FreeBSD] 20050518', gccosandvers=''
+    intsize=4, longsize=4, ptrsize=4, doublesize=8, byteorder=1234
+    d_longlong=define, longlongsize=8, d_longdbl=define, longdblsize=12
+    ivtype='long', ivsize=4, nvtype='double', nvsize=8, Off_t='off_t', lseeksize=8
+    alignbytes=4, usemymalloc=y, prototype=define
+  Linker and Libraries:
+    ld='ccache cc', ldflags ='-Wl,-E  -L/usr/local/lib'
+    libpth=/usr/lib /usr/local/lib
+    libs=-lm -lc -lcrypt -lutil
+    perllibs=-lm -lc -lcrypt -lutil
+    libc=, so=so, useshrplib=false, libperl=libperl.a
+  Dynamic Linking:
+    dlsrc=dl_dlopen.xs, dlext=so, d_dlsymun=undef, ccdlflags=' '
+    cccdlflags='-DPIC -fpic', lddlflags='-shared  -L/usr/local/lib'
+
