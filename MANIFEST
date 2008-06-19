@@ -23,3 +23,5 @@ Business/ParabolicSAR.pm
 t/07_sar.t
 msft_6-17-8.txt
 graph_sar
+Business/StockMonkey/CookBook.pod
+Business/StockMonkey/FAQ.pod
