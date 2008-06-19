@@ -132,7 +132,7 @@ Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
 
 =head1 SEE ALSO
 
-perl(1), Math::Business::EMA(3).
+perl(1), L<Math::Business::EMA>, L<Math::Business::StockMonkey>, L<Math::Business::StockMonkey::FAQ>, L<Math::Business::StockMonkey::CookBook>
 
 L<http://en.wikipedia.org/wiki/Exponential_moving_average>
 
