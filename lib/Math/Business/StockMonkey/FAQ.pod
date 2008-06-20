@@ -1,3 +1,7 @@
+=head1 NAME
+
+Math::Business::StockMonkey::FAQ - These are indeed frequent questions
+
 =head1 Your ModuleX is wrong, just look at SiteName!
 
 No it isn't.  Well, probably not.  Most of these technical analysis
