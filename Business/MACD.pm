@@ -179,7 +179,7 @@ situation and vice versa.
 
 =head1 Thanks
 
-David Perry <David.Perry@ca.com>
+David Perry
 
 =head1 AUTHOR
 
