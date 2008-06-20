@@ -22,15 +22,13 @@ for my $p (@ohlc) {
     $sar->insert($p);
 
     my $x = 0;
-
-    push @{$data[$x++]}, $d;      # date  [0]
-    push @{$data[$x++]}, $p->[3]; # close [1]
-    push @{$data[$x++]}, $p->[1]; # high  [2]
-    push @{$data[$x++]}, $p->[2]; # low   [3]
-    push @{$data[$x++]}, $sar->query; # [4]
+    push @{$data[$x++]}, $d; # date
+    push @{$data[$x++]}, $p->[-1]; # close
+    push @{$data[$x++]}, $p; # ohlc
+    push @{$data[$x++]}, $sar->query;
 }
 
-my @all_points = grep {defined $_} map {@$_} @data[1 .. $#data];
+my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
 my $min_point  = min(@all_points);
 my $max_point  = max(@all_points);
 
@@ -39,13 +37,13 @@ my $graph = GD::Graph::mixed->new(1000, 500);
        y_label           => 'dollars',
        x_label           => 'date',
        transparent       => 0,
-       markers           => [qw(7 3 9 8)],
-       dclrs             => [qw(black lgreen lred lblue)],
+       markers           => [qw(8)],
+       dclrs             => [qw(lgray lblue lred)],
+       types             => [qw(lines ohlc points)],
        y_min_value       => $min_point-0.2,
        y_max_value       => $max_point+0.2,
        y_number_format   => '%0.2f',
        x_labels_vertical => 1,
-       types             => [qw(linespoints points points points)],
 
    ) or die $graph->error;
 
