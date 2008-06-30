@@ -22,8 +22,6 @@ sub new {
         ],
     }, $class;
 
-    croak $@ if $@;
-
     my $days = shift;
     if( defined $days ) {
         $this->set_days( $days );

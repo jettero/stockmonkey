@@ -13,10 +13,7 @@ sub recommended { croak "no recommendation" }
 
 sub new { 
     my $class = shift;
-    my $this  = bless [
-    ], $class;
-
-    croak $@ if $@;
+    my $this  = bless [], $class;
 
     my $days = shift;
     if( defined $days ) {
