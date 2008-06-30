@@ -159,28 +159,6 @@ sub insert {
     @{$this->{y}} = ($y_low, $y_high);
 }
 
-sub query_internals {
-    my $this = shift;
-
-    return (
-        $this->{S},
-        $this->{A},
-        $this->{e},
-        $this->{y},
-        $this->{ls},
-    );
-}
-
-sub start_with {
-    my $this = shift;
-
-    $this->{S}  = shift;
-    $this->{A}  = shift;
-    $this->{e}  = shift;
-    $this->{y}  = shift;
-    $this->{ls} = shift;
-}
-
 sub query {
     my $this = shift;
 
@@ -240,15 +218,6 @@ Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)
 
   print "The SAR is long  today.\n" if $sar->long;
   print "The SAR is short today.\n" if $sar->short;
-
-  # You may use this to kick start like this
-  $sar->start_with(@internals);
-
-  # This module keeps track of quite a few more internals than
-  # others in this family, and most of them are useless for
-  # anything besides calculating the next SAR...  Query them like
-  # this:
-  my @internals = $sar->query_internals;
 
 =head1 RESEARCHER
 

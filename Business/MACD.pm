@@ -33,19 +33,6 @@ sub new {
     return $this;
 }
 
-sub start_with {
-    my $this = shift;
-    my ($slow, $fast, $trig) = @_;
-
-    croak "undefined slow ema" unless defined $slow;
-    croak "undefined fast ema" unless defined $fast;
-    croak "undefined trig ema" unless defined $trig;
-
-    $this->{slow_EMA}->start_with($slow);
-    $this->{fast_EMA}->start_with($fast);
-    $this->{trig_EMA}->start_with($trig);
-}
-
 sub set_days {
     my $this = shift;
     my ($slow, $fast, $trig) = @_;
@@ -148,14 +135,6 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
   # $macd[2] is the Slow
   # $macd[3] is the Trigger
   # $macd[4] is the Histogram
-
-To avoid recalculating huge lists when you add a few new values on the end:
-
-  $ema->start_with( 
-      $last_slow_ema,
-      $last_fast_ema,
-      $last_trig_ema,
-  );
 
 =head1 RESEARCHER
 

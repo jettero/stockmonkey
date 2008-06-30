@@ -70,6 +70,7 @@ sub insert {
                        $sum += $true_range;
 
                     $this->{ATR} = $sum / $N;
+                    delete $this->{_p};
 
                 } else {
                     push @{$this->{_p}}, $true_range;
@@ -94,14 +95,6 @@ sub insert {
     }
 
     $this->{y_close} = $y_close;
-}
-
-sub start_with {
-    my $this = shift;
-    croak "you must provide: (yesterday's close, yesterday's ATR)" unless @_ == 2;
-
-    $this->{y_close} = shift;
-    $this->{ATR}     = shift;
 }
 
 sub query {
@@ -147,9 +140,6 @@ Math::Business::ATR - Technical Analysis: Average True Range
   } else {
       print "ATR: n/a.\n";
   }
-
-  # you may use this to kick start 
-  $atr->start_with( $yesterday_close, $old_atr );
 
 =head1 RESEARCHER
 

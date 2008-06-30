@@ -124,6 +124,9 @@ sub insert {
                         $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
                     }
 
+                    delete $this->{_p};
+                    delete $this->{_m};
+
                 } else {
                     push @{$this->{_p}}, $PDM;
                     push @{$this->{_m}}, $MDM;
@@ -137,19 +140,8 @@ sub insert {
     $this->{y} = $y_point;
 }
 
-sub start_with {
-    my $this = shift;
-    croak "you must provide: (aPDM, aMDM, aDX)" unless @_ == 3;
-
-    $this->{aPDM} = shift;
-    $this->{aMDM} = shift;
-    $this->{ADX}  = shift;
-}
-
 sub query_pdi  { my $this = shift; return $this->{PDI}; }
 sub query_mdi  { my $this = shift; return $this->{MDI}; }
-sub query_apdm { my $this = shift; return $this->{aPDM} }
-sub query_amdm { my $this = shift; return $this->{aMDM} }
 
 sub query {
     my $this = shift;
@@ -200,13 +192,6 @@ Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)
   } else {
       print "ADX: n/a.\n";
   }
-
-  # you may use this to kick start 
-  $dmi->start_with($aPDM, $aMDM, $adx;
-
-  # aPDM and aMDM are internals, to fetch them, use these
-  my $aPDM = $dmi->query_apdm;
-  my $aMDM = $dmi->query_amdm;
 
 =head1 RESEARCHER
 

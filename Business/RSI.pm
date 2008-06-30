@@ -123,19 +123,6 @@ sub insert {
     $this->{cy} = $close_yesterday;
 }
 
-sub start_with {
-    my $this = shift;
-    my ($U,$D,$cy) = @_;
-
-    $this->{U}->start_with( $U );
-    $this->{D}->start_with( $U );
-    $this->{cy} = $cy;
-}
-
-sub query_EMA_U { my $this = shift; $this->{U}->query }
-sub query_EMA_D { my $this = shift; $this->{D}->query }
-sub query_cy    { my $this = shift; $this->{cy} }
-
 sub query {
     my $this = shift;
 
@@ -177,14 +164,6 @@ Math::Business::RSI - Technical Analysis: Relative Strength Index
   } else {
       print "RSI: n/a.\n";
   }
-
-  # you may use this to kick start 
-  $rsi->start_with( $U, $D, $cy );
-
-  # you may fetch those values with these
-  my $U  = $rsi->query_EMA_U;
-  my $D  = $rsi->query_EMA_D;
-  my $cy = $rsi->query_cy; # (close yesterday)
 
 =head1 RESEARCHER
 

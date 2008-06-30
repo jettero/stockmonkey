@@ -101,8 +101,6 @@ sub insert {
     }
 }
 
-*start_with = *insert;
-
 sub query {
     my $this = shift;
 
@@ -146,9 +144,6 @@ Math::Business::BollingerBands - Technical Analysis: Bollinger Bands
   } else {
       print "BB: n/a.\n";
   }
-
-  # you may use this to kick start 
-  $bb->start_with( @closes );
 
 =head1 RESEARCHER
 

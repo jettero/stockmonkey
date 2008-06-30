@@ -81,10 +81,6 @@ sub insert {
     }
 }
 
-sub start_with {
-    die "todo";
-}
-
 sub query {
     my $this = shift;
 
@@ -119,10 +115,6 @@ Math::Business::HMA - Technical Analysis: Hull Moving Average
   } else {
       print "value: n/a.\n";
   }
-
-To avoid recalculating huge lists when you add a few new values on the end;
-
-  $avg->start_with( $the_last_calculated_value );
 
 For short, you can skip the set_days() by suppling the setting to new():
 

@@ -53,19 +53,13 @@ sub insert {
                    $sum += $_ for @$p;
 
                 $this->{EMA} = ( $this->{R} * $Yt ) + ( $this->{R1} * ($sum/$N) );
+                delete $this->{_p};
 
             } else {
                 push @{$this->{_p}}, $Yt;
             }
         }
     }
-}
-
-sub start_with {
-    my $this = shift;
-       $this->{EMA} = shift;
-
-    croak "undefined arg to start_with" unless defined $this->{EMA};
 }
 
 sub query {
@@ -102,10 +96,6 @@ Math::Business::EMA - Technical Analysis: Exponential Moving Average
   } else {
       print "value: n/a.\n";
   }
-
-To avoid recalculating huge lists when you add a few new values on the end:
-
-  $avg->start_with( $the_last_calculated_value );
 
 For short, you can skip the set_days() by suppling the setting to new():
 
