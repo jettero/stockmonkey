@@ -3,6 +3,7 @@
       freeze()/thaw() should work better anyway.  Choose that.
     - gave instructions on using the dumpers and storable to
       avoid recalcs
+    - Added WMA
 
 2.7: Fri Jun 20 16:41:36 EDT 2008
     - my doc rearrange didn't help...  I added NAME sections.
