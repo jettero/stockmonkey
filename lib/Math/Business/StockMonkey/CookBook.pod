@@ -44,6 +44,41 @@ store their results alongside OHLC data.
         ) or die $dbo->errstr;
     }
 
+=head1 AVOID RECALCULATING
+
+I can't stress this strongly enough.  Avoid recalculating lots of data if you
+can.  If you're pulling daily updates to long columns of numbers and you want
+them as accurate as possible -- and noticed that today's value is highly
+dependent on yesterday's value, recursively: then use L<Storable>, L<Data::Dump>
+or L<Data::Dumper>:
+
+    # Pretend we've just calculated 6 months as above under DBI
+    use Storable qw(lock_store lock_retrieve);
+
+    # Store the $bb in a file for later use
+    lock_store($bb, "filename");
+
+You can now resurrect a complete snapshot of the C<$bb> object like this:
+
+    my $resurrected_bb = lock_retrieve("filename");
+       $resurrected_bb->insert($tomorrow_close);
+
+The resurrected C<$bb> will know just as much past history as the original.
+Hurray!  If you have some aversion to L<Storable>, for whatever reason, you can
+do nearly the same thing with the dumper modules like this:
+
+    use Data::Dump qw(dump);
+    open my $save, "filename" or die $!;
+    print $save dump($bb);
+    close $save;
+
+    open my $load, "filename" or die $!;
+    my $code = do { local $/; <$load> };
+    close $load;
+
+    my $resurrected_bb = eval $code; die $@ if $@;
+       $resurrected_bb->insert($tomorrow_close);
+
 =head1 GD::Graph
 
 What good is data without plots?  This is basically how you'd draw a nice
