@@ -78,7 +78,7 @@ __END__
 
 =head1 NAME
 
-Math::Business::WMA - Technical Analysis: Hull Moving Average
+Math::Business::WMA - Technical Analysis: Weighted Moving Average
 
 =head1 SYNOPSIS
 
