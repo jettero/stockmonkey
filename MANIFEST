@@ -25,3 +25,6 @@ graph_sar
 lib/Math/Business/StockMonkey/CookBook.pod
 lib/Math/Business/StockMonkey/FAQ.pod
 lib/Math/Business/StockMonkey.pod
+Business/WMA.pm
+Business/HMA.pm
+t/08_wma.t
