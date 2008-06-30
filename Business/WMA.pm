@@ -30,7 +30,7 @@ sub set_days {
     croak "days must be a positive non-zero even integer" if $arg <= 0;
     @$this = (
         $arg,
-        $arg*($arg+1)/2,
+        ($arg*($arg+1))/2,
         [],     # the data (we actually need to store it, although we can avoid calculating much of it)
         undef,  # the sum of the data
         undef,  # the the last numerator
@@ -56,11 +56,11 @@ sub insert {
 
         } elsif( @$dat == $N ) {
             $old = 1;
-            my $x = $N;
+            my $x = 1;
 
             $total_m = $numerator_m = 0;
 
-            $numerator_m += $_ for map {$_*$x--} @$dat;
+            $numerator_m += $_ for map {$_*$x++} @$dat;
                 $total_m += $_ for @$dat;
         }
     }
