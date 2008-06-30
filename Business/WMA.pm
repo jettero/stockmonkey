@@ -27,7 +27,7 @@ sub set_days {
     my $this = shift; 
     my $arg  = int(shift);
 
-    croak "days must be a positive non-zero even integer" if $arg <= 0 or ($arg/2) =~ m/\./;
+    croak "days must be a positive non-zero even integer" if $arg <= 0;
     @$this = (
         $arg,
         $arg*($arg+1)/2,
