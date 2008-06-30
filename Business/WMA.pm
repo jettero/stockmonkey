@@ -43,18 +43,29 @@ sub insert {
     my ($N, $D, $dat, $total_m, $numerator_m, $EMA) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $N;
+
+    my $old;
     while( defined( my $P = shift ) ) {
         push @$dat, $P;
 
         if( @$dat > $N ) {
-            my $old = shift @$dat;
+            $old = shift @$dat;
 
             $numerator_m = $numerator_m + $P*$N - $total_m;
                 $total_m =     $total_m + $P - $old;
+
+        } elsif( @$dat == $N ) {
+            $old = 1;
+            my $x = $N;
+
+            $total_m = $numerator_m = 0;
+
+            $numerator_m += $_ for map {$_*$x--} @$dat;
+                $total_m += $_ for @$dat;
         }
     }
 
-    @$this = ($N, $D, $dat, $total_m, $numerator_m, $numerator_m/$D);
+    @$this = ($N, $D, $dat, $total_m, $numerator_m, (defined($old) ? $numerator_m/$D:undef));
 }
 
 sub query {
