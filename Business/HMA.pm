@@ -3,7 +3,7 @@ package Math::Business::HMA;
 use strict;
 use warnings;
 use Carp;
-use Math::Business::SMA;
+use Math::Business::WMA;
 
 our $VERSION = 1.0;
 
@@ -13,14 +13,11 @@ sub recommended { croak "no recommendation" }
 
 sub new { 
     my $class = shift;
-    my $this  = bless {
-        dat => [
-            undef,
-            undef,
-            undef,
-            undef,
-        ],
-    }, $class;
+    my $this  = bless [
+        undef,
+        undef,
+        undef,
+    ], $class;
 
     my $days = shift;
     if( defined $days ) {
@@ -36,18 +33,18 @@ sub set_days {
 
     croak "days must be a positive number" if $arg <= 0;
 
-    $this->{dat} = [
+    @$this = (
         Math::Business::WMA->new(int($arg/2)),
         Math::Business::WMA->new($arg),
         Math::Business::WMA->new(int(sqrt($arg))),
-    ];
+    );
 }
 
 sub insert {
     my $this = shift;
-    my ($po2, $p, $sqp) = @{ $this->{dat} };
+    my ($po2, $p, $sqp) = @$this;
 
-    croak "You must set the number of days before you try to insert" if not defined $N;
+    croak "You must set the number of days before you try to insert" unless defined $sqp;
     while( defined(my $P = shift) ) {
         $po2->insert($P);
           $p->insert($P);
