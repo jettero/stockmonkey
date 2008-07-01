@@ -7,6 +7,7 @@ Here's the tiny catalog so far:
 Math::Business::SMA             Simple Moving Average
 Math::Business::EMA             Exponential Moving Average
 Math::Business::WMA             Weighted Moving Average
+Math::Business::HMA             Hull Moving Average
 Math::Business::MACD            Moving Average Convergence/Divergence
 Math::Business::RSI             Relative Strength Index
 Math::Business::BollingerBands  Bollinger Bands

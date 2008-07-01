@@ -4,7 +4,7 @@
     - gave instructions on using the dumpers and storable to
       avoid recalcs
     - Added WMA
-    - Worked on the HMA (suggested by John Baker) a little, I'm
+    - Added the HMA (suggested by John Baker). I'm
       intrigued by it's purported low-lag smoothing abilities..
 
 2.7: Fri Jun 20 16:41:36 EDT 2008
