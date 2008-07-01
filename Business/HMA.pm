@@ -97,6 +97,10 @@ For short, you can skip the set_days() by suppling the setting to new():
 
   my $longer_avg = new Math::Business::HMA(10);
 
+=head1 Thanks
+
+John Baker <johnb@listbrokers.com>
+
 =head1 AUTHOR
 
 Paul Miller <jettero@cpan.org>
