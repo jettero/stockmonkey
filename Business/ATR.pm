@@ -37,8 +37,8 @@ sub set_days {
     # probably wouldn't have been my first choice, but that's how ATR is defined.
 
     $this->{days} = $arg;
-    $this->{R}  = ($arg-1)/$arg;
-    $this->{R1} = 1/$arg;
+    $this->{R1}  = ($arg-1)/$arg;
+    $this->{R} = 1/$arg;
 }
 
 sub insert {
@@ -59,7 +59,7 @@ sub insert {
                $true_range = $C if $C > $true_range;
 
             if( defined(my $atr = $this->{ATR}) ) {
-                $this->{ATR} = $this->{R} * $atr + $this->{R1} * $true_range;
+                $this->{ATR} = $this->{R1} * $atr + $this->{R} * $true_range;
 
             } else {
                 my $p;
