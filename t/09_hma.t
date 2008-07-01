@@ -13,12 +13,17 @@ plan tests => $N+$Dp;
 
 my $min = my $max = $data[0];
 
+my $ok = 1;
 for my $data (@data) {
     $hma->insert($data);
     $min = $data if $data < $min;
     $max = $data if $data > $max;
 
-    my $h = $hma->query;
+    if( defined( my $h = $hma->query ) ) {
+        ok( $h >= $min and $h <= $max );
+        $ok = 0;
 
-    ok( $h => $min and $h <= $max );
+    } else {
+        ok($ok);
+    }
 }
