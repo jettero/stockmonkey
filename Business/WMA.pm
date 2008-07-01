@@ -3,7 +3,6 @@ package Math::Business::WMA;
 use strict;
 use warnings;
 use Carp;
-use Math::Business::SMA;
 
 our $VERSION = 1.0;
 
