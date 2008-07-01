@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.3;
+our $VERSION = 2.4;
 
 use Math::Business::ATR;
 
