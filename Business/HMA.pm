@@ -34,55 +34,34 @@ sub set_days {
     my $this = shift; 
     my $arg  = int(shift);
 
-    croak "days must be a positive non-zero even integer" if $arg <= 0 or ($arg/2) =~ m/\./;
+    croak "days must be a positive number" if $arg <= 0;
 
     $this->{dat} = [
-        $arg,
-        $arg/2,
-        sqrt($arg),
-        Math::Business::SMA->new($arg),
+        Math::Business::WMA->new(int($arg/2)),
+        Math::Business::WMA->new($arg),
+        Math::Business::WMA->new(int(sqrt($arg))),
     ];
 }
 
 sub insert {
     my $this = shift;
-    my ($N, $No2, $sqrtN, $sma) = @{ $this->{dat} };
-
-    # The HMA manages to keep up with rapid changes in price activity whilst
-    # having superior smoothing over an SMA of the same period. The HMA employs
-    # weighted moving averages and dampens the smoothing effect (and resulting
-    # lag) by using the square root of the period instead of the actual period
-    # itself…as seen below.
-
-    # Integer (Square Root (Period)) WMA [2 x Integer (Period/2) WMA (Price) -
-    # Period WMA (Price)]
-
-    # The following formulas for the Hull Moving Average are for MetaStock and
-    # Supercharts but can be easily adapted for use with other charting
-    # programs that are capable of custom indicator construction.
-
-    # MetaStock Formula
-    # period:=Input("period",1,200,20);sqrtperiod:=Sqrt(period);Mov(2*Mov(C,period/2,W)
-    # - Mov(C,period,W),LastValue(sqrtperiod),W);
-
-    # SuperCharts Formula
-    # Input: period (Default value 20) waverage (2*waverage
-    # (close,period/2)-waverage (close,period), SquareRoot (Period))
-
-    # A simple application for the HMA, given its superior smoothing, would be
-    # to employ the turning points as entry/exit signals. However it shouldn't
-    # be used to generate crossover signals as this technique relies on lag.
+    my ($po2, $p, $sqp) = @{ $this->{dat} };
 
     croak "You must set the number of days before you try to insert" if not defined $N;
     while( defined(my $P = shift) ) {
-        $sma->insert($P);
+        $po2->insert($P);
+          $p->insert($P);
+
+        if( defined( my $_p = $p->query ) and defined( my $_po2 = $po2->query ) ) {
+            $sqp->insert( 2*$_po2 - $_p );
+        }
     }
 }
 
 sub query {
     my $this = shift;
 
-    return $this->{HMA};
+    return $this->[-1]->query;
 }
 
 __END__
@@ -127,6 +106,9 @@ please let me know.
 
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 

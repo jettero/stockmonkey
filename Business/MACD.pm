@@ -170,6 +170,9 @@ please let me know.
 I normally hang out on #perl on freenode, so you can try to get immediate
 gratification there if you like.  L<irc://irc.freenode.net/perl>
 
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
+
 =head1 COPYRIGHT
 
 Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
