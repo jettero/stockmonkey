@@ -6,21 +6,32 @@ use Math::Business::HMA;
 
 my $N   = 14;
 my $Dp  = 250;
-my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
+my @data = map { $_->[-1] } 
 my $hma = Math::Business::HMA->new(14);
 
 plan tests => $N+$Dp;
 
 my $min = my $max = $data[0];
+for my $data (@data) {
+    $min = $data if $data < $min;
+    $max = $data if $data > $max;
+}
 
 my $ok = 1;
 for my $data (@data) {
     $hma->insert($data);
-    $min = $data if $data < $min;
-    $max = $data if $data > $max;
 
     if( defined( my $h = $hma->query ) ) {
-        ok( $h >= $min and $h <= $max );
+        if( $h >= $min and $h <= $max ) {
+            ok(1);
+
+        } else {
+            open DUMP, ">dump.txt" or die $!;
+            print DUMP "@data";
+            close DUMP;
+            die " [false]  $h >= $min and $h <= $max \n";
+            ok(0);
+        }
         $ok = 0;
 
     } else {
