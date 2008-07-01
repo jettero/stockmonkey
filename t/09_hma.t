@@ -9,13 +9,13 @@ my $Dp  = 250;
 my @data = map { $_->[-1] } 
 my $hma = Math::Business::HMA->new(14);
 
-plan tests => $N+$Dp;
-
 my $min = my $max = $data[0];
 for my $data (@data) {
     $min = $data if $data < $min;
     $max = $data if $data > $max;
 }
+
+plan tests => 1*@data;
 
 my $ok = 1;
 for my $data (@data) {
