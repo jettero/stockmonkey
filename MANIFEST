@@ -31,3 +31,5 @@ t/08_wma.t
 t/09_hma.t
 Business/LaguerreFilter.pm
 t/10_lf.t
+Business/AdaptiveLaguerreFilter.pm
+t/11_alf.t
