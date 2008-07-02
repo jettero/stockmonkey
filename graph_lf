@@ -27,7 +27,7 @@ for my $p (@ohlc) {
     $hma->insert($p->[-1]);
     $sma->insert($p->[-1]);
     $lag->insert($p->[-1]);
-    $la2->insert(@$p[1,2]);
+    $la2->insert([@$p[1,2]]);
 
     my $x = 0;
     push @{$data[$x++]}, $d; # date
