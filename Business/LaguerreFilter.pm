@@ -16,27 +16,40 @@ sub new {
 
     my $days = shift;
     if( defined $days ) {
-        $this->set_alpha( $days );
+        $this->set_days( $days );
     }
 
     return $this;
 }
 
-sub set_alpha { 
-    my $this = shift; 
+sub set_days {
+    my $this = shift;
     my $arg  = 0+shift;
+
+    my $alpha = 2/(1+$arg);
+    eval { $this->set_alpha( $alpha ) };
+    croak "set_days() is basically set_alpha(2/(1+$arg)), which complained: $@" if $@;
+}
+
+sub set_alpha { 
+    my $this  = shift; 
+    my $alpha = 0+shift;
+    my $days  = 2*int(shift)-1;
+       $days  = 1 if $days < 1;
 
     croak "alpha must be a real between 0 and 1" unless $arg > 0 and $arg < 1;
     @$this = (
-        [undef,undef,undef,undef], # L0-L4
-        $arg,  # alpha
+        [],    # P-hist
+        [],    # L0-L4
+        $alpha,
+        $days,
         undef, # filter
     );
 }
 
 sub insert {
     my $this = shift;
-    my ($L, $alpha, $filter) = @$this;
+    my ($h, $L, $alpha, $days, $filter) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $alpha;
     no warnings 'uninitialized';
@@ -49,22 +62,35 @@ sub insert {
             $P = ($a[0]+$a[1])/$c;
         }
 
-        my $O = [ @$L ];
+        if( defined $L->[0] ) {
+            my $O = [ @$L ];
 
-        # L0 = alpha*Price + (1 - alpha)*L0[1];
+            # L0 = alpha*Price + (1 - alpha)*L0[1] = alpha*P + (1-alpha)*O[0]
 
-        $L->[0] = $alpha*$P + (1-$alpha)*$O->[0];
+            $L->[0] = $alpha*$P + (1-$alpha)*$O->[0];
 
-        # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1];
-        # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1];
-        # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1];
-                                                                        
-        $L->[1] = (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0];
-        $L->[2] = (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1];
-        $L->[3] = (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2];
+            # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1] = (1 - alpha)*O[1] - (1 - alpha)*L[0] + O[0]
+            # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1] = (1 - alpha)*O[2] - (1 - alpha)*L[1] + O[1]
+            # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1] = (1 - alpha)*O[3] - (1 - alpha)*L[2] + O[2]
+                                                                            
+            $L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0];
+            $L->[2] = defined($O->[2]) ? (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1] : $O->[1];
+            $L->[3] = defined($O->[3]) ? (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2] : $O->[2];
+
+        } elsif( @$h==$days-1 ) {
+            my $sum = shift @$h;
+               $sum += $_ for @$h; @$h =();
+
+            $L->[0] = $sum/$days; # NOTE: this is not in the DSP book
+
+        } else {
+            push @$h, $P;
+        }
     }
 
-    $this->[-1] = ($L->[0] + 2*$L->[1] + 2*$L->[2] + $L->[3])/6;
+    if( 4 == grep {defined $_} @$L ) {
+        $this->[-1] = ($L->[0] + 2*$L->[1] + 2*$L->[2] + $L->[3])/6;
+    }
 }
 
 sub query {
@@ -84,7 +110,8 @@ Math::Business::LaguerreFilter - Technical Analysis: Laguerre Filter
   use Math::Business::LaguerreFilter;
 
   my $avg = new Math::Business::LaguerreFilter;
-     $avg->set_alpha(0.2);
+     $avg->set_days(9); 
+     $avg->set_alpha(0.2); # same (roughly)
 
   my @closing_values = qw(
       3 4 4 5 6 5 6 5 5 5 5 
@@ -102,9 +129,9 @@ Math::Business::LaguerreFilter - Technical Analysis: Laguerre Filter
       print "value: n/a.\n";
   }
 
-For short, you can skip the set_alpha() by suppling the setting to new():
+For short, you can skip the set_days() by suppling the setting to new():
 
-  my $avg = new Math::Business::LaguerreFilter(0.2);
+  my $avg = new Math::Business::LaguerreFilter(9); # same as set_alpha(0.2)
 
 Ehlers actually uses the high and low price, rather than the closing price, in
 his book.  The insert method takes either a closing price or the high and low
