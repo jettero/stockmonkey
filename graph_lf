@@ -15,8 +15,8 @@ use List::Util qw(min max);
 
 my $hma = Math::Business::HMA->new(12);
 my $sma = Math::Business::SMA->new(12);
-my $lag = Math::Business::LaguerreFilter->new(0.2);
-my $la2 = Math::Business::LaguerreFilter->new(0.2);
+my $lag = Math::Business::LaguerreFilter->new(9);
+my $la2 = Math::Business::LaguerreFilter->new(9);
 
 my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
 my @data;
@@ -59,12 +59,12 @@ my $graph = GD::Graph::mixed->new(1000, 500);
    ) or die $graph->error;
 
 my $gd = $graph->plot(\@data) or die $graph->error;
-open my $img, '>', "graph.png" or die $!;
+open my $img, '>', ".graph.png" or die $!;
 binmode $img;
 print $img $gd->png;
 close $img;
 
-system(qw(eog graph.png));
+system(qw(eog .graph.png));
 
 __END__
 This controls the order of markers in points and linespoints graphs.  This should be a reference to an array of
