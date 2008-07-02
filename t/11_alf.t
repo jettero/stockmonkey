@@ -2,12 +2,13 @@
 use Test;
 use strict;
 
-use Math::Business::AdaptiveLaguerreFilter;
+use Math::Business::LaguerreFilter;
 
 my $N   = 14;
 my $Dp  = 250;
 my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
-my $lag = Math::Business::AdaptiveLaguerreFilter->new(0.4);
+my $lag = Math::Business::LaguerreFilter->new(0.4);
+   $lag->set_adaptive(20);
 
 my $min = my $max = $data[0];
 for my $data (@data) {
