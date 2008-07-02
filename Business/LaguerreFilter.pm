@@ -3,6 +3,11 @@ package Math::Business::LaguerreFilter;
 use strict;
 use warnings;
 use Carp;
+use constant {
+    ALPHA  =>  2,
+    LENGTH =>  3,
+    F      => -1,
+};
 
 our $VERSION = 1.0; # local revision: c
 
@@ -51,6 +56,7 @@ sub set_alpha {
         [],    # L0-L4
         $alpha,
         0,     # adaptive length
+        [],    # adaptive diff history
         undef, # filter
     );
 }
@@ -60,11 +66,12 @@ sub set_adaptive {
     my $that = int shift;
 
     croak "adaptive length must be an non-negative integer" unless $that >= 0;
+    $this->[LENGTH] = $that;
 }
 
 sub insert {
     my $this = shift;
-    my ($h, $L, $alpha, $length, $filter) = @$this;
+    my ($h, $L, $alpha, $length, $diff, $filter) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $alpha;
     no warnings 'uninitialized';
@@ -78,6 +85,41 @@ sub insert {
         }
 
         if( defined $L->[0] ) {
+            if( $length and defined($filter) ) {
+                my $d = abs($P-$filter);
+                push @$diff, $d;
+
+                my $k = @$diff - $length;
+                splice @$diff, 0, $k if $k>0;
+
+                if( $k > 0 ) {   # NOTE Ehler really does this, "CurrentBar > Length".  See below.
+                                 # IE, $k will only by >0 when we've moved past the 20th point
+                    my $HH = $d;
+                    my $LL = $d;
+
+                    for(@$diff) {
+                        $HH = $_ if $_ > $HH;
+                        $LL = $_ if $_ < $LL;
+                    }
+
+                    if( $HH != $LL ) {
+                        # Ehler: If CurrentBar > Length and HH - LL <> 0 then alpha = Median(((Diff - LL) / (HH - LL)), 5);
+
+                        # NOTE: wtf is a "5 bar median"?  I guess it's this, or
+                        # pretty close to it.  I imagine Median() runs through
+                        # the [] hist for Diff, LL, and HH, but I can't say for
+                        # sure without access to the programming language he
+                        # uses in the book.
+
+                        my $sum  = ($diff->[-5]-$LL)/($HH-$LL);
+                           $sum += ($diff->[$_]-$LL)/($HH-$LL) for (-4 .. -1);
+
+                        warn "adapting from alpha=$alpha; to alpha=" . 
+                        ($this->[ALPHA] = $alpha = $sum / 5);
+                    }
+                }
+            }
+
             my $O = [ @$L ];
 
             # L0 = alpha*Price + (1 - alpha)*L0[1] = alpha*P + (1-alpha)*O[0]
@@ -98,14 +140,14 @@ sub insert {
     }
 
     if( 4 == grep {defined $_} @$L ) {
-        $this->[-1] = ($L->[0] + 2*$L->[1] + 2*$L->[2] + $L->[3])/6;
+        $this->[F] = ($L->[0] + 2*$L->[1] + 2*$L->[2] + $L->[3])/6;
     }
 }
 
 sub query {
     my $this = shift;
 
-    return $this->[-1];
+    return $this->[F];
 }
 
 __END__
