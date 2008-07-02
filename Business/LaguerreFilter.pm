@@ -19,6 +19,11 @@ sub new {
         $this->set_alpha( $alpha );
     }
 
+    my $length = shift;
+    if( defined $length ) {
+        $this->set_adaptive( $length );
+    }
+
     return $this;
 }
 
@@ -45,14 +50,21 @@ sub set_alpha {
         [],    # P-hist
         [],    # L0-L4
         $alpha,
-        $days,
+        0,     # adaptive length
         undef, # filter
     );
 }
 
+sub set_adaptive {
+    my $this = shift;
+    my $that = int shift;
+
+    croak "adaptive length must be an non-negative integer" unless $that >= 0;
+}
+
 sub insert {
     my $this = shift;
-    my ($h, $L, $alpha, $days, $filter) = @$this;
+    my ($h, $L, $alpha, $length, $filter) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $alpha;
     no warnings 'uninitialized';
