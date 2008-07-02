@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 1.1;
+our $VERSION = 1.0;
 
 1;
 
@@ -28,7 +28,7 @@ sub set_alpha {
 
     croak "alpha must be a real between 0 and 1" unless $arg > 0 and $arg < 1;
     @$this = (
-        [0,0,0,0], # L0-L4
+        [undef,undef,undef,undef], # L0-L4
         $arg,  # alpha
         undef, # filter
     );
@@ -39,6 +39,7 @@ sub insert {
     my ($L, $alpha, $filter) = @$this;
 
     croak "You must set the number of days before you try to insert" if not defined $alpha;
+    no warnings 'uninitialized';
 
     while( defined( my $P = shift ) ) {
         if( ref $P ) {
@@ -50,12 +51,17 @@ sub insert {
 
         my $O = [ @$L ];
 
-        $L->[0] = $alpha*$P + (1-$alpha)*$O->[0]; # L0 = alpha*Price + (1 - alpha)*L0[1];
+        # L0 = alpha*Price + (1 - alpha)*L0[1];
 
-        $L->[1] = (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0]; # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1];
-        $L->[2] = (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1]; # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1];
-        $L->[3] = (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2]; # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1];
+        $L->[0] = $alpha*$P + (1-$alpha)*$O->[0];
 
+        # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1];
+        # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1];
+        # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1];
+                                                                        
+        $L->[1] = (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0];
+        $L->[2] = (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1];
+        $L->[3] = (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2];
     }
 
     $this->[-1] = ($L->[0] + 2*$L->[1] + 2*$L->[2] + $L->[3])/6;

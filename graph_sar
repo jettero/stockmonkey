@@ -48,12 +48,12 @@ my $graph = GD::Graph::mixed->new(1000, 500);
    ) or die $graph->error;
 
 my $gd = $graph->plot(\@data) or die $graph->error;
-open my $img, '>', "sar.png" or die $!;
+open my $img, '>', "graph.png" or die $!;
 binmode $img;
 print $img $gd->png;
 close $img;
 
-system(qw(eog sar.png));
+system(qw(eog graph.png));
 
 __END__
 This controls the order of markers in points and linespoints graphs.  This should be a reference to an array of
