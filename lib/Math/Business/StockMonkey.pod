@@ -29,6 +29,8 @@ L<Math::Business::DMI> - Directional Movement Index (aka ADX)
 
 L<Math::Business::ParabolicSAR> - Parabolic Stop and Reversal
 
+=head1 CONTACT
+
 If you'd like to help, or even just I<suggest> a module, just let me know.
 
 Links to the algorithm are helpful as our spreadsheets with example
@@ -37,6 +39,10 @@ calculations, but they are not necessary.
 I do check rt.cpan.org, so that's definitely one way to go.
 
 L<https://rt.cpan.org/Dist/Display.html?Status=Active&Queue=stockmonkey>
+
+If you're into things like this, you might enjoy the mailing list:
+
+L<http://groups.google.com/group/stockmonkey/>
 
 =head1 AUTHOR
 
