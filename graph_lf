@@ -12,11 +12,13 @@ use Math::Business::LaguerreFilter;
 use GD::Graph::mixed;
 use List::Util qw(min max);
 
-my $sma = Math::Business::SMA->new(12);
-my @lag = (
-    Math::Business::LaguerreFilter->new(0.2),
-    Math::Business::LaguerreFilter->new(0.3),
-    Math::Business::LaguerreFilter->new(0.4),
+my @avg = (
+    [ dblue  => Math::Business::SMA->new(9) ],
+    [ dgreen => Math::Business::SMA->new(5) ],
+    [ dred   => Math::Business::SMA->new(4) ],
+    [ lblue  => Math::Business::LaguerreFilter->new(0.2) ], # 9 days
+    [ lgreen => Math::Business::LaguerreFilter->new(0.3) ], # 5 days (roughly)
+    [ lred   => Math::Business::LaguerreFilter->new(0.4) ], # 4 days
 );
 
 my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
@@ -25,15 +27,13 @@ my @data;
 for my $p (@ohlc) {
     my $d = shift @$p;
 
-    $sma->insert($p->[-1]);
-    $_->insert($p->[-1]) for @lag;
+    $_->[1]->insert($p->[-1]) for @avg;
 
     my $x = 0;
     push @{$data[$x++]}, $d; # date
     push @{$data[$x++]}, $p->[-1]; # close
     push @{$data[$x++]}, $p; # ohlc
-    push @{$data[$x++]}, $sma->query;
-    push @{$data[$x++]}, $_->query for @lag;
+    push @{$data[$x++]}, $_->[1]->query for @avg;
 }
 
 my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
@@ -46,8 +46,8 @@ my $graph = GD::Graph::mixed->new(1000, 500);
        x_label           => 'date',
        transparent       => 0,
        markers           => [qw(8)],
-       dclrs             => [qw(lgray lgray lgray lred lblue lgreen lpurple)],
-       types             => [qw(lines ohlc lines), map {'lines'} @lag],
+       dclrs             => [qw(lgray lgray), map {$_->[0]} @avg],
+       types             => [qw(lines ohlc),  map {'lines'} @avg],
        y_min_value       => $min_point-0.2,
        y_max_value       => $max_point+0.2,
        y_number_format   => '%0.2f',
