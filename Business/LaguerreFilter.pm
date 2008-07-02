@@ -35,7 +35,10 @@ sub set_alpha {
     my $this  = shift; 
     my $alpha = 0+shift;
     my $days  = 2*(1/$alpha)-1;
+       $days  = int $days;
        $days  = 1 if $days < 1;
+
+  # warn "alpha=$alpha; days=$days";
 
     croak "alpha must be a real between 0 and 1" unless $alpha > 0 and $alpha < 1;
     @$this = (
