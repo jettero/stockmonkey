@@ -6,7 +6,7 @@ use Math::Business::HMA;
 
 my $N   = 14;
 my $Dp  = 250;
-my @data = map { $_->[-1] } 
+my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
 my $hma = Math::Business::HMA->new(14);
 
 my $min = my $max = $data[0];
