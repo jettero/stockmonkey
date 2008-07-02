@@ -38,7 +38,10 @@ sub set_alpha {
     my $this  = shift;
     my $alpha = shift;
 
-    my $days = 2*$alpha - 1;
+    # NOTE: this alpha is different than you might think ... it's really inverse alpha
+    # Wilder uses alpha=14 instead of alpha=(1/14) like you might expect
+
+    my $days = 2*$alpha - 1; # so days is 2*$alpha-1 instead of the expected 2*(1/$alpha)-1
 
     eval { $this->set_days( $days ) };
     croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
