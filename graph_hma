@@ -7,11 +7,13 @@ BEGIN {
 }
 
 use strict;
+use Math::Business::SMA;
 use Math::Business::HMA;
 use GD::Graph::mixed;
 use List::Util qw(min max);
 
 my $hma = Math::Business::HMA->new(12);
+my $sma = Math::Business::SMA->new(12);
 
 my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
 my @data;
@@ -20,12 +22,14 @@ for my $p (@ohlc) {
     my $d = shift @$p;
 
     $hma->insert($p->[-1]);
+    $sma->insert($p->[-1]);
 
     my $x = 0;
     push @{$data[$x++]}, $d; # date
     push @{$data[$x++]}, $p->[-1]; # close
     push @{$data[$x++]}, $p; # ohlc
     push @{$data[$x++]}, $hma->query;
+    push @{$data[$x++]}, $sma->query;
 }
 
 my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
@@ -38,7 +42,7 @@ my $graph = GD::Graph::mixed->new(1000, 500);
        x_label           => 'date',
        transparent       => 0,
        markers           => [qw(8)],
-       dclrs             => [qw(lgray lblue lred)],
+       dclrs             => [qw(lgray lblue lred lgray)],
        types             => [qw(lines ohlc lines)],
        y_min_value       => $min_point-0.2,
        y_max_value       => $max_point+0.2,

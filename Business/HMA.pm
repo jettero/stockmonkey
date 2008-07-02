@@ -94,6 +94,14 @@ For short, you can skip the set_days() by suppling the setting to new():
 
   my $longer_avg = new Math::Business::HMA(10);
 
+=head1 RESEARCHER
+
+The Hull Moving Average was invented Alan Hull circa 1990[?].
+
+An SMA can smooth data fairly well but tends to lag terribly.  The HMA tries to
+smooth data quickly (without the lag) by averaging some weighted moving
+averages (L<Math::Business::WMA>) of itself at various intervals.
+
 =head1 Thanks
 
 John Baker <johnb@listbrokers.com>
