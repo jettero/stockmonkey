@@ -8,15 +8,16 @@ BEGIN {
 
 use strict;
 use Math::Business::SMA;
-use Math::Business::HMA;
 use Math::Business::LaguerreFilter;
 use GD::Graph::mixed;
 use List::Util qw(min max);
 
-my $hma = Math::Business::HMA->new(12);
 my $sma = Math::Business::SMA->new(12);
-my $lag = Math::Business::LaguerreFilter->new(0.4);
-my $la2 = Math::Business::LaguerreFilter->new(0.4);
+my @lag = (
+    Math::Business::LaguerreFilter->new(0.2),
+    Math::Business::LaguerreFilter->new(0.3),
+    Math::Business::LaguerreFilter->new(0.4),
+);
 
 my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
 my @data;
@@ -24,19 +25,15 @@ my @data;
 for my $p (@ohlc) {
     my $d = shift @$p;
 
-    $hma->insert($p->[-1]);
     $sma->insert($p->[-1]);
-    $lag->insert($p->[-1]);
-    $la2->insert([@$p[1,2]]);
+    $_->insert($p->[-1]) for @lag;
 
     my $x = 0;
     push @{$data[$x++]}, $d; # date
     push @{$data[$x++]}, $p->[-1]; # close
     push @{$data[$x++]}, $p; # ohlc
-    push @{$data[$x++]}, $hma->query;
     push @{$data[$x++]}, $sma->query;
-    push @{$data[$x++]}, $lag->query;
-    push @{$data[$x++]}, $la2->query;
+    push @{$data[$x++]}, $_->query for @lag;
 }
 
 my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
@@ -49,8 +46,8 @@ my $graph = GD::Graph::mixed->new(1000, 500);
        x_label           => 'date',
        transparent       => 0,
        markers           => [qw(8)],
-       dclrs             => [qw(lgray lblue lgray lgray lred lgreen)],
-       types             => [qw(lines ohlc lines lines lines lines)],
+       dclrs             => [qw(lgray lgray lgray lred lblue lgreen lpurple)],
+       types             => [qw(lines ohlc lines), map {'lines'} @lag],
        y_min_value       => $min_point-0.2,
        y_max_value       => $max_point+0.2,
        y_number_format   => '%0.2f',
