@@ -6,6 +6,8 @@
     - Added WMA
     - Added the HMA (suggested by John Baker). I'm
       intrigued by it's purported low-lag smoothing abilities..
+    - Added LaguerreFilter (a fascinating take on moving averages
+      using digital filter processing)
 
 2.7: Fri Jun 20 16:41:36 EDT 2008
     - my doc rearrange didn't help...  I added NAME sections.
