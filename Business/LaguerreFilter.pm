@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 1.0; # local revision: b
+our $VERSION = 1.0; # local revision: c
 
 1;
 
@@ -80,15 +80,8 @@ sub insert {
             $L->[2] = defined($O->[2]) ? (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1] : $O->[1];
             $L->[3] = defined($O->[3]) ? (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2] : $O->[2];
 
-        } elsif( @$h==$days-1 ) {
-            my $sum = $P;
-               $sum += $_ for @$h;
-
-            $L->[0] = $sum/$days; # NOTE: this is not in the DSP book
-            @$h =();
-
         } else {
-            push @$h, $P;
+            $L->[0] = $P;
         }
     }
 
