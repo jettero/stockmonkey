@@ -17,6 +17,10 @@ L<Math::Business::WMA> - Weighted Moving Average
 
 L<Math::Business::HMA> - Hull Moving Average
 
+L<Math::Business::LaguerreFilter> - Laguerre Filter (DSP technique)
+
+L<Math::Business::AdaptiveLaguerreFilter> - Adaptive Laguerre Filter (DSP technique)
+
 L<Math::Business::MACD> - Moving Average Convergence/Divergence
 
 L<Math::Business::RSI> - Relative Strength Index

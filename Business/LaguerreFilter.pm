@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 1.0;
+our $VERSION = 1.0; # local revision: b
 
 1;
 

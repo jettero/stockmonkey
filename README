@@ -4,16 +4,18 @@ tools you'd ever want.  It has a few things, but it's sadly lacking.
 
 Here's the tiny catalog so far:
 
-Math::Business::SMA             Simple Moving Average
-Math::Business::EMA             Exponential Moving Average
-Math::Business::WMA             Weighted Moving Average
-Math::Business::HMA             Hull Moving Average
-Math::Business::MACD            Moving Average Convergence/Divergence
-Math::Business::RSI             Relative Strength Index
-Math::Business::BollingerBands  Bollinger Bands
-Math::Business::ATR             Average True Value
-Math::Business::DMI             Directional Movement Index (aka ADX)
-Math::Business::ParabolicSAR    Parabolic Stop and Reversal
+Math::Business::SMA                     Simple Moving Average
+Math::Business::EMA                     Exponential Moving Average
+Math::Business::WMA                     Weighted Moving Average
+Math::Business::HMA                     Hull Moving Average
+Math::Business::LaguerreFilter          Laguerre Filter (DSP technique)
+Math::Business::AdaptiveLaguerreFilter  Adaptive Laguerre Filter (DSP technique)
+Math::Business::MACD                    Moving Average Convergence/Divergence
+Math::Business::RSI                     Relative Strength Index
+Math::Business::BollingerBands          Bollinger Bands
+Math::Business::ATR                     Average True Value
+Math::Business::DMI                     Directional Movement Index (aka ADX)
+Math::Business::ParabolicSAR            Parabolic Stop and Reversal
 
 If you'd like to help, or even just *suggest* a module, just let me know.
 
@@ -23,5 +25,9 @@ calculations, but they are not necessary.
 I do check rt.cpan.org, so that's definitely one way to go.
 
     https://rt.cpan.org/Dist/Display.html?Status=Active&Queue=stockmonkey
+
+Another is to check out the mailing list:
+
+http://groups.google.com/group/stockmonkey/
 
  - jettero@cpan.org
