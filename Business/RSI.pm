@@ -180,11 +180,13 @@ Therefore, moving above the upper threshold is a selling signal, whlie moving
 below the lower threshold is a signal to buy.
 
 Oddly, RSI(14) uses a "smoothing period" of 14 days -- referring to an alpha of
-1/14.  This means the EMA[N]u/EMA[N]d has N set to 27!
+1/14.  This means the EMA[N]u/EMA[N]d has N set to 27.  This also means the
+alpha is upside of other alpha you might see.  RSI(14) actually uses an alpha
+of ~0.0714, but set_alpha() takes the inverse to make C<$rsi->set_alpha(14)>
+work.
 
-Therefore, in addition to the usual C<set_days()> there is also a C<set_alpha()>
-(which is used by C<new()>).  C<set_days(27)> is equivelent to C<set_alpha(14)> or
-C<new(14)>.
+If all of the above seems really confusing, no worries: RSI(14) means
+C<set_alpha(14)> (or C<new(14)> and is equivelent to C<set_days(27)>.
 
 =head2 Cutler
 
