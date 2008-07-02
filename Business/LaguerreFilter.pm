@@ -14,9 +14,9 @@ sub new {
     my $class = shift;
     my $this  = bless [], $class;
 
-    my $days = shift;
-    if( defined $days ) {
-        $this->set_days( $days );
+    my $alpha = shift;
+    if( defined $alpha ) {
+        $this->set_alpha( $alpha );
     }
 
     return $this;
@@ -68,20 +68,23 @@ sub insert {
             # L0 = alpha*Price + (1 - alpha)*L0[1] = alpha*P + (1-alpha)*O[0]
 
             $L->[0] = $alpha*$P + (1-$alpha)*$O->[0];
+      warn "$L->[0] = $alpha*$P + (1-$alpha)*$O->[0]";
 
             # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1] = (1 - alpha)*O[1] - (1 - alpha)*L[0] + O[0]
             # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1] = (1 - alpha)*O[2] - (1 - alpha)*L[1] + O[1]
             # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1] = (1 - alpha)*O[3] - (1 - alpha)*L[2] + O[2]
                                                                             
             $L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0];
+      warn "$L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0]";
             $L->[2] = defined($O->[2]) ? (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1] : $O->[1];
             $L->[3] = defined($O->[3]) ? (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2] : $O->[2];
 
         } elsif( @$h==$days-1 ) {
-            my $sum = shift @$h;
-               $sum += $_ for @$h; @$h =();
+            my $sum = $P;
+               $sum += $_ for @$h;
 
             $L->[0] = $sum/$days; # NOTE: this is not in the DSP book
+            @$h =();
 
         } else {
             push @$h, $P;
@@ -129,9 +132,9 @@ Math::Business::LaguerreFilter - Technical Analysis: Laguerre Filter
       print "value: n/a.\n";
   }
 
-For short, you can skip the set_days() by suppling the setting to new():
+For short, you can skip the set_alpha() by suppling the setting to new():
 
-  my $avg = new Math::Business::LaguerreFilter(9); # same as set_alpha(0.2)
+  my $avg = new Math::Business::LaguerreFilter(0.2); # same as set_alpha(0.2)
 
 Ehlers actually uses the high and low price, rather than the closing price, in
 his book.  The insert method takes either a closing price or the high and low

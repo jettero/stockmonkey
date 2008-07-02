@@ -15,8 +15,8 @@ use List::Util qw(min max);
 
 my $hma = Math::Business::HMA->new(12);
 my $sma = Math::Business::SMA->new(12);
-my $lag = Math::Business::LaguerreFilter->new(9);
-my $la2 = Math::Business::LaguerreFilter->new(9);
+my $lag = Math::Business::LaguerreFilter->new(0.4);
+my $la2 = Math::Business::LaguerreFilter->new(0.4);
 
 my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
 my @data;
