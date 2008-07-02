@@ -68,14 +68,12 @@ sub insert {
             # L0 = alpha*Price + (1 - alpha)*L0[1] = alpha*P + (1-alpha)*O[0]
 
             $L->[0] = $alpha*$P + (1-$alpha)*$O->[0];
-      warn "$L->[0] = $alpha*$P + (1-$alpha)*$O->[0]";
 
             # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1] = (1 - alpha)*O[1] - (1 - alpha)*L[0] + O[0]
             # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1] = (1 - alpha)*O[2] - (1 - alpha)*L[1] + O[1]
             # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1] = (1 - alpha)*O[3] - (1 - alpha)*L[2] + O[2]
                                                                             
             $L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0];
-      warn "$L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0]";
             $L->[2] = defined($O->[2]) ? (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1] : $O->[1];
             $L->[3] = defined($O->[3]) ? (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2] : $O->[2];
 
