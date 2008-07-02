@@ -41,6 +41,10 @@ Sometimes you have to sift through quite a few approximations intended for
 spreadsheet calculations rather than formally correct computations -- that is,
 if anything can be formally "correct" in technical analysis.
 
+Also, post resources, ideas, and comments to the official mailing list:
+
+    http://groups.google.com/group/stockmonkey/
+
 =head1 What is Stock Monkey?
 
 Every time I work on technical analysis I end up bumping into more and more tech
