@@ -1,3 +1,8 @@
+2.8: Wed Jul  2 15:44:30 EDT 2008
+    - Added LaguerreFilter (a fascinating take on moving averages
+      using digital filter processing)
+    - added a test for the LF
+
 2.8: Sun Jun 30 19:55:50 EDT 2008
     - I axed the start_with functions... Storable's
       freeze()/thaw() should work better anyway.  Choose that.
@@ -6,8 +11,6 @@
     - Added WMA
     - Added the HMA (suggested by John Baker). I'm
       intrigued by it's purported low-lag smoothing abilities..
-    - Added LaguerreFilter (a fascinating take on moving averages
-      using digital filter processing)
 
 2.7: Fri Jun 20 16:41:36 EDT 2008
     - my doc rearrange didn't help...  I added NAME sections.
