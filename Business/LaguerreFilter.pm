@@ -45,7 +45,7 @@ sub set_alpha {
     my $this  = shift; 
     my $alpha = 0+shift;
 
-    croak "alpha must be a real between 0 and 1" unless $alpha > 0 and $alpha < 1;
+    croak "alpha must be a real between >=0 and <=1" unless $alpha >= 0 and $alpha <= 1;
     @$this = (
         [],    # P-hist
         [],    # L0-L4

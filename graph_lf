@@ -13,29 +13,31 @@ use GD::Graph::mixed;
 use List::Util qw(min max);
 
 my @avg = (
-#   [ dblue  => Math::Business::SMA->new(9) ],
-#   [ dgreen => Math::Business::SMA->new(5) ],
-#   [ dred   => Math::Business::SMA->new(4) ],
-#   [ lblue  => Math::Business::LaguerreFilter->new(0.2) ], # 9 days
-#   [ lgreen => Math::Business::LaguerreFilter->new(0.3) ], # 5 days (roughly)
-    [ lred   => Math::Business::LaguerreFilter->new(0.4) ], # 4 days
-
-    [ purple => Math::Business::LaguerreFilter->new(0.4, 20) ], # 4 days, 20 point adaptive
+    [ sub {$_[0][-1]},       gray   => Math::Business::SMA->new(4) ],
+    [ sub {[@{$_[0]}[1,2]]}, blue   => Math::Business::LaguerreFilter->new(1.0) ], # FIR
+    [ sub {[@{$_[0]}[1,2]]}, red    => Math::Business::LaguerreFilter->new(0.4) ], # 4 days
+    [ sub {[@{$_[0]}[1,2]]}, purple => Math::Business::LaguerreFilter->new(1.0, 20) ], # FIR, 20 point adaptive
 );
 
-my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
+my @ohlc = @{do "msft_6-17-8.txt"};
 my @data;
 
 for my $p (@ohlc) {
     my $d = shift @$p;
 
-    $_->[1]->insert($p->[-1]) for @avg;
+    $_->[2]->insert($_->[0]->($p)) for @avg;
 
     my $x = 0;
     push @{$data[$x++]}, $d; # date
     push @{$data[$x++]}, $p->[-1]; # close
     push @{$data[$x++]}, $p; # ohlc
-    push @{$data[$x++]}, $_->[1]->query for @avg;
+    push @{$data[$x++]}, $_->[2]->query for @avg;
+}
+
+for(@data) {
+    if( (my $k = @$_ - 62)>0 ) {
+        splice @$_, 0, $k;
+    }
 }
 
 my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
@@ -48,7 +50,7 @@ my $graph = GD::Graph::mixed->new(1000, 500);
        x_label           => 'date',
        transparent       => 0,
        markers           => [qw(8)],
-       dclrs             => [qw(lgray lgray), map {$_->[0]} @avg],
+       dclrs             => [qw(lgray lgray), map {$_->[1]} @avg],
        types             => [qw(lines ohlc),  map {'lines'} @avg],
        y_min_value       => $min_point-0.2,
        y_max_value       => $max_point+0.2,
