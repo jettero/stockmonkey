@@ -85,6 +85,7 @@ sub insert {
         }
 
         if( defined $L->[0] ) {
+            # adapt alpha {{{
             if( $length and defined($filter) ) {
                 my $d = abs($P-$filter);
                 push @$diff, $d;
@@ -114,11 +115,12 @@ sub insert {
                         my $sum  = ($diff->[-5]-$LL)/($HH-$LL);
                            $sum += ($diff->[$_]-$LL)/($HH-$LL) for (-4 .. -1);
 
-                        warn "adapting from alpha=$alpha; to alpha=" . 
+                      # warn "adapting from alpha=$alpha; to alpha=" . 
                         ($this->[ALPHA] = $alpha = $sum / 5);
                     }
                 }
             }
+            # }}}
 
             my $O = [ @$L ];
 
