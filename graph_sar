@@ -13,7 +13,7 @@ use List::Util qw(min max);
 
 my $sar = Math::Business::ParabolicSAR->recommended;
 
-my @ohlc = @{do "msft_6-17-8.txt"}; shift @ohlc while @ohlc>62;
+my @ohlc = @{do "msft_6-17-8.txt"};
 my @data;
 
 for my $p (@ohlc) {
@@ -26,6 +26,12 @@ for my $p (@ohlc) {
     push @{$data[$x++]}, $p->[-1]; # close
     push @{$data[$x++]}, $p; # ohlc
     push @{$data[$x++]}, $sar->query;
+}
+
+for(@data) {
+    if( (my $k = @$_ - 62)>0 ) {
+        splice @$_, 0, $k;
+    }
 }
 
 my @all_points = grep {defined $_} map {ref $_ ? @$_ : $_} map {@$_} @data[1 .. $#data];
