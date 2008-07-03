@@ -13,11 +13,11 @@ use GD::Graph::mixed;
 use List::Util qw(min max);
 
 my @avg = (
-    [ dblue  => Math::Business::SMA->new(9) ],
-    [ dgreen => Math::Business::SMA->new(5) ],
-    [ dred   => Math::Business::SMA->new(4) ],
-    [ lblue  => Math::Business::LaguerreFilter->new(0.2) ], # 9 days
-    [ lgreen => Math::Business::LaguerreFilter->new(0.3) ], # 5 days (roughly)
+#   [ dblue  => Math::Business::SMA->new(9) ],
+#   [ dgreen => Math::Business::SMA->new(5) ],
+#   [ dred   => Math::Business::SMA->new(4) ],
+#   [ lblue  => Math::Business::LaguerreFilter->new(0.2) ], # 9 days
+#   [ lgreen => Math::Business::LaguerreFilter->new(0.3) ], # 5 days (roughly)
     [ lred   => Math::Business::LaguerreFilter->new(0.4) ], # 4 days
 
     [ purple => Math::Business::LaguerreFilter->new(0.4, 20) ], # 4 days, 20 point adaptive
