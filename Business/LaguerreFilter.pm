@@ -107,11 +107,17 @@ sub insert {
                         # sure without access to the programming language he
                         # uses in the book.
 
-                        my $sum  = ($diff->[-5]-$LL)/($HH-$LL);
-                           $sum += ($diff->[$_]-$LL)/($HH-$LL) for (-4 .. -1);
+                        # AVG # my $sum  = ($diff->[-5]-$LL)/($HH-$LL);
+                        # AVG #    $sum += ($diff->[$_]-$LL)/($HH-$LL) for (-4 .. -1);
 
-                      # warn "adapting from alpha=$alpha; to alpha=" . 
-                        ($this->[ALPHA] = $alpha = $sum / 5);
+                        # AVG # ($this->[ALPHA] = $alpha = $sum / 5);
+
+                        # NOTE (later): he appears to mean the median (not
+                        # average) of a scalar $HH/$LL against the last 5 @diff
+
+                        my @b5 = sort {$a<=>$b}map {(($diff->[$_]-$LL)/($HH-$LL))} -5 .. -1;
+
+                        $this->[ALPHA] = $alpha = $b5[2];
                     }
                 }
             }

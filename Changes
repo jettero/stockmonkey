@@ -1,7 +1,9 @@
-2.8: Wed Jul  2 15:44:30 EDT 2008
+2.9: Wed Jul  2 15:44:30 EDT 2008
     - Added LaguerreFilter (a fascinating take on moving averages
       using digital filter processing)
     - added a test for the LF
+    - switched the adaptive diff filter from an average to a
+      median (more literally what's in Ehlers' book)
 
 2.8: Sun Jun 30 19:55:50 EDT 2008
     - I axed the start_with functions... Storable's
