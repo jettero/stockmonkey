@@ -39,7 +39,7 @@ my $min_point  = min(@all_points);
 my $max_point  = max(@all_points);
 
 my $graph = GD::Graph::mixed->new(1000, 500);
-   $graph->set_legend(qw(close ohlc Parabolic SAR));
+   $graph->set_legend(qw(close ohlc Parabolic-SAR));
    $graph->set(
        y_label           => 'dollars NASDAQ:MSFT',
        x_label           => 'date',
