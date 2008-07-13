@@ -31,6 +31,17 @@ add that variation as a stetting for the main package.  I'm less interested in
 informal tweaks, but if it'd be a simple option (like a coefficient or
 something), it's a doable thing.
 
+=head1 I'm trying to build an automatic trading system.  Are you interested in something like that?
+
+Not really.  I just want the bare bones functions to be on CPAN.  That is my
+only goal.  Personally, I use them only for things I<not> relating to the stock
+market.
+
+If you are interested in something that automates trading and evaluation of
+stocks, check out Genius Trader:
+
+L<http://www.geniustrader.org/>
+
 =head1 How can I help?
 
 Links and resources.  Really, these modules aren't hard to write... the main

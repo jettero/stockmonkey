@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.4;
+our $VERSION = 2.4; # local revision: b
 
 use Math::Business::ATR;
 
@@ -47,7 +47,7 @@ sub insert {
 
     my $y_point = $this->{y};
     while( defined( my $point = shift ) ) {
-        croak "insert takes three touples (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+        croak "insert takes three tuple (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
         my ($t_high, $t_low, $t_close) = @$point;
 
         if( defined $y_point ) {
@@ -210,7 +210,7 @@ The DMI uses the ATR to try to measure volatility.
 
 NOTE: The +DI, -DI and ADX returned by this module are probabilities ranging
 from 0 to 1.  Most sources seem to show the DMI values as numbers from 0 to
-100.  Simply multiply the three touple by 100 to get this result.
+100.  Simply multiply the three tuple by 100 to get this result.
 
     my @DMI = map { 100*$_ } = $dmi->query;
 

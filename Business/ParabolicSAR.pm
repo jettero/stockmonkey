@@ -10,7 +10,7 @@ use constant {
     LP    => 0,
 };
 
-our $VERSION = 1.1;
+our $VERSION = 1.2;
 
 1;
 
@@ -61,8 +61,8 @@ sub insert {
     my $ls = $this->{ls};
 
     while( defined( my $ar = shift ) ) {
-        croak "arguments to insert must be four touples (open,high,low,close)"
-            unless ref($ar) eq "ARRAY" and @$ar==4 and $ar->[2]<$ar->[1];
+        croak "arguments to insert must be four tuple (open,high,low,close) with high greater than or equal to low"
+            unless ref($ar) eq "ARRAY" and @$ar==4 and $ar->[2]<=$ar->[1];
 
         # NOTE: we really only use open and close to initialize ...
         ($open,$high,$low,$close) = @$ar;
@@ -231,6 +231,10 @@ you're long) or a buy (when you're short).
 Wilder himself felt the SAR was particularly vulnerable to "whipsaws" and
 recommended only using the SAR when the ADX is above 30 -- that is, when there
 is a strong trend going.
+
+=head1 THANKS
+
+Gustav <gustavf@gmail.com>
 
 =head1 AUTHOR
 

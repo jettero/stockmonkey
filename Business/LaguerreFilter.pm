@@ -9,7 +9,7 @@ use constant {
     F      => -1,
 };
 
-our $VERSION = 1.0; # local revision: c
+our $VERSION = 1.0; # local revision: d
 
 1;
 
@@ -189,7 +189,7 @@ For short, you can skip the set_alpha() by suppling the setting to new():
 
 Ehlers actually uses the high and low price, rather than the closing price, in
 his book.  The insert method takes either a closing price or the high and low
-price as a two-touple.
+price as a two-tuple.
 
     $avg->insert( $close );       # correct
     $avg->insert( [$high,$low] ); # also correct

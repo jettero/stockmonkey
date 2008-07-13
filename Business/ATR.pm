@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.4;
+our $VERSION = 2.4; # local revision: b
 
 1;
 
@@ -46,7 +46,7 @@ sub insert {
 
     my $y_close = $this->{y_close};
     while( defined( my $point = shift ) ) {
-        croak "insert takes three touples [high, low, close]" unless ref $point eq "ARRAY" and @$point == 3;
+        croak "insert takes three tuple [high, low, close]" unless ref $point eq "ARRAY" and @$point == 3;
         my ($t_high, $t_low, $t_close) = @$point;
 
         if( defined $y_close ) {
