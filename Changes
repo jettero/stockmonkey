@@ -1,3 +1,7 @@
+2.11: Sun Jul 13 13:08:22 EDT 2008
+    - fixed the HMA test.  HMA can apparently exceed (or
+      under-ceed) input-min-max boundaries.  Huh.
+
 2.10: Sat Jul 12 20:33:50 EDT 2008
     - Gustav <gustavf@gmail.com> found that ParabolicSAR fails to
       accept four tuples that That must have been hard to figure out...
