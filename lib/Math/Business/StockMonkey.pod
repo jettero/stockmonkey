@@ -1,0 +1,69 @@
+=head1 NAME
+
+Math::Business::StockMonkey - Base documentation for the StockMonkey Collection
+
+=head1 README
+
+The stockmonkey distribution is supposed to contain all the technical analysis
+tools you'd ever want.  It has a few things, but it's sadly lacking.
+
+Here's the tiny catalog so far:
+
+L<Math::Business::SMA> - Simple Moving Average
+
+L<Math::Business::EMA> - Exponential Moving Average
+
+L<Math::Business::WMA> - Weighted Moving Average
+
+L<Math::Business::HMA> - Hull Moving Average
+
+L<Math::Business::LaguerreFilter> - Laguerre Filter (DSP technique)
+
+L<Math::Business::MACD> - Moving Average Convergence/Divergence
+
+L<Math::Business::RSI> - Relative Strength Index
+
+L<Math::Business::BollingerBands> - Bollinger Bands
+
+L<Math::Business::ATR> - Average True Value
+
+L<Math::Business::DMI> - Directional Movement Index (aka ADX)
+
+L<Math::Business::ParabolicSAR> - Parabolic Stop and Reversal
+
+=head1 CONTACT
+
+If you'd like to help, or even just I<suggest> a module, just let me know.
+
+Links to the algorithm are helpful as our spreadsheets with example
+calculations, but they are not necessary.
+
+I do check rt.cpan.org, so that's definitely one way to go.
+
+L<https://rt.cpan.org/Dist/Display.html?Status=Active&Queue=stockmonkey>
+
+If you're into things like this, you might enjoy the mailing list:
+
+L<http://groups.google.com/group/stockmonkey/>
+
+=head1 AUTHOR
+
+Paul Miller <jettero@cpan.org>
+
+I am using this software in my own projects...  If you find bugs, please please
+please let me know.
+
+I normally hang out on #perl on freenode, so you can try to get immediate
+gratification there if you like.  L<irc://irc.freenode.net/perl>
+
+There is also a mailing list with very light traffic that you might want to
+join: L<http://groups.google.com/group/stockmonkey/>.
+
+=head1 COPYRIGHT
+
+Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+
+    perl -MSoftware::License::LGPL_2_1 \
+         -e '$l = Software::License::LGPL_2_1->new({
+             holder=>"Paul Miller"});
+             print $l->fulltext' | less
