@@ -1,3 +1,7 @@
+2.111: Fri Mar 27 18:35:35 EDT 2009
+   - added chorny code to the makefile that makes the repo show
+     on cpan.
+
 2.11: Sun Jul 13 13:08:22 EDT 2008
     - fixed the HMA test.  HMA can apparently exceed (or
       under-ceed) input-min-max boundaries.  Huh.
