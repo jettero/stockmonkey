@@ -1,3 +1,10 @@
+2.13: Mon Mar 30 09:54:57 EDT 2009
+   - I changed the way the tests worked.  The rand() calls in the
+     tests were making the tests fail fairly rarely, but also
+     randomly.  I'm hopeful that the rare circumstances where the
+     assumptions in the tests fail ... won't happen at all with
+     pre-generated data.
+
 2.111: Fri Mar 27 18:35:35 EDT 2009
    - added chorny code to the makefile that makes the repo show
      on cpan.

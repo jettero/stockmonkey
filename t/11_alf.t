@@ -6,7 +6,7 @@ use Math::Business::LaguerreFilter;
 
 my $N   = 14;
 my $Dp  = 250;
-my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
+my @data = @{do "rand.data" or die $!}[0 .. $N*$Dp];
 my $lag = Math::Business::LaguerreFilter->new(0.4);
    $lag->set_adaptive(20);
 

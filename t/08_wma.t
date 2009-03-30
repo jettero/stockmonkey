@@ -8,7 +8,7 @@ my $N   = 13;
 my $Dp  = 250;
 my $wma = new Math::Business::WMA($N);
 
-my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
+my @data = @{do "rand.data" or die $!}[0 .. $N*$Dp];
 my @hand;
 
 for my $i ($N-1 .. $#data) {

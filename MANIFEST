@@ -34,3 +34,4 @@ t/10_lf.t
 t/11_alf.t
 t/07_sar_b.t
 META.yml
+rand.data

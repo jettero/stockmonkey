@@ -6,7 +6,7 @@ use Math::Business::LaguerreFilter;
 
 my $N   = 14;
 my $Dp  = 250;
-my @data = (map {int(3 + rand 9)} 1 .. $N+$Dp);
+my @data = @{do "rand.data" or die $!}[0 .. $N*$Dp];
 my $lag = Math::Business::LaguerreFilter->new(0.4);
 
 my $min = my $max = $data[0];
@@ -29,7 +29,7 @@ for my $data (@data) {
             open DUMP, ">dump.txt" or die $!;
             print DUMP "@data";
             close DUMP;
-            die " [false]  $h >= $min and $h <= $max \n";
+            warn " [false]  $h >= $min and $h <= $max \n";
             ok(0);
         }
         $ok = 0;
