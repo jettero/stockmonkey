@@ -61,9 +61,4 @@ join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
-
-    perl -MSoftware::License::LGPL_2_1 \
-         -e '$l = Software::License::LGPL_2_1->new({
-             holder=>"Paul Miller"});
-             print $l->fulltext' | less
+Copyright (c) 2009 Paul Miller -- LGPL2
