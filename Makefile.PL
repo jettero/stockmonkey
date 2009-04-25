@@ -13,7 +13,7 @@ WriteMakefile(
             META_MERGE => {
                 keywords => [qw(ATR bollinger-bands DMI EMA HMA MACD RSI SMA WMU ParabolicSAR LaguerreFilter)],
                 resources=> {
-                    repository => 'http://github.com/jettero/stockmonkey/tree',
+                    repository => 'http://github.com/jettero/stockmonkey',
                 },
             },
 
