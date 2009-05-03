@@ -17,6 +17,6 @@ WriteMakefile(
                 },
             },
 
-        LICENSE	=> 'lgpl2',
+        LICENSE	=> 'LGPL',
     ) : ()),
 );
