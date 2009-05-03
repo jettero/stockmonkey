@@ -9,7 +9,7 @@ WriteMakefile(
     PREREQ_PM => { constant => 1.05 },
 
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 
-        (MIN_PERL_VERSION => 5.008,
+        (MIN_PERL_VERSION => 5.006001,
             META_MERGE => {
                 keywords => [qw(ATR bollinger-bands DMI EMA HMA MACD RSI SMA WMU ParabolicSAR LaguerreFilter)],
                 resources=> {
