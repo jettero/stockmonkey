@@ -1,0 +1,13 @@
+.gitignore
+.git
+MANIFEST.SKIP
+.todo
+proof.xls
+check_version
+slurp.pl
+.mbox$
+registration_todo
+dump.txt
+Time Warp Without Space Travel.pdf
+graph_ma
+.graph.png
