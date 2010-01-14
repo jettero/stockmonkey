@@ -45,7 +45,7 @@ for my $pm (@pm) {
 
 for my $pm (@pm) {
     my ($base) = $pm =~ m/([^\/]+)\.pm$/;
-    for my $reqfile (qw(lib/Math/Business/StockMonkey.pod README registration_todo)) {
+    for my $reqfile (qw(lib/Math/Business/StockMonkey.pod README)) {
         local $/;
         open my $in, $reqfile or die $!;
         my $txt = <$in>;
