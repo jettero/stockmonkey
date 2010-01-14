@@ -2,11 +2,8 @@
 .git
 MANIFEST.SKIP
 .todo
-proof.xls
 check_version
-slurp.pl
-.mbox$
-registration_todo
+slurp_msft.pl
 dump.txt
 Time Warp Without Space Travel.pdf
 graph_ma
