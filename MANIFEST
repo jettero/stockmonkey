@@ -28,6 +28,7 @@ t/04_rsi.t
 t/04_rsi_amit.t
 t/05_bollinger.t
 t/06_atr.t
+t/06_bobback_dmi.t
 t/06_dmi.t
 t/07_sar.t
 t/07_sar_b.t
