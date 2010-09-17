@@ -89,7 +89,8 @@ sub insert {
                     my $MDI = $this->{MDI} = $aMDM / $ATR;
 
                     my $DI = abs( $PDI - $MDI );
-                    my $DX = $DI / ($PDI + $MDI);
+                    my $DX = $DI ? $DI / ($PDI + $MDI) : 0;
+                    # 0/0 is indeterminent form, but I think 0 makes sense
 
                     $this->{ADX} = $R * $this->{ADX} + $R1 * $DX;
                 }
@@ -119,7 +120,8 @@ sub insert {
                         my $MDI = $this->{MDI} = $aMDM / $ATR;
 
                         my $DI = abs( $PDI - $MDI );
-                        my $DX = $DI / ($PDI + $MDI);
+                        my $DX = $DI ? $DI / ($PDI + $MDI) : 0;
+                        # 0/0 is indeterminent form, but I think 0 makes sense
 
                         $this->{ADX} = $DX; # is this right?  No idea...  I assume this is well documented in his book
                     }
