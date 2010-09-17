@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 1.1;
+our $VERSION = 1.2;
 
 1;
 

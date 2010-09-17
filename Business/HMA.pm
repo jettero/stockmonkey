@@ -5,7 +5,7 @@ use warnings;
 use Carp;
 use Math::Business::WMA;
 
-our $VERSION = 1.2;
+our $VERSION = 1.3;
 
 1;
 

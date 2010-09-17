@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.4; # local revision: b
+our $VERSION = 2.5; # local revision: b
 
 use Math::Business::SMA;
 use Math::Business::EMA;
