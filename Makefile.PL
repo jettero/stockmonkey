@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME      => 'Math::Business',
     DISTNAME  => 'stockmonkey',
-    VERSION   => '2.9013',
+    VERSION   => '2.9014',
     PREREQ_PM => { constant => 1.05 },
 
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 

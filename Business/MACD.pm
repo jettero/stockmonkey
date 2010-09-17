@@ -16,7 +16,7 @@ sub recommended {
     $class->new(26, 12, 9);
 }
 
-sub new { 
+sub new {
     my $class = shift;
 
     my $this = bless {
@@ -52,8 +52,8 @@ sub query_trig_ema { my $this = shift; return $this->{trig_EMA}->query }
 sub query_slow_ema { my $this = shift; return $this->{slow_EMA}->query }
 sub query_fast_ema { my $this = shift; return $this->{fast_EMA}->query }
 
-sub query_histogram { 
-    my $this = shift; 
+sub query_histogram {
+    my $this = shift;
 
     my $m = $this->query;
     my $t = $this->query_trig_ema;
@@ -140,7 +140,7 @@ Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence
 
 The MACD was designed by Gerald Appel in the 1960s.
 
-MACD graphs usually show: 
+MACD graphs usually show:
 
     1. The MACD=ema[fast]-ema[slow] -- query()
     2. The signal=ema[trig]         -- query_trig_ema()
@@ -156,13 +156,13 @@ crossing is going to occur.
 A upward crossing of the MACD through the zero-line indicates a bullish
 situation and vice versa.
 
-=head1 Thanks
+=head1 THANKS
 
 David Perry
 
 =head1 AUTHOR
 
-Paul Miller <jettero@cpan.org>
+Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
 please let me know.
@@ -175,12 +175,20 @@ join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+Copyright (c) 2010 Paul Miller
 
-    perl -MSoftware::License::LGPL_2_1 \
-         -e '$l = Software::License::LGPL_2_1->new({
-             holder=>"Paul Miller"});
-             print $l->fulltext' | less
+=head1 LICENSE
+
+This module is free software.  You can redistribute it and/or
+modify it under the terms of the Artistic License 2.0.
+
+This program is distributed in the hope that it will be useful,
+but without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.
+
+[This software may have had previous licenses, of which the current maintainer
+is completely unaware.  If this is so, it is possible the above license is
+incorrect or invalid.]
 
 =head1 SEE ALSO
 

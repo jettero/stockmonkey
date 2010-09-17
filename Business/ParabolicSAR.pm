@@ -234,11 +234,11 @@ is a strong trend going.
 
 =head1 THANKS
 
-Gustav <gustavf@gmail.com>
+Gustav C<< <gustavf@gmail.com> >>
 
 =head1 AUTHOR
 
-Paul Miller <jettero@cpan.org>
+Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
 please let me know.
@@ -251,12 +251,20 @@ join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+Copyright (c) 2010 Paul Miller
 
-    perl -MSoftware::License::LGPL_2_1 \
-         -e '$l = Software::License::LGPL_2_1->new({
-             holder=>"Paul Miller"});
-             print $l->fulltext' | less
+=head1 LICENSE
+
+This module is free software.  You can redistribute it and/or
+modify it under the terms of the Artistic License 2.0.
+
+This program is distributed in the hope that it will be useful,
+but without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.
+
+[This software may have had previous licenses, of which the current maintainer
+is completely unaware.  If this is so, it is possible the above license is
+incorrect or invalid.]
 
 =head1 SEE ALSO
 

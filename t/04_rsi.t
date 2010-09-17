@@ -33,12 +33,12 @@ $rsi->insert(shift @todd_litteken);
 ok( sprintf('%0.4f', $rsi->query), sprintf('%0.4f', '45.4545') );
 
 ######### The EMA RSI
- 
+
 $rsi->set_standard;
 $rsi->insert(splice @orig, 0, 14);
 ok( $rsi->query, undef );
 
-# NOTE: I then computed (using his spreadsheet) the 14-day ema version 
+# NOTE: I then computed (using his spreadsheet) the 14-day ema version
 my @paul = qw( 48.6989 42.8212 31.3579 35.1721 44.5110 38.6921 );
 
 while( @paul ) {

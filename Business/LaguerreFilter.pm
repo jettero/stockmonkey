@@ -15,7 +15,7 @@ our $VERSION = 1.0; # local revision: d
 
 sub recommended { croak "no recommendation" }
 
-sub new { 
+sub new {
     my $class = shift;
     my $this  = bless [], $class;
 
@@ -41,8 +41,8 @@ sub set_days {
     croak "set_days() is basically set_alpha(2/(1+$arg)), which complained: $@" if $@;
 }
 
-sub set_alpha { 
-    my $this  = shift; 
+sub set_alpha {
+    my $this  = shift;
     my $alpha = 0+shift;
 
     croak "alpha must be a real between >=0 and <=1" unless $alpha >= 0 and $alpha <= 1;
@@ -132,7 +132,7 @@ sub insert {
             # L1 = (1 - alpha)*L1[1] - (1 - alpha)*L0 + L0[1] = (1 - alpha)*O[1] - (1 - alpha)*L[0] + O[0]
             # L2 = (1 - alpha)*L2[1] - (1 - alpha)*L1 + L1[1] = (1 - alpha)*O[2] - (1 - alpha)*L[1] + O[1]
             # L3 = (1 - alpha)*L3[1] - (1 - alpha)*L2 + L2[1] = (1 - alpha)*O[3] - (1 - alpha)*L[2] + O[2]
-                                                                            
+
             $L->[1] = defined($O->[1]) ? (1 - $alpha)*$O->[1] - (1 - $alpha)*$L->[0] + $O->[0] : $O->[0];
             $L->[2] = defined($O->[2]) ? (1 - $alpha)*$O->[2] - (1 - $alpha)*$L->[1] + $O->[1] : $O->[1];
             $L->[3] = defined($O->[3]) ? (1 - $alpha)*$O->[3] - (1 - $alpha)*$L->[2] + $O->[2] : $O->[2];
@@ -164,12 +164,12 @@ Math::Business::LaguerreFilter - Technical Analysis: Laguerre Filter
   use Math::Business::LaguerreFilter;
 
   my $avg = new Math::Business::LaguerreFilter;
-     $avg->set_days(9); 
+     $avg->set_days(9);
      $avg->set_alpha(0.2); # same (roughly)
 
   my @closing_values = qw(
-      3 4 4 5 6 5 6 5 5 5 5 
-      6 6 6 6 7 7 7 8 8 8 8 
+      3 4 4 5 6 5 6 5 5 5 5
+      6 6 6 6 7 7 7 8 8 8 8
   );
 
   # choose one:
@@ -177,7 +177,7 @@ Math::Business::LaguerreFilter - Technical Analysis: Laguerre Filter
   $avg->insert( $_ ) for @closing_values;
 
   if( defined(my $q = $avg->query) ) {
-      print "value: $q.\n";  
+      print "value: $q.\n";
 
   } else {
       print "value: n/a.\n";
@@ -207,13 +207,13 @@ If you locate the chapter or the book, you should read it.  It's written well
 and it's a unique way to look at moving averages in general (e.g. there are
 filter schematics of each equation).
 
-=head1 Thanks
+=head1 THANKS
 
-John Baker <johnb@listbrokers.com>
+John Baker C<< <johnb@listbrokers.com> >>
 
 =head1 AUTHOR
 
-Paul Miller <jettero@cpan.org>
+Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
 please let me know.
@@ -226,12 +226,20 @@ join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2008 Paul Miller -- LGPL [Software::License::LGPL_2_1]
+Copyright (c) 2010 Paul Miller
 
-    perl -MSoftware::License::LGPL_2_1 \
-         -e '$l = Software::License::LGPL_2_1->new({
-             holder=>"Paul Miller"});
-             print $l->fulltext' | less
+=head1 LICENSE
+
+This module is free software.  You can redistribute it and/or
+modify it under the terms of the Artistic License 2.0.
+
+This program is distributed in the hope that it will be useful,
+but without any warranty; without even the implied warranty of
+merchantability or fitness for a particular purpose.
+
+[This software may have had previous licenses, of which the current maintainer
+is completely unaware.  If this is so, it is possible the above license is
+incorrect or invalid.]
 
 =head1 SEE ALSO
 

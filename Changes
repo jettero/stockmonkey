@@ -1,3 +1,8 @@
+2.9014: Fri Sep 17 2010
+   - fixed a 0/0 error.... clearly since the DI is 0, the DX is
+     also 0, even though it's indeterminant form.
+   - relicensed as Perl artistic
+
 2.9013: Tue Mar 31 06:58:51 EDT 2009
    - I just noticed that the reason my versions are screwed up is
      that at some point (circa Jul12 2008) I went down in version

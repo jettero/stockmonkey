@@ -7,7 +7,7 @@ use Data::Dumper;
 
 plan tests => 3;
 
-my $rsi = new Math::Business::RSI(14); 
+my $rsi = new Math::Business::RSI(14);
 my $rec = recommended Math::Business::RSI;
 
 if( -f "msft_6-13-8.txt" ) {

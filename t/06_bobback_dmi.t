@@ -8,7 +8,7 @@ my @dmiData = (
     [ 168, 166, 168 ],
     [ 168, 166, 168 ],
     [ 168, 166, 168 ],
-); 
+);
 
 my $adx = recommended Math::Business::DMI;
 
@@ -21,7 +21,7 @@ ok( $i );
 ok(eval { $adx->query; 1});
 
 my $ok = 0;
-eval { 
+eval {
     $adx = recommended Math::Business::DMI;
     my $pfft = [ 168, 166, 168 ];
     $adx->insert( $pfft ) for 1 .. 100;
