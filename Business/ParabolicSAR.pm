@@ -125,10 +125,16 @@ sub insert {
             }
 
         } else {
-            # initialize somehow
-            # (never did find a good description of how to initialize this mess,
+            # circa 2010: initialize somehow
+            # (never did find a good description of how to initialize this mess.
             #   I think you're supposed to tell it how to start)
             # this is the only time we use open/close and it's not even in the definition
+            #
+            # 2011-01-03: I did look this up, it's the "SIP" or significant
+            # point.  It should be the lowest (or the highest) point we have
+            # from our recent-ish data or "long trade" as he calls it.  This'll
+            # do as an approximation of that imo — otherwise we'll have to
+            # start asking for a few days previous trades just to initialize.
 
             $A = $as;
 
