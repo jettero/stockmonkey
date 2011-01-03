@@ -226,7 +226,7 @@ join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2010 Paul Miller
+Copyright (c) 2011 Paul Miller
 
 =head1 LICENSE
 
