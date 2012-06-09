@@ -1,3 +1,7 @@
+2.9015: Sat Jun 09 2012
+   - Alan Wee feels Bollinger Bands should support floating point
+     arguments.  Probably other modules should do that too...
+
 2.9014: Fri Sep 17 2010
    - fixed a 0/0 error.... clearly since the DI is 0, the DX is
      also 0, even though it's indeterminant form.
