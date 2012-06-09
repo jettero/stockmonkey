@@ -9,7 +9,7 @@ use constant {
     F      => -1,
 };
 
-our $VERSION = 1.1; # local revision: d
+our $VERSION = 1.101; # local revision: d
 
 1;
 
