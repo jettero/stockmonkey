@@ -48,17 +48,16 @@ L<http://groups.google.com/group/stockmonkey/>
 
 =head1 AUTHOR
 
-Paul Miller <jettero@cpan.org>
+Paul Miller C<< <jettero@cpan.org> >>
 
 I am using this software in my own projects...  If you find bugs, please please
-please let me know.
-
-I normally hang out on #perl on freenode, so you can try to get immediate
-gratification there if you like.  L<irc://irc.freenode.net/perl>
-
-There is also a mailing list with very light traffic that you might want to
-join: L<http://groups.google.com/group/stockmonkey/>.
+please let me know.  There is a mailing list with very light traffic that you
+might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2009 Paul Miller -- LGPL2
+Copyright (c) 2012 Paul Miller
+
+=head1 LICENSE
+
+This is released under the Artistic License. See L<perlartistic>.
