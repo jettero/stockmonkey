@@ -33,7 +33,7 @@ sub new {
 
 sub set_deviations {
     my $this = shift;
-    my $arg  = int shift;
+    my $arg  = shift;
 
     croak "deviations must be a positive non-zero integer" if $arg <= 0;
     $this->{K} = $arg;
