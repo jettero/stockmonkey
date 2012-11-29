@@ -7,12 +7,13 @@ my $bb = new Math::Business::BollingerBands(20,2);
 
 # NOTE: This example was taken from
 # http://stockcharts.com/school/doku.php?id=chart_school:technical_indicators:bollinger_bands
-# 05/28 2008
+# 2012-11-29 2012
 
 my @closes = qw(
-    103.13 109.00 103.06 102.75 108.00 107.56 105.25 107.69 108.63 107.00
-    109.00 110.00 112.75 113.50 114.25 115.25 121.50 126.88 122.50 119.00
-    122.50 118.00 122.00 121.19 123.63 122.75 123.13 122.13 119.00 112.69
+    86.16 89.09 88.78 90.32 89.07 91.15 89.44 89.17 86.93 87.68 86.96 89.43
+    89.32 88.72 87.45 87.26 89.50 87.90 89.13 90.70 92.90 92.98 91.80 92.66
+    92.68 92.30 92.77 92.54 92.95 93.20 91.07 89.83 89.74 90.40 90.74 88.02
+    88.09 88.84 90.78 90.54 91.39 90.65
 );
 
 my @matchers = (
@@ -20,9 +21,9 @@ my @matchers = (
     # here-and-there because we don't throw away as much roundoff error as
     # their spreadsheet apparently does.
 
-    [qw(124.62 111.34 98.05)],
-    [qw(125.86 112.30 98.74)],
-    [qw(126.48 112.75 99.03)],
+    [qw(87.95 91.24 94.53)],
+    [qw(87.96 91.17 94.37)],
+    [qw(87.95 91.05 94.15)],
 );
 
 my ($L,$M,$U,$match);
@@ -35,10 +36,12 @@ ok( $L, undef );
 ok( $M, undef );
 ok( $U, undef );
 
+$bb->insert(splice @closes, 0, -3);
+
 while( $match = shift @matchers ) {
     $bb->insert(shift @closes);
     ($L,$M,$U) = $bb->query;
-    ok( sprintf('%0.2f', $L), sprintf('%0.2f', $match->[2]) );
+    ok( sprintf('%0.2f', $L), sprintf('%0.2f', $match->[0]) );
     ok( sprintf('%0.2f', $M), sprintf('%0.2f', $match->[1]) );
-    ok( sprintf('%0.2f', $U), sprintf('%0.2f', $match->[0]) );
+    ok( sprintf('%0.2f', $U), sprintf('%0.2f', $match->[2]) );
 }

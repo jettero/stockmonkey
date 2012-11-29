@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.501;
+our $VERSION = 2.502;
 
 1;
 
@@ -57,7 +57,6 @@ sub set_days {
 sub insert {
     my $this = shift;
     my $val  = $this->{val};
-    my $dev  = $this->{dev};
 
     my $N = $this->{N};
     my $K = $this->{K};
@@ -71,13 +70,13 @@ sub insert {
                 my $old = shift @$val;
                 $this->{M} = my $M = $s - $old/$N + $value/$N;
 
-                push @$dev, (my $new = ($value - $M)**2);
-                $old = shift @$dev;
+                my @dev = map {($_-$M)**2} @$val;
 
-                my $d = $this->{d};
-                $this->{d} = $d = $d - $old/$N + $new/$N;
+                my $sum = 0;
+                $sum += $_ for @dev;
+                $sum /= $N;
 
-                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
+                my $k_stddev = $K * ($sum<0.000_000_000_6 ? 0 : sqrt($sum));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
 
@@ -86,14 +85,13 @@ sub insert {
                    $sum += $_ for @$val;
 
                 $this->{M} = my $M = $sum/$N;
-                @$dev = map {($_-$M)**2} @$val;
+                my @dev = map {($_-$M)**2} @$val;
 
                 $sum = 0;
-                $sum += $_ for @$dev;
+                $sum += $_ for @dev;
+                $sum /= $N;
 
-                $this->{d} = my $d = $sum/$N;
-
-                my $k_stddev = $K * ($d<0.000_000_000_6 ? 0 : sqrt($d));
+                my $k_stddev = $K * ($sum<0.000_000_000_6 ? 0 : sqrt($sum));
                 $this->{L} = $M - $k_stddev;
                 $this->{U} = $M + $k_stddev;
             }

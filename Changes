@@ -1,3 +1,7 @@
+2.9020: Thu Nov 29 2012
+   - Erik Axelkrans discovered a bad bug in the stddev
+     computation of bollinger bands.  Thanks!!
+
 2.9015: Sat Jun 09 2012
    - Alan Wee feels Bollinger Bands should support floating point
      arguments.  Probably other modules should do that too...
