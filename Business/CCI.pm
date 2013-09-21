@@ -13,11 +13,11 @@ sub recommended { croak "no recommendation" }
 sub new {
     my $class = shift;
     my $days  = shift || 20;
-    my $mul   = shift || (1/0.015);
+    my $mul   = shift || 0.015;
 
     my $this  = bless {
         sma => Math::Business::SMA->new($days),
-        mul => $mul,
+        mul => 1/$mul,
         len => $days
     }, $class;
 
@@ -41,7 +41,7 @@ sub set_scale {
     # NOTE: "Lambertset the constant at 0.015 to ensure that approximately 70
     # to 80 percent of CCI values would fall between −100 and +100"
 
-    $this->{mul} = $scale;
+    $this->{mul} = 1/$scale;
 }
 
 sub insert {
