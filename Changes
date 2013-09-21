@@ -1,3 +1,8 @@
+2.9100: Sat Sep 21 2013
+   - added a new index (CCI)
+   - added an example program showing loading a database with
+     MACD and RSI from Forex M1 data.
+
 2.9020: Thu Nov 29 2012
    - Erik Axelkrans discovered a bad bug in the stddev
      computation of bollinger bands.  Thanks!!
