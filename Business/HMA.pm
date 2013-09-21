@@ -5,8 +5,6 @@ use warnings;
 use Carp;
 use Math::Business::WMA;
 
-our $VERSION = 1.301;
-
 1;
 
 sub recommended { croak "no recommendation" }

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.501;
-
 1;
 
 sub recommended { croak "no recommendation" }

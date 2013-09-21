@@ -10,8 +10,6 @@ use constant {
     LP    => 0,
 };
 
-our $VERSION = 1.301;
-
 1;
 
 sub recommended {

@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.502;
-
 1;
 
 sub recommended {

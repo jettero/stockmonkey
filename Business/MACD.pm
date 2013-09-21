@@ -4,8 +4,6 @@ use strict;
 use warnings;
 use Carp;
 
-our $VERSION = 2.501;
-
 use Math::Business::EMA;
 
 1;

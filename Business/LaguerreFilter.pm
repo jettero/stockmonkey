@@ -9,8 +9,6 @@ use constant {
     F      => -1,
 };
 
-our $VERSION = 1.101; # local revision: d
-
 1;
 
 sub recommended { croak "no recommendation" }
