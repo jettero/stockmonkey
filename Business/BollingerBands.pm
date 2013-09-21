@@ -169,7 +169,7 @@ might want to join: L<http://groups.google.com/group/stockmonkey/>.
 
 =head1 COPYRIGHT
 
-Copyright (c) 2012 Paul Miller
+Copyright © 2013 Paul Miller
 
 =head1 LICENSE
 
