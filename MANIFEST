@@ -1,5 +1,6 @@
 Business/ATR.pm
 Business/BollingerBands.pm
+Business/CCI.pm
 Business/DMI.pm
 Business/EMA.pm
 Business/HMA.pm
