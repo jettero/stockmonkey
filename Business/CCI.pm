@@ -20,7 +20,7 @@ sub new {
     my $this  = bless {
         sma => Math::Business::SMA->new($days),
         mul => $mul,
-        len => $days;
+        len => $days
     }, $class;
 
     return $this;
@@ -64,17 +64,19 @@ sub insert {
         shift @$hist while @$hist > $len;
 
         $sma->insert( $pt );
-        $sma = $sma->query;
+        if( defined ($sma = $sma->query) ) {
+            my @mad = map { abs($sma - $_) } @$hist;
+            my $mad = shift @mad;
+               $mad += $_ for @mad;
+               $mad /= @mad+1;
 
-        my @mad = map { abs($sma - $_) } @$hist;
-        my $mad = shift @mad;
-           $mad += $_ for @mad;
-           $mad /= @mad+1;
-
-        $cci = $mul * ( $pt - $sma ) / $mad;
+            if( @$hist == $len ) {
+                $cci = $mul * ( $pt - $sma ) / $mad;
+            }
+        }
     }
 
-    $this->{CCI} = @$hist == $len ? $cci : undef;
+    $this->{CCI} = $cci;
 
     return;
 }
