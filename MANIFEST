@@ -10,6 +10,7 @@ Business/MACD.pm
 Business/ParabolicSAR.pm
 Business/RSI.pm
 Business/SMA.pm
+Business/Stochastic.pm
 Business/WMA.pm
 Changes
 contrib/forex-macd-rsi-database-populator.pl
@@ -40,3 +41,4 @@ t/09_hma.t
 t/10_lf.t
 t/11_alf.t
 t/12_cci.t
+t/13_sto.t
