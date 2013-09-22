@@ -15,9 +15,10 @@ use constant METHOD_SLOW => 2;
 use constant METHOD_FULL => 3;
 
 sub recommended { my $class = shift; return $class->new(METHOD_LANE,5,3); }
-sub method_slow { my $class = shift; return $class->new(METHOD_SLOW,14,3); }
-sub method_fast { my $class = shift; return $class->new(METHOD_FAST,14,3); }
-sub method_full { my $class = shift; return $class->new(METHOD_FULL,14,3,3); }
+
+sub method_slow { my $class = shift; return $class->new(METHOD_SLOW,$_[0]||14,$_[1]||3); }
+sub method_fast { my $class = shift; return $class->new(METHOD_FAST,$_[0]||14,$_[1]||3); }
+sub method_full { my $class = shift; return $class->new(METHOD_FULL,$_[0]||14,$_[1]||3,$_[2]||3); }
 
 sub new {
     my $class = shift;
