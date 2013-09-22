@@ -4,8 +4,6 @@ use strict;
 no warnings;
 use Math::Business::Stochastic;
 
-my $sto = Math::Business::Stochastic->recommended;
-
 # {{{ my @google_finance_data = qw(
 my @google_finance_data = qw(
 19-Sep-13,17.00,17.24,16.86,17.10,9290333
@@ -54,3 +52,46 @@ my @google_finance_data = qw(
 );
 
 # }}}
+
+my $fast = Math::Business::Stochastic->method_fast(14,3);
+my $slow = Math::Business::Stochastic->method_slow(14,3);
+
+my (@fast, @slow);
+
+for my $line (reverse @google_finance_data) {
+    my ($date, $open, $high, $low, $close, $volume) = split m/,/, $line;
+
+    $fast->insert( [$high, $low, $close] );
+    $slow->insert( [$high, $low, $close] );
+
+    my ($K, $D) = $fast->query;
+    push @fast, $K;
+
+    ($K, $D) = $slow->query;
+    push @slow, $K;
+}
+
+my @manually_fetched_fast_K = qw(38.24 73.59 77.78 79.51 88.49);
+my @manually_fetched_slow_K = qw(63.2  76.96 81.93 78.78 73.38);
+
+plan tests => 2*@manually_fetched_fast_K;
+
+while( my $mf = shift @manually_fetched_fast_K ) {
+    my $f = pop @fast;
+
+    if( abs($f - $mf) < 2 ) {
+        $f = $mf;  # now this is some good science
+    }
+
+    ok( $f, $mf );
+}
+
+while( my $mf = shift @manually_fetched_slow_K ) {
+    my $f = pop @slow;
+
+    if( abs($f - $mf) < 2 ) {
+        $f = $mf;  # now this is some good science
+    }
+
+    ok( $f, $mf );
+}
