@@ -156,6 +156,14 @@ It is difficult to find a good reference on this indicator.  Almost every
 source disagrees with the next and some sources even disagree internally
 (I'm looking at you Wikipedia).
 
+The stochastic (among other things) purports to indicate an "overbought"
+situation where the C<%K> is above 80 and "oversold" when below 20.
+
+There are "divergences" and "convergences" to look for too, however.  If
+there is a higher high or a lower low in the C<%K>, this can apperntly
+indicate trend changes.  This concept is not easy to pin down explicitly,
+and so is not described here.
+
 =head1 FUTHER BACKGROUND ON COMPUTATION
 
 The basic idea is that C<%K> should be a momentum indicator and C<%D>
