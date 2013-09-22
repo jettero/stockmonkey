@@ -88,8 +88,9 @@ sub set_method {
 
     sub insert {
         my $this = shift;
+        my $m = $method->{$this->{m}};
 
-        return $this->$method( @_ );
+        return $this->$m( @_ );
     }
 }
 
@@ -116,8 +117,8 @@ sub insert_lane {
 
             $K = 100 * ($t_close - $L)/($H-$L);
 
-            my $L = $l->[-$dp]; for( (-$dp+1) .. -1 ) { $L = $l->[$_] if $l->[$_] < $L };
-            my $H = $h->[-$dp]; for( (-$dp+1) .. -1 ) { $H = $h->[$_] if $h->[$_] > $H };
+            $L = $l->[-$dp]; for( (-$dp+1) .. -1 ) { $L = $l->[$_] if $l->[$_] < $L };
+            $H = $h->[-$dp]; for( (-$dp+1) .. -1 ) { $H = $h->[$_] if $h->[$_] > $H };
 
             $D = 100 * $H / $L;
         }
@@ -139,7 +140,7 @@ sub insert_fast {
     my $kp = $this->{kp};
     my $dp = $this->{dp};
 
-    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($dp));
+    my $dsma = ($this->{dsma} ||= Math::Business::SMA->new($dp));
 
     my ($K, $D);
     while( defined( my $point = shift ) ) {
@@ -176,8 +177,8 @@ sub insert_slow {
     my $kp = $this->{kp};
     my $dp = $this->{dp};
 
-    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($dp));
-    my $ksma = ($this->{ksma} ||= Business::Math::SMA->new($dp));
+    my $dsma = ($this->{dsma} ||= Math::Business::SMA->new($dp));
+    my $ksma = ($this->{ksma} ||= Math::Business::SMA->new($dp));
 
     my ($K, $D);
     while( defined( my $point = shift ) ) {
@@ -216,8 +217,8 @@ sub insert_full {
     my $dp = $this->{dp};
     my $xp = $this->{xp} || $this->{dp};
 
-    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($xp));
-    my $ksma = ($this->{ksma} ||= Business::Math::SMA->new($xp));
+    my $dsma = ($this->{dsma} ||= Math::Business::SMA->new($xp));
+    my $ksma = ($this->{ksma} ||= Math::Business::SMA->new($xp));
 
     my ($K, $D);
     while( defined( my $point = shift ) ) {
