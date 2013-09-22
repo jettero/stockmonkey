@@ -251,7 +251,7 @@ sub insert_full {
 sub query {
     my $this = shift;
 
-    return ($this->{K}, $this->{D});
+    return ($this->{D}, $this->{K});
 }
 
 __END__
@@ -287,7 +287,8 @@ Math::Business::Stochastic - Technical Analysis: Stochastic Oscillator
   # basic usage
 
   $sto->insert($close);
-  my ($K, $D) = $sto->query;
+  my ($D, $K) = $sto->query;
+  my $K = $sto->query; # if you don't care about %D
   print "current stochastic: %K=$K and %D=$D\n";
 
 =head1 RESEARCHER
