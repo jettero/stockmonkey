@@ -17,9 +17,10 @@ sub new {
 
     my $this  = bless {
         sma => Math::Business::SMA->new($days),
-        mul => 1/$mul,
-        len => $days
     }, $class;
+
+    $this->set_days($days);
+    $this->set_scale($mul);
 
     return $this;
 }
