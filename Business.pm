@@ -1,5 +1,5 @@
 package Math::Business;
 
-our $VERSION = '2.9100';
+our $VERSION = '2.9200';
 
 1;

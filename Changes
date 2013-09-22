@@ -1,3 +1,6 @@
+2.9200: Sun Sep 22 2013
+   - added Stochastics
+
 2.9100: Sat Sep 21 2013
    - added a new index (CCI)
    - added an example program showing loading a database with
