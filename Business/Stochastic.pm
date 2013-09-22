@@ -14,19 +14,24 @@ use constant METHOD_FAST => 1;
 use constant METHOD_SLOW => 2;
 use constant METHOD_FULL => 3;
 
-sub recommended { my $class = shift; return $class->new(5,3,METHOD_LANE); }
+sub recommended { my $class = shift; return $class->new(METHOD_LANE,5,3); }
+sub method_slow { my $class = shift; return $class->new(METHOD_SLOW,14,3); }
+sub method_fast { my $class = shift; return $class->new(METHOD_FAST,14,3); }
+sub method_full { my $class = shift; return $class->new(METHOD_FULL,14,3,3); }
 
 sub new {
     my $class = shift;
+    my $meth  = shift || METHOD_LANE;
     my $kp    = shift || 5;
     my $dp    = shift || 3;
-    my $meth  = shift || METHOD_LANE;
+    my $xp    = shift || 3;
 
     my $this  = bless {}, $class;
 
+    $this->set_method( $meth );
     $this->set_days( $kp );
     $this->set_dperiod( $dp );
-    $this->set_method( $meth );
+    $this->set_xperiod( $xp );
 
     return $this;
 }
@@ -49,6 +54,15 @@ sub set_dperiod {
     $this->{dp} = $arg;
 }
 
+sub set_xperiod { 
+    my $this = shift;
+    my $arg = shift;
+
+    croak "days must be a positive non-zero integer" if $arg <= 0;
+
+    $this->{xp} = $arg;
+}
+
 sub set_method {
     my $this = shift;
     my $meth = shift;
@@ -56,6 +70,11 @@ sub set_method {
     croak "method not known" unless grep {$meth == $_} (METHOD_LANE, METHOD_FAST, METHOD_SLOW, METHOD_FULL);
 
     $this->{m} = $meth;
+
+    delete $this->{ksma};
+    delete $this->{dsma};
+
+    return;
 }
 
 {
@@ -73,6 +92,7 @@ sub set_method {
     }
 }
 
+# {{{ sub insert_lane
 sub insert_lane {
     my $this = shift;
 
@@ -108,6 +128,124 @@ sub insert_lane {
     return;
 }
 
+# }}}
+# {{{ sub insert_fast
+sub insert_fast {
+    my $this = shift;
+
+    my $l = ($this->{low_hist}  ||= []);
+    my $h = ($this->{high_hist} ||= []);
+    my $kp = $this->{kp};
+    my $dp = $this->{dp};
+
+    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($dp));
+
+    my ($K, $D);
+    while( defined( my $point = shift ) ) {
+        croak "insert takes three tuple (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+        my ($t_high, $t_low, $t_close) = @$point;
+
+        push @$l, $t_low;  shift @$l while @$l > $kp;
+        push @$h, $t_high; shift @$h while @$h > $kp;
+
+        if( @$l == $kp ) {
+            my $L = $l->[0]; for( 1 .. $#$l ) { $L = $l->[$_] if $l->[$_] < $L };
+            my $H = $h->[0]; for( 1 .. $#$h ) { $H = $h->[$_] if $h->[$_] > $H };
+
+            $K = 100 * ($t_close - $L)/($H-$L);
+
+            $dsma->insert($K);
+            $D = $dsma->query;
+        }
+    }
+
+    $this->{K} = $K;
+    $this->{D} = $D;
+
+    return;
+}
+
+# }}}
+# {{{ sub insert_slow
+sub insert_slow {
+    my $this = shift;
+
+    my $l = ($this->{low_hist}  ||= []);
+    my $h = ($this->{high_hist} ||= []);
+    my $kp = $this->{kp};
+    my $dp = $this->{dp};
+
+    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($dp));
+    my $ksma = ($this->{ksma} ||= Business::Math::SMA->new($dp));
+
+    my ($K, $D);
+    while( defined( my $point = shift ) ) {
+        croak "insert takes three tuple (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+        my ($t_high, $t_low, $t_close) = @$point;
+
+        push @$l, $t_low;  shift @$l while @$l > $kp;
+        push @$h, $t_high; shift @$h while @$h > $kp;
+
+        if( @$l == $kp ) {
+            my $L = $l->[0]; for( 1 .. $#$l ) { $L = $l->[$_] if $l->[$_] < $L };
+            my $H = $h->[0]; for( 1 .. $#$h ) { $H = $h->[$_] if $h->[$_] > $H };
+
+            $ksma->insert( 100 * ($t_close - $L)/($H-$L) );
+            $K = $ksma->query;
+
+            $dsma->insert($K);
+            $D = $dsma->query;
+        }
+    }
+
+    $this->{K} = $K;
+    $this->{D} = $D;
+
+    return;
+}
+
+# }}}
+# {{{ sub insert_full
+sub insert_full {
+    my $this = shift;
+
+    my $l = ($this->{low_hist}  ||= []);
+    my $h = ($this->{high_hist} ||= []);
+    my $kp = $this->{kp};
+    my $dp = $this->{dp};
+    my $xp = $this->{xp} || $this->{dp};
+
+    my $dsma = ($this->{dsma} ||= Business::Math::SMA->new($xp));
+    my $ksma = ($this->{ksma} ||= Business::Math::SMA->new($xp));
+
+    my ($K, $D);
+    while( defined( my $point = shift ) ) {
+        croak "insert takes three tuple (high, low, close)" unless ref $point eq "ARRAY" and @$point == 3;
+        my ($t_high, $t_low, $t_close) = @$point;
+
+        push @$l, $t_low;  shift @$l while @$l > $kp;
+        push @$h, $t_high; shift @$h while @$h > $kp;
+
+        if( @$l == $kp ) {
+            my $L = $l->[0]; for( 1 .. $#$l ) { $L = $l->[$_] if $l->[$_] < $L };
+            my $H = $h->[0]; for( 1 .. $#$h ) { $H = $h->[$_] if $h->[$_] > $H };
+
+            $ksma->insert( 100 * ($t_close - $L)/($H-$L) );
+            $K = $ksma->query;
+
+            $dsma->insert($K);
+            $D = $dsma->query;
+        }
+    }
+
+    $this->{K} = $K;
+    $this->{D} = $D;
+
+    return;
+}
+
+# }}}
+
 sub query {
     my $this = shift;
 
@@ -128,6 +266,8 @@ Math::Business::Stochastic - Technical Analysis: Stochastic Oscillator
      $sto->set_days(5);     # Lane uses 5 in his examples (if any)
      $sto->set_dperiod(30); # Lane
      $sto->set_method( Math::Business::Stochastic::METHOD_LANE );
+     # methods: METHOD_LANE, METHOD_SLOW, METHOD_FAST, METHOD_FULL
+     $sto->set_xperiod(3); # used only by METHOD_FULL 
 
 
   # Lane's version
@@ -218,5 +358,7 @@ This is released under the Artistic License. See L<perlartistic>.
 perl(1), L<Math::Business::StockMonkey>, L<Math::Business::StockMonkey::FAQ>, L<Math::Business::StockMonkey::CookBook>
 
 L<http://en.wikipedia.org/wiki/Stochastic_oscillator>
+
+L<http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:stochastic_oscillato>
 
 =cut
