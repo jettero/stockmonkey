@@ -3,25 +3,39 @@ use Test;
 use strict;
 no warnings;
 use Math::Business::Stochastic;
+use Math::Business::SMA;
 
-plan tests => 30;
+my $number = 30*2;
+plan tests => $number;
 
-my $sto = Math::Business::Stochastic->method_fast(14,3);
-my @data; # high,low,close points
+my $fsto = Math::Business::Stochastic->method_fast(14,3);
+my $ssto = Math::Business::Stochastic->method_slow(14,3);
+my $sful = Math::Business::Stochastic->method_full(14,3,3);
+
+my $three_period_sma_of_fastK = Math::Business::SMA->new(3);
+
 while(<DATA>) {
     # data ripped from http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:stochastic_oscillato
     chomp;
     my ($line, $date, $high, $low, $highest, $lowest, $close, $theirK) = split m/,/;
 
-    $sto->insert( [$high,$low,$close] );
+    $fsto->insert( my $i = [$high,$low,$close] );
+    $ssto->insert( $i );
+    $sful->insert( $i );
 
-    my $K = $sto->query;
+    my ($D,$K) = $fsto->query;
+
+    $three_period_sma_of_fastK->insert($K) if defined $K;
 
     if( not defined $K and not $theirK ) {
         ok(1); 
+        ok(2);
 
     } else {
         ok( $K, $theirK );
+
+        my $tmp = $three_period_sma_of_fastK->query;
+        ok( $D, $tmp );
     }
 }
 
