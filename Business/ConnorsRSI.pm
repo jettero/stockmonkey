@@ -12,9 +12,20 @@ sub new {
 
     $this->set_days(shift  ||   3);
     $this->set_sdays(shift ||   2);
-    $this->set_prank(shift || 100);
+    $this->set_pdays(shift || 100);
 
     return $this;
+}
+
+sub reset {
+    my $this = shift;
+
+    delete $this->{cy};
+    delete $this->{st};
+
+    $this->{cRSI} = Math::Business::RSI->new($this->{cdays}) if exists $this->{cRSI};
+    $this->{sRSI} = Math::Business::RSI->new($this->{sdays}) if exists $this->{sRSI};
+    $this->{prank} = [];
 }
 
 sub set_days {
@@ -23,10 +34,7 @@ sub set_days {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    delete $this->{cy};
-    delete $this->{st};
-
-    $this->{cRSI} = Math::Business::RSI->new($arg);
+    $this->reset;
 }
 
 sub set_sdays {
@@ -35,10 +43,17 @@ sub set_sdays {
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
-    delete $this->{cy};
-    delete $this->{st};
+    $this->reset;
+}
 
-    $this->{sRSI} = Math::Business::RSI->new($arg);
+sub set_pdays {
+    my $this = shift;
+    my $arg  = int(shift);
+
+    croak "days must be a positive non-zero integer" if $arg <= 0;
+
+    $this->{pdays} = $arg;
+    $this->reset;
 }
 
 sub insert {
@@ -48,6 +63,7 @@ sub insert {
 
     my $sRSI = $this->{sRSI};
     my $cRSI = $this->{cRSI};
+    my $prnk = $this->{prnk};
 
     while( defined( my $close_today = shift ) ) {
         if( defined $close_yesterday ) {
@@ -56,9 +72,8 @@ sub insert {
             $streak += $d;
         }
 
-        if( defined $streak ) {
-            $this->{streak}->
-        }
+        $sRSI->insert($sreak) if defined $streak;
+        $cRSI->insert($close_today);
 
         $close_yesterday = $close_today;
     }
