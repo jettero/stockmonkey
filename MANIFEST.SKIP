@@ -5,5 +5,4 @@
 MANIFEST.SKIP
 check_version
 dump.txt
-graph_ma
 slurp_msft.pl
