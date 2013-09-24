@@ -1,4 +1,4 @@
-package Math::Business::RSI;
+package Math::Business::ConnorRSI;
 
 use strict;
 use warnings;
@@ -64,6 +64,7 @@ sub insert {
     my $sRSI = $this->{sRSI};
     my $cRSI = $this->{cRSI};
     my $prnk = $this->{prnk};
+    my $pdays = $this->{pdays};
 
     while( defined( my $close_today = shift ) ) {
         if( defined $close_yesterday ) {
@@ -72,10 +73,32 @@ sub insert {
             $streak += $d;
         }
 
-        $sRSI->insert($sreak) if defined $streak;
+        $sRSI->insert($streak) if defined $streak;
         $cRSI->insert($close_today);
 
+        push @$prnk, ($close_today - $close_yesterday)/$close_yesterday;
+        shift @$prnk while @$prnk > $pdays;
+
         $close_yesterday = $close_today;
+    }
+
+    my $srsi = $sRSI->query;
+    my $crsi = $cRSI->query;
+
+    if( defined $srsi and defined $crsi ) {
+        my $v = $prnk->[-1];
+        my $p = 0;
+        my $c = 0;
+        my $i = $#$prnk;
+
+        while( (--$i) >= 0 ) {
+            $p ++ if $prnk->[$i] < $v;
+            $c ++;
+        }
+
+        my $PR = $p/$c;
+
+        $this->{connor} = ( $srsi + $crsi + $PR ) / 3;
     }
 
     $this->{cy} = $close_yesterday;
