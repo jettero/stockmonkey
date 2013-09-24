@@ -3,6 +3,4 @@
 .graph.png
 .todo
 MANIFEST.SKIP
-check_version
 dump.txt
-slurp_msft.pl

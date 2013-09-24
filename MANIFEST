@@ -43,3 +43,7 @@ t/13_sto.t
 examples/forex-macd-rsi-database-populator.pl
 examples/graph-moving-averages.pl
 examples/graph-parabolic-sar.pl
+examples/forex-macd-rsi-database-populator.pl
+examples/graph-moving-averages.pl
+examples/graph-parabolic-sar.pl
+examples/slurp_msft.pl
