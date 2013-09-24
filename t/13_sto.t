@@ -5,14 +5,18 @@ no warnings;
 use Math::Business::Stochastic;
 use Math::Business::SMA;
 
-my $number = 30*2;
+my $number = 30*6;
 plan tests => $number;
 
 my $fsto = Math::Business::Stochastic->method_fast(14,3);
 my $ssto = Math::Business::Stochastic->method_slow(14,3);
-my $sful = Math::Business::Stochastic->method_full(14,3,3);
+my $sful = Math::Business::Stochastic->method_full(14,3,5);
 
-my $three_period_sma_of_fastK = Math::Business::SMA->new(3);
+my $K3  = Math::Business::SMA->new(3);
+my $K33 = Math::Business::SMA->new(3);
+
+my $K5  = Math::Business::SMA->new(5);
+my $K55 = Math::Business::SMA->new(5);
 
 while(<DATA>) {
     # data ripped from http://stockcharts.com/help/doku.php?id=chart_school:technical_indicators:stochastic_oscillato
@@ -25,7 +29,17 @@ while(<DATA>) {
 
     my ($D,$K) = $fsto->query;
 
-    $three_period_sma_of_fastK->insert($K) if defined $K;
+    $K3->insert($K) if defined $K;
+    my $k3 = $K3->query;
+
+    $K33->insert($k3) if defined $k3;
+    my $k33 = $K33->query;
+
+    $K5->insert($K) if defined $K;
+    my $k5 = $K5->query;
+
+    $K55->insert($k5) if defined $k5;
+    my $k55 = $K55->query;
 
     if( not defined $K and not $theirK ) {
         ok(1); 
@@ -33,9 +47,27 @@ while(<DATA>) {
 
     } else {
         ok( $K, $theirK );
+        ok( $D, $k3 );
+    }
 
-        my $tmp = $three_period_sma_of_fastK->query;
-        ok( $D, $tmp );
+    ($D,$K) = $ssto->query;
+    if( not defined $K or not defined $D ) {
+        ok(1);
+        ok(2);
+
+    } else {
+        ok( $K, $k3 );
+        ok( $D, $k33 );
+    }
+
+    ($D,$K) = $sful->query;
+    if( not defined $K or not defined $D ) {
+        ok(1);
+        ok(2);
+
+    } else {
+        ok( $K, $k5 );
+        ok( $D, $k55 );
     }
 }
 
