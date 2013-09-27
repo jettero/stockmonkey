@@ -6,6 +6,8 @@ use Carp;
 
 use Math::Business::RSI;
 
+sub recommended { (shift)->new() }
+
 sub new {
     my $class = shift;
     my $this = bless {}, $class;
