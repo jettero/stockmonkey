@@ -1,5 +1,5 @@
 2.9300_1: Fri Sep 27 2013
-   - added ConnorRSI
+   - added ConnorRSI - Still lacks docs and tests
    - added a Bayesian example to the examples directory
 
 2.9200: Sun Sep 22 2013
