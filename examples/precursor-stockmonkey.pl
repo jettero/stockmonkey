@@ -17,8 +17,11 @@ use constant {
     SELL_P => 4,
 };
 
+my $ticker = shift    || "JPM";
+my $slurpp = "@ARGV"  || "2 years";
+
 my $period   = 12;
-my $quotes   = find_quotes_for(SCTY=>"6 months");
+my $quotes   = find_quotes_for($ticker=>$slurpp);
 my $sz       = @$quotes;
 my $train_sz = int($sz * (2/3));
 
@@ -60,13 +63,13 @@ sub train_on {
         my $diff  = $future->[CLOSE] - $day->[CLOSE];
         my $pdiff = $diff / $day->[CLOSE];
 
-        my $label = $pdiff > 0.2 ? "buy"
-                  : $pdiff < 0.2 ? "sell"
+        my $label = $pdiff >=  0.05 ? "buy"
+                  : $pdiff <= -0.05 ? "sell"
                   : "neutral";
 
         if( keys %$attrs ) {
             $anb->add_instance( attributes=>$attrs, label=>$label );
-            print "[train] ", dump($attrs), " => $label\n";
+            print "[train pdiff=$pdiff] ", dump($attrs), " => $label\n";
         }
     }
 
@@ -78,6 +81,7 @@ sub train_on {
 sub find_attrs {
     my ($day, $prev) = @_;
 
+    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $day->[RSI];
     die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $prev->[RSI];
 
     my %attrs;
@@ -146,21 +150,21 @@ sub plot_result {
     for(@$quotes) {
         no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
-        push @{ $data[0] }, $_->[DATE],
-        push @{ $data[1] }, $_->[CLOSE],
-        push @{ $data[2] }, $_->[SELL_P] > 0.7 ? $_->[CLOSE]*0.8 : undef,
-        push @{ $data[3] }, $_->[BUY_P]  > 0.7 ? $_->[CLOSE]*1.2 : undef,
+        push @{ $data[0] }, $_->[DATE];
+        push @{ $data[1] }, $_->[CLOSE];
+        push @{ $data[2] }, $_->[SELL_P] > 0.6 ? $_->[CLOSE]*0.95 : undef;
+        push @{ $data[3] }, $_->[BUY_P]  > 0.6 ? $_->[CLOSE]*1.05 : undef;
     }
 
-    my @flattened_values = grep {defined} map {@$_} @data[1..$#data];
+    my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
+    my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
 
-    my $min_point = min( @flattened_values );
-    my $max_point = max( @flattened_values );
+    my $width = 100 + 12*@$quotes;
 
-    my $graph = GD::Graph::mixed->new(1000, 500);
+    my $graph = GD::Graph::mixed->new($width, 500);
        $graph->set_legend(qw(close sell-signal buy-signal));
        $graph->set(
-           y_label           => 'dollars NASDAQ:SCTY',
+           y_label           => "dollars $ticker",
            x_label           => 'date',
            transparent       => 0,
            dclrs             => [qw(dgray red green)],
