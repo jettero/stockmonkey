@@ -159,7 +159,7 @@ sub plot_result {
     my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
     my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
 
-    my $width = 100 + 12*@$quotes;
+    my $width = 100 + 11*@$quotes;
 
     my $graph = GD::Graph::mixed->new($width, 500);
        $graph->set_legend(qw(close sell-signal buy-signal));
