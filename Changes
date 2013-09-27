@@ -1,5 +1,6 @@
-2.9300: Tue Sep 24 2013
-   - made an examples directory
+2.9300_1: Fri Sep 27 2013
+   - added ConnorRSI
+   - added a Bayesian example to the examples directory
 
 2.9200: Sun Sep 22 2013
    - added Stochastics
