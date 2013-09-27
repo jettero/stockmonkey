@@ -7,9 +7,14 @@ use Storable qw(store retrieve);
 use Algorithm::NaiveBayes;
 use Math::Business::RSI;
 use Data::Dump qw(dump);
+use GD::Graph::mixed;
+use List::Util qw(min max);
 use constant {
-    CLOSE => 0,
-    RSI   => 1,
+    DATE   => 0,
+    CLOSE  => 1,
+    RSI    => 2,
+    BUY_P  => 3,
+    SELL_P => 4,
 };
 
 my $period   = 12;
@@ -19,6 +24,8 @@ my $train_sz = int($sz * (2/3));
 
 train_on( $period+1   .. $train_sz );
 solve_on( $train_sz+1 .. $#$quotes );
+
+plot_result();
 
 # {{{ sub solve_on
 sub solve_on {
@@ -32,6 +39,9 @@ sub solve_on {
         my $result = $anb->predict(attributes=>$attrs);
 
         print "[predict] ", dump({given=>$attrs, result=>$result}), "\n";
+
+        $day->[BUY_P]  = $result->{buy};
+        $day->[SELL_P] = $result->{sell};
     }
 }
 
@@ -54,8 +64,10 @@ sub train_on {
                   : $pdiff < 0.2 ? "sell"
                   : "neutral";
 
-        $anb->add_instance( attributes=>$attrs, label=>$label );
-        print "[train] ", dump($attrs), " => $label\n";
+        if( keys %$attrs ) {
+            $anb->add_instance( attributes=>$attrs, label=>$label );
+            print "[train] ", dump($attrs), " => $label\n";
+        }
     }
 
     $anb->train;
@@ -65,6 +77,8 @@ sub train_on {
 # {{{ sub find_attrs
 sub find_attrs {
     my ($day, $prev) = @_;
+
+    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $prev->[RSI];
 
     my %attrs;
 
@@ -115,12 +129,56 @@ sub find_quotes_for {
 
         $rsi->insert( $close );
         my $v = $rsi->query;
-        push @todump, [ $close, $v ] if defined $v;
+        push @todump, [ $date, $close, $v ] if defined $v;
     }
 
     store(\@todump => $fnam);
 
     return \@todump;
+}
+
+# }}}
+# {{{ sub plot_result
+sub plot_result {
+
+    my @data;
+
+    for(@$quotes) {
+        no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
+
+        push @{ $data[0] }, $_->[DATE],
+        push @{ $data[1] }, $_->[CLOSE],
+        push @{ $data[2] }, $_->[SELL_P] > 0.7 ? $_->[CLOSE]*0.8 : undef,
+        push @{ $data[3] }, $_->[BUY_P]  > 0.7 ? $_->[CLOSE]*1.2 : undef,
+    }
+
+    my @flattened_values = grep {defined} map {@$_} @data[1..$#data];
+
+    my $min_point = min( @flattened_values );
+    my $max_point = max( @flattened_values );
+
+    my $graph = GD::Graph::mixed->new(1000, 500);
+       $graph->set_legend(qw(close sell-signal buy-signal));
+       $graph->set(
+           y_label           => 'dollars NASDAQ:SCTY',
+           x_label           => 'date',
+           transparent       => 0,
+           dclrs             => [qw(dgray red green)],
+           types             => [qw(lines points points)],
+           y_min_value       => $min_point-0.2,
+           y_max_value       => $max_point+0.2,
+           y_number_format   => '%0.2f',
+           x_labels_vertical => 1,
+
+       ) or die $graph->error;
+
+    my $gd = $graph->plot(\@data) or die $graph->error;
+    open my $img, '>', ".graph.png" or die $!;
+    binmode $img;
+    print $img $gd->png;
+    close $img;
+
+    #system(qw(eog .graph.png));
 }
 
 # }}}
