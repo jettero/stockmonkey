@@ -17,11 +17,11 @@ use constant {
     SELL_P => 4,
 };
 
-my $ticker = shift    || "JPM";
-my $period = shift    || 5; # days into the future we want to predict
-my $slurpp = "@ARGV"  || "10 years";
+my $ticker = shift || "JPM";
 
-my $significant_pdiff           = 0.05; # this is a significant price jump (0.1 is 10%)
+my $slurpp                      = "10 years"; # data we want to fetch
+my $period                      =   15; # days into the future we want to predict
+my $significant_pdiff           = 0.04; # this is a significant price jump (0.1 is 10%)
 my $train_size                  = 0.80; # use this amount of the data for training (only)
 my $significant_bayesian_signal = 0.70; # probability high enough to plot on the output graph
 my $allow_neutral_signals       =    1; # predictions are always buy or sell? or should neutral be an option
@@ -188,7 +188,7 @@ sub plot_result {
     print $img $gd->png;
     close $img;
 
-    #system(qw(eog .graph.png));
+    system(qw(eog .graph.png));
 }
 
 # }}}
