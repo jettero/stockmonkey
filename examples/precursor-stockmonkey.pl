@@ -18,12 +18,17 @@ use constant {
 };
 
 my $ticker = shift    || "JPM";
-my $slurpp = "@ARGV"  || "2 years";
+my $period = shift    || 5; # days into the future we want to predict
+my $slurpp = "@ARGV"  || "10 years";
 
-my $period   = 12;
+my $significant_pdiff           = 0.05; # this is a significant price jump (0.1 is 10%)
+my $train_size                  = 0.80; # use this amount of the data for training (only)
+my $significant_bayesian_signal = 0.70; # probability high enough to plot on the output graph
+my $allow_neutral_signals       =    1; # predictions are always buy or sell? or should neutral be an option
+
 my $quotes   = find_quotes_for($ticker=>$slurpp);
 my $sz       = @$quotes;
-my $train_sz = int($sz * (2/3));
+my $train_sz = int($sz * $train_size);
 
 train_on( $period+1   .. $train_sz );
 solve_on( $train_sz+1 .. $#$quotes );
@@ -63,14 +68,15 @@ sub train_on {
         my $diff  = $future->[CLOSE] - $day->[CLOSE];
         my $pdiff = $diff / $day->[CLOSE];
 
-        my $label = $pdiff >=  0.05 ? "buy"
-                  : $pdiff <= -0.05 ? "sell"
+        my $label = $pdiff >=  $significant_pdiff ? "buy"
+                  : $pdiff <= -$significant_pdiff ? "sell"
                   : "neutral";
 
-        if( keys %$attrs ) {
-            $anb->add_instance( attributes=>$attrs, label=>$label );
-            print "[train pdiff=$pdiff] ", dump($attrs), " => $label\n";
-        }
+        next if $label eq "neutral" and not $allow_neutral_signals;
+        next unless %$attrs;
+
+        $anb->add_instance( attributes=>$attrs, label=>$label );
+        print "[train pdiff=$pdiff] ", dump($attrs), " => $label\n";
     }
 
     $anb->train;
@@ -147,19 +153,19 @@ sub plot_result {
 
     my @data;
 
-    for(@$quotes) {
+    for(@$quotes[$train_sz+1 .. $#$quotes]) {
         no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
         push @{ $data[0] }, $_->[DATE];
         push @{ $data[1] }, $_->[CLOSE];
-        push @{ $data[2] }, $_->[SELL_P] > 0.6 ? $_->[CLOSE]*0.95 : undef;
-        push @{ $data[3] }, $_->[BUY_P]  > 0.6 ? $_->[CLOSE]*1.05 : undef;
+        push @{ $data[2] }, $_->[SELL_P] > $significant_bayesian_signal ? $_->[CLOSE]*0.95 : undef;
+        push @{ $data[3] }, $_->[BUY_P]  > $significant_bayesian_signal ? $_->[CLOSE]*1.05 : undef;
     }
 
     my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
     my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
 
-    my $width = 100 + 11*@$quotes;
+    my $width = 100 + 11*@{$data[0]};
 
     my $graph = GD::Graph::mixed->new($width, 500);
        $graph->set_legend(qw(close sell-signal buy-signal));
