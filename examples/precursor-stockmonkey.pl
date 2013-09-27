@@ -20,11 +20,11 @@ use constant {
 my $ticker = shift || "JPM";
 
 my $slurpp                      = "10 years"; # data we want to fetch
-my $period                      =   15; # days into the future we want to predict
-my $significant_pdiff           = 0.04; # this is a significant price jump (0.1 is 10%)
-my $train_size                  = 0.80; # use this amount of the data for training (only)
-my $significant_bayesian_signal = 0.70; # probability high enough to plot on the output graph
-my $allow_neutral_signals       =    1; # predictions are always buy or sell? or should neutral be an option
+my $period                      = 5;          # days into the future we want to predict
+my $significant_pdiff           = 0.01;       # this is a significant price jump (0.1 is 10%)
+my $train_size                  = 0.80;       # use this amount of the data for training (only)
+my $significant_bayesian_signal = 0.70;       # probability high enough to plot on the output graph
+my $allow_neutral_signals       = 1;          # predictions are always buy or sell? or should neutral be an option
 
 my $quotes   = find_quotes_for($ticker=>$slurpp);
 my $sz       = @$quotes;
