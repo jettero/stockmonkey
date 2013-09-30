@@ -24,33 +24,55 @@ sub scan_for_events {
     my $last_row = $quotes->[0];
 
     for my $row ( @$quotes[1..$#$quotes] ) {
+
+        if( exists $last_row->{event} ) {
+            if( not exists $last_row->{max_age} ) {
+                $row->{event}   = $last_row->{event};
+                $row->{age}     = 1 + $last_row->{age};
+
+            } elsif( $last_row->{age} < $last_row->{max_age} ) {
+                $row->{event}   = $last_row->{event};
+                $row->{age}     = 1 + $last_row->{age};
+                $row->{max_age} = $last_row->{max_age};
+            }
+        }
+
         if( $last_row->{rsi} < 70 and $row->{rsi} >= 70 ) {
-            $row->{event} = "OVERBOUGHT-1";
+            $row->{event} = "OVERBOUGHT";
+            $row->{age} = 1;
+            delete $row->{max_age};
         }
 
         if( $last_row->{rsi} > 30 and $row->{rsi} <= 30 ) {
-            $row->{event} = "OVERSOLD-1";
+            $row->{event} = "OVERSOLD";
+            $row->{age} = 1;
+            delete $row->{max_age};
         }
 
-        if( not exists $row->{event} and exists $last_row->{event} ) {
-            my ($event, $age) = $last_row->{event} =~ m/(\w+)-(\d+)/;
-            $row->{event} = "$event-" . ($age+1);
+        next unless exists $row->{event};
+
+        if( $row->{event} eq "OVERBOUGHT" and $last_row->{rsi} > 60 and $row->{rsi} <= 60 ) {
+            $row->{event}   = "DIP";
+            $row->{age}     = 1;
+            $row->{max_age} = 3;
         }
 
-        if( exists $row->{event} and my ($event, $age) = $row->{event} =~ m/(\w+)-(\d+)/ ) {
-            if( $event eq "OVERBOUGHT" and $last_row->{rsi} > 60 and $row->{rsi} <= 60 ) {
-                delete $row->{event};
-                if( $row->{lag4} < $row->{lag8} ) {
-                    $row->{EVENT} = "SELL";
-                }
-            }
+        elsif ( $row->{event} eq "OVERSOLD" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
+            $row->{event}   = "SPIKE";
+            $row->{age}     = 1;
+            $row->{max_age} = 3;
+        }
 
-            if( $event eq "OVERSOLD" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
-                delete $row->{event};
-                if( $row->{lag4} > $row->{lag8} ) {
-                    $row->{EVENT} = "BUY";
-                }
-            }
+        if( $row->{event} eq "DIP" and $last_row->{lag4} < $last_row->{lag8} ) {
+            $row->{event}   = "SELL";
+            $row->{age}     = 1;
+            $row->{max_age} = 1;
+        }
+
+        if( $row->{event} eq "SPIKE" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
+            $row->{event}   = "BUY";
+            $row->{age}     = 1;
+            $row->{max_age} = 1;
         }
 
         $last_row = $row;
