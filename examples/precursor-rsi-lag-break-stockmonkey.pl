@@ -17,11 +17,11 @@ my $quotes = find_quotes_for($ticker=>$slurpp);
 
 scan_for_events();
 
-print dump($quotes), "\n";
-
 # {{{ sub scan_for_events
 sub scan_for_events {
     my $last_row = $quotes->[0];
+
+    local $| = 1; # print immediately, don't buffer lines
 
     for my $row ( @$quotes[1..$#$quotes] ) {
 
@@ -41,12 +41,14 @@ sub scan_for_events {
             $row->{event} = "OVERBOUGHT";
             $row->{age} = 1;
             delete $row->{max_age};
+            print "$row->{event} ";
         }
 
         if( $last_row->{rsi} > 30 and $row->{rsi} <= 30 ) {
             $row->{event} = "OVERSOLD";
             $row->{age} = 1;
             delete $row->{max_age};
+            print "$row->{event} ";
         }
 
         next unless exists $row->{event};
@@ -55,28 +57,34 @@ sub scan_for_events {
             $row->{event}   = "DIP";
             $row->{age}     = 1;
             $row->{max_age} = 3;
+            print "$row->{event} ";
         }
 
         elsif ( $row->{event} eq "OVERSOLD" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
             $row->{event}   = "SPIKE";
             $row->{age}     = 1;
             $row->{max_age} = 3;
+            print "$row->{event} ";
         }
 
         if( $row->{event} eq "DIP" and $last_row->{lag4} < $last_row->{lag8} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
             $row->{max_age} = 1;
+            print "!$row->{event}! ";
         }
 
         if( $row->{event} eq "SPIKE" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
             $row->{event}   = "BUY";
             $row->{age}     = 1;
             $row->{max_age} = 1;
+            print "!$row->{event}! ";
         }
 
         $last_row = $row;
     }
+
+    print "\n";
 }
 
 # }}}
