@@ -67,14 +67,14 @@ sub scan_for_events {
             print "$row->{event} ";
         }
 
-        if( $row->{event} eq "DIP" and $last_row->{lag4} < $last_row->{lag8} ) {
+        if( $row->{event} eq "DIP" and $row->{lag4} < $row->{lag8} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
             $row->{max_age} = 1;
             print "!$row->{event}! ";
         }
 
-        if( $row->{event} eq "SPIKE" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
+        if( $row->{event} eq "SPIKE" and $row->{lag4} > $row->{lag8} ) {
             $row->{event}   = "BUY";
             $row->{age}     = 1;
             $row->{max_age} = 1;
