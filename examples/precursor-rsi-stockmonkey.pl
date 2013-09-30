@@ -9,13 +9,6 @@ use Math::Business::RSI;
 use Data::Dump qw(dump);
 use GD::Graph::mixed;
 use List::Util qw(min max);
-use constant {
-    DATE   => 0,
-    CLOSE  => 1,
-    RSI    => 2,
-    BUY_P  => 3,
-    SELL_P => 4,
-};
 
 my $ticker = shift || "JPM";
 
@@ -48,8 +41,8 @@ sub solve_on {
 
         print "[predict] ", dump({given=>$attrs, result=>$result}), "\n";
 
-        $day->[BUY_P]  = $result->{buy};
-        $day->[SELL_P] = $result->{sell};
+        $day->{buy_p}  = $result->{buy};
+        $day->{sell_p} = $result->{sell};
     }
 }
 
@@ -65,8 +58,8 @@ sub train_on {
 
         my $attrs = find_attrs($day,$prev);
 
-        my $diff  = $future->[CLOSE] - $day->[CLOSE];
-        my $pdiff = $diff / $day->[CLOSE];
+        my $diff  = $future->{close} - $day->{close};
+        my $pdiff = $diff / $day->{close};
 
         my $label = $pdiff >=  $significant_pdiff ? "buy"
                   : $pdiff <= -$significant_pdiff ? "sell"
@@ -87,29 +80,29 @@ sub train_on {
 sub find_attrs {
     my ($day, $prev) = @_;
 
-    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $day->[RSI];
-    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $prev->[RSI];
+    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $day->{rsi};
+    die "no rsi?? " . dump({day=>$day, prev=>$prev}) unless defined $prev->{rsi};
 
     my %attrs;
 
     # traditional interpretations
-    $attrs{rsi_overbought} = 1 if $day->[RSI] >= 90;
-    $attrs{rsi_oversold} = 1   if $day->[RSI] <= 10;
-    $attrs{rsi_sell} = 1       if $day->[RSI] >= 90 and $prev->[RSI] < 90;
-    $attrs{rsi_buy} = 1        if $day->[RSI] <= 10 and $prev->[RSI] > 10;
+    $attrs{rsi_overbought} = 1 if $day->{rsi} >= 90;
+    $attrs{rsi_oversold} = 1   if $day->{rsi} <= 10;
+    $attrs{rsi_sell} = 1       if $day->{rsi} >= 90 and $prev->{rsi} < 90;
+    $attrs{rsi_buy} = 1        if $day->{rsi} <= 10 and $prev->{rsi} > 10;
     # NOTE: if I have these backwards, it doesn't really matter, Bayes will sort that out
 
     # other factoids of questionable value and unknown meaning
-    $attrs{rsi_above} = 1           if $day->[RSI] > 50;
-    $attrs{rsi_below} = 1           if $day->[RSI] < 50;
-    $attrs{rsi_moar_above} = 1      if $day->[RSI] > 65;
-    $attrs{rsi_moar_below} = 1      if $day->[RSI] < 35;
-    $attrs{rsi_prev_above} = 1      if $prev->[RSI] > 50;
-    $attrs{rsi_prev_below} = 1      if $prev->[RSI] < 50;
-    $attrs{rsi_prev_moar_above} = 1 if $prev->[RSI] > 65;
-    $attrs{rsi_prev_moar_below} = 1 if $prev->[RSI] < 35;
-    $attrs{rsi_trend_up}   = 1      if $day->[RSI] > $prev->[RSI];
-    $attrs{rsi_trend_down} = 1      if $day->[RSI] < $prev->[RSI];
+    $attrs{rsi_above} = 1           if $day->{rsi} > 50;
+    $attrs{rsi_below} = 1           if $day->{rsi} < 50;
+    $attrs{rsi_moar_above} = 1      if $day->{rsi} > 65;
+    $attrs{rsi_moar_below} = 1      if $day->{rsi} < 35;
+    $attrs{rsi_prev_above} = 1      if $prev->{rsi} > 50;
+    $attrs{rsi_prev_below} = 1      if $prev->{rsi} < 50;
+    $attrs{rsi_prev_moar_above} = 1 if $prev->{rsi} > 65;
+    $attrs{rsi_prev_moar_below} = 1 if $prev->{rsi} < 35;
+    $attrs{rsi_trend_up}   = 1      if $day->{rsi} > $prev->{rsi};
+    $attrs{rsi_trend_down} = 1      if $day->{rsi} < $prev->{rsi};
 
     return \%attrs;
 }
@@ -121,7 +114,7 @@ sub find_quotes_for {
 
     my $tick = uc(shift || "MSFT");
     my $time = lc(shift || "6 months");
-    my $fnam = "/tmp/$tick-$time.dat";
+    my $fnam = "/tmp/p1-$tick-$time.dat";
 
     my $res = eval { retrieve($fnam) };
     return $res if $res;
@@ -139,7 +132,8 @@ sub find_quotes_for {
 
         $rsi->insert( $close );
         my $v = $rsi->query;
-        push @todump, [ $date, $close, $v ] if defined $v;
+
+        push @todump, { date=>$date, close=>$close, rsi=>$v } if defined $v;
     }
 
     store(\@todump => $fnam);
@@ -156,10 +150,10 @@ sub plot_result {
     for(@$quotes[$train_sz+1 .. $#$quotes]) {
         no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
-        push @{ $data[0] }, $_->[DATE];
-        push @{ $data[1] }, $_->[CLOSE];
-        push @{ $data[2] }, $_->[SELL_P] > $significant_bayesian_signal ? $_->[CLOSE]*0.95 : undef;
-        push @{ $data[3] }, $_->[BUY_P]  > $significant_bayesian_signal ? $_->[CLOSE]*1.05 : undef;
+        push @{ $data[0] }, $_->{date};
+        push @{ $data[1] }, $_->{close};
+        push @{ $data[2] }, $_->{sell_p} > $significant_bayesian_signal ? $_->{close}*0.95 : undef;
+        push @{ $data[3] }, $_->{buy_p}  > $significant_bayesian_signal ? $_->{close}*1.05 : undef;
     }
 
     my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
