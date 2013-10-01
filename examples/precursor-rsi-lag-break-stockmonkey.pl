@@ -144,7 +144,7 @@ sub plot_result {
         for(@$quotes[-300 .. -1]) {
             no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
-            push @{ $data[0] }, $_->{date};
+            push @{ $data[0] }, ''; # $_->{date};
             push @{ $data[1] }, $_->{close};
         }
 
@@ -157,7 +157,7 @@ sub plot_result {
            $graph->set_legend(qw(close));
            $graph->set(
                y_label           => "dollars $ticker",
-               x_label           => 'date',
+               x_label           => '',
                transparent       => 0,
                dclrs             => [qw(dgray)],
                types             => [qw(lines)],
