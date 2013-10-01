@@ -169,6 +169,7 @@ sub plot_result {
 
            ) or die $graph->error;
 
+        # return gd
         $graph->plot(\@data) or die $graph->error;
     };
 
@@ -202,7 +203,19 @@ sub plot_result {
 
            ) or die $graph->error;
 
-        $graph->plot(\@data) or die $graph->error;
+        my $gd = $graph->plot(\@data) or die $graph->error;
+
+        my @lhs = $graph->val_to_pixel(0,50);
+        my @rhs = $graph->val_to_pixel( @{$data[0]}-1, 50 );
+
+        # XXX: hack alert... {fgci} is the color of the axis
+
+        my $rsi_axis_clr = $graph->set_clr(GD::Graph::colour::_rgb('lgrey'));
+
+        $gd->line(@lhs,@rhs,$rsi_axis_clr);
+
+        # return
+        $gd;
     };
 
     # }}}
