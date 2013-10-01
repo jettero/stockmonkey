@@ -17,6 +17,8 @@ Changes
 examples/forex-macd-rsi-database-populator.pl
 examples/graph-moving-averages.pl
 examples/graph-parabolic-sar.pl
+examples/precursor-rsi-lag-break-stockmonkey.pl
+examples/precursor-rsi-stockmonkey.pl
 examples/slurp_msft.pl
 lib/Math/Business/StockMonkey.pod
 lib/Math/Business/StockMonkey/CookBook.pod
@@ -45,4 +47,3 @@ t/10_lf.t
 t/11_alf.t
 t/12_cci.t
 t/13_sto.t
-examples/precursor-stockmonkey.pl
