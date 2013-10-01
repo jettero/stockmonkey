@@ -16,6 +16,7 @@ my $slurpp = "10 years"; # data we want to fetch
 my $quotes = find_quotes_for($ticker=>$slurpp);
 
 scan_for_events();
+plot_result();
 
 # {{{ sub scan_for_events
 sub scan_for_events {
@@ -56,14 +57,14 @@ sub scan_for_events {
         if( $row->{event} eq "OVERBOUGHT" and $last_row->{rsi} > 60 and $row->{rsi} <= 60 ) {
             $row->{event}   = "DIP";
             $row->{age}     = 1;
-            $row->{max_age} = 3;
+            $row->{max_age} = 5;
             print "$row->{event} ";
         }
 
         elsif ( $row->{event} eq "OVERSOLD" and $last_row->{rsi} < 40 and $row->{rsi} >= 40 ) {
             $row->{event}   = "SPIKE";
             $row->{age}     = 1;
-            $row->{max_age} = 3;
+            $row->{max_age} = 5;
             print "$row->{event} ";
         }
 
@@ -74,7 +75,7 @@ sub scan_for_events {
             print "!$row->{event}! ";
         }
 
-        if( $row->{event} eq "SPIKE" and $row->{lag4} > $row->{lag8} ) {
+        elsif( $row->{event} eq "SPIKE" and $row->{lag4} > $row->{lag8} ) {
             $row->{event}   = "BUY";
             $row->{age}     = 1;
             $row->{max_age} = 1;
