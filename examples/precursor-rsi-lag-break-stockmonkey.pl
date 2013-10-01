@@ -154,8 +154,9 @@ sub plot_result {
         my $width = 100 + 11*@{$data[0]};
 
         my $graph = GD::Graph::mixed->new($width, 500);
-           $graph->set_legend(qw(close));
+           $graph->set_legend(map { sprintf "%6s",$_ } qw(close) );
            $graph->set(
+               legend_placement  => 'RT',
                y_label           => "dollars $ticker",
                x_label           => '',
                transparent       => 0,
@@ -163,7 +164,7 @@ sub plot_result {
                types             => [qw(lines)],
                y_min_value       => $min_point-0.2,
                y_max_value       => $max_point+0.2,
-               y_number_format   => '%0.2f',
+               y_number_format   => '%6.2f',
                x_labels_vertical => 1,
 
            ) or die $graph->error;
@@ -183,22 +184,20 @@ sub plot_result {
             push @{ $data[1] }, $_->{rsi};
         }
 
-        my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
-        my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
-
         my $width = 100 + 11*@{$data[0]};
 
-        my $graph = GD::Graph::mixed->new($width, 500);
-           $graph->set_legend(qw(rsi));
+        my $graph = GD::Graph::mixed->new($width, 150);
+           $graph->set_legend( map { sprintf "%6s", $_ } qw(rsi) );
            $graph->set(
+               legend_placement  => 'RT',
                y_label           => "rsi $ticker",
                x_label           => 'date',
                transparent       => 0,
                dclrs             => [qw(dgray)],
                types             => [qw(lines)],
-               y_min_value       => $min_point-0.2,
-               y_max_value       => $max_point+0.2,
-               y_number_format   => '%0.2f',
+               y_min_value       => 0,
+               y_max_value       => 100,
+               y_number_format   => '%6.2f',
                x_labels_vertical => 1,
 
            ) or die $graph->error;
