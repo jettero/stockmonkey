@@ -209,13 +209,21 @@ sub plot_result {
             my $curry_draw_axes = sub {
                 my $this = $_[0];
 
-                my @lhs = $this->val_to_pixel(0,50);
-                my @rhs = $this->val_to_pixel( @{$data[0]}-1, 50 );
-
                 my $rsi_axis_clr = $this->set_clr(0xaa,0xaa,0xaa);
+                    my @lhs = $this->val_to_pixel(0,50);
+                    my @rhs = $this->val_to_pixel( @{$data[0]}-1, 50 );
+                    $this->{graph}->line(@lhs,@rhs,$rsi_axis_clr);
 
-                $this->{graph}->line(@lhs,@rhs,$rsi_axis_clr);
+                $rsi_axis_clr = $this->set_clr(0xdd,0xdd,0xdd);
+                    @lhs = $this->val_to_pixel(0,100);
+                    @rhs = $this->val_to_pixel( @{$data[0]}-1, 70 );
+                    $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
 
+                    @lhs = $this->val_to_pixel(0,30);
+                    @rhs = $this->val_to_pixel( @{$data[0]}-1, 0 );
+                    $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
+
+                ### now call the original
                 $_orig_draw_axes->(@_);
             };
 
