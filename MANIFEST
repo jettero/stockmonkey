@@ -19,7 +19,7 @@ examples/graph-moving-averages.pl
 examples/graph-parabolic-sar.pl
 examples/precursor-rsi-lag-break-stockmonkey.pl
 examples/precursor-rsi-stockmonkey.pl
-examples/slurp_msft.pl
+examples/slurp_ticker.pl
 lib/Math/Business/StockMonkey.pod
 lib/Math/Business/StockMonkey/CookBook.pod
 lib/Math/Business/StockMonkey/FAQ.pod
@@ -30,6 +30,7 @@ msft_6-13-8.txt
 msft_6-17-8.txt
 rand.data
 README
+jpm-2013-10-02.txt
 t/01_sma.t
 t/02_ema.t
 t/03_macd.t

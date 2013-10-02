@@ -3,9 +3,12 @@
 use strict;
 use Data::Dump qw(dump);
 
+my @tickers = @_;
+push @tickers, "MSFT" unless @tickers;
+
 use Finance::QuoteHist;
 my $q = Finance::QuoteHist->new(
-    symbols    => [qw(MSFT)],
+    symbols    => [@tickers],
     start_date => '6 months ago',
     end_date   => 'today',
 );
