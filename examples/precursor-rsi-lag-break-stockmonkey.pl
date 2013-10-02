@@ -11,7 +11,10 @@ use Data::Dump qw(dump);
 use GD::Graph::lines;
 use List::Util qw(min max);
 
-my $ticker = shift || "JPM";
+my $ticker = shift || "SCTY";
+my $phist  = shift || 150; # final plot history items
+my $lagf   = shift || 4;   # speed of fast laguerre filter
+my $lags   = shift || 8;   # speed of slow laguerre filter
 my $slurpp = "10 years"; # data we want to fetch
 my $quotes = find_quotes_for($ticker=>$slurpp);
 
@@ -68,6 +71,8 @@ sub scan_for_events {
             print "$row->{event} ";
         }
 
+        warn "$row->{date} $row->{event} eq 'DIP' and $row->{lagf} < $row->{lags}";
+
         if( $row->{event} eq "DIP" and $row->{lagf} < $row->{lags} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
@@ -92,12 +97,12 @@ sub scan_for_events {
 # {{{ sub find_quotes_for
 sub find_quotes_for {
     our $rsi  ||= Math::Business::RSI->recommended;
-    our $lagf ||= Math::Business::LaguerreFilter->new(2/(1+4));
-    our $lags ||= Math::Business::LaguerreFilter->new(2/(1+8));
+    our $lagf ||= Math::Business::LaguerreFilter->new(2/(1+$lagf));
+    our $lags ||= Math::Business::LaguerreFilter->new(2/(1+$lags));
 
-    my $tick = uc(shift || "MSFT");
+    my $tick = uc(shift || "SCTY");
     my $time = lc(shift || "6 months");
-    my $fnam = "/tmp/p2-$tick-$time.dat";
+    my $fnam = "/tmp/p2-$tick-$time-$lagf-$lags.dat";
 
     my $res = eval { retrieve($fnam) };
     return $res if $res;
@@ -142,7 +147,7 @@ sub plot_result {
     my $gd_price = do {
         my @data;
 
-        for(@$quotes[-300 .. -1]) {
+        for(@$quotes[-$phist .. -1]) {
             no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
             push @{ $data[0] }, ''; # $_->{date};
@@ -171,6 +176,39 @@ sub plot_result {
 
            ) or die $graph->error;
 
+        # {{{ LAZY_CURRY_HACK:
+        LAZY_CURRY_HACK: {
+            no warnings 'redefine';
+
+            # NOTE: the right way to do this is a subclass currying is lazy
+            my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
+            my $curry_draw_axes = sub {
+                my $this = $_[0];
+
+                $this->{gdta_x_axis}->set_align('bottom', 'center');
+                my $x = 1;
+                for(@$quotes[-$phist..-1]) {
+                    if( exists $_->{event} and $_->{age} == 1 and $_->{event} ~~ [qw(BUY SELL)]) {
+                        my @lhs = $this->val_to_pixel($x, $_->{lagf}*($_->{event} eq "BUY" ? 0.9 : 1.1));
+
+                        $this->{gdta_x_axis}->set_text(lc $_->{event});
+                        $this->{gdta_x_axis}->draw(@lhs, 1.5707);
+
+                        print "labeling $_->{event} on $_->{date}\n";
+                    }
+                    $x ++;
+                }
+
+                ### now call the original
+                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
+                GD::Graph::axestype::draw_axes(@_);
+            };
+
+            *GD::Graph::axestype::draw_axes = $curry_draw_axes;
+        }
+
+        # }}}
+
         # return gd
         $graph->plot(\@data) or die $graph->error;
     };
@@ -180,7 +218,7 @@ sub plot_result {
     my $gd_rsi = do {
         my @data;
 
-        for(@$quotes[-300..-1]) {
+        for(@$quotes[-$phist..-1]) {
             no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
             push @{ $data[0] }, $_->{date};
@@ -207,6 +245,8 @@ sub plot_result {
 
         # {{{ LAZY_CURRY_HACK:
         LAZY_CURRY_HACK: {
+            no warnings 'redefine';
+
             # NOTE: the right way to do this is a subclass currying is lazy
             my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
             my $curry_draw_axes = sub {
@@ -228,7 +268,7 @@ sub plot_result {
 
                 $this->{gdta_x_axis}->set_align('bottom', 'center');
                 my $x = 1;
-                for(@$quotes[-300..-1]) {
+                for(@$quotes[-$phist..-1]) {
                     if( exists $_->{event} and $_->{age} == 1 and not $_->{event} ~~ [qw(BUY SELL)]) {
                         @lhs = $this->val_to_pixel($x,50);
 
@@ -241,10 +281,10 @@ sub plot_result {
                 }
 
                 ### now call the original
-                $_orig_draw_axes->(@_);
+                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
+                GD::Graph::axestype::draw_axes(@_);
             };
 
-            no warnings 'redefine';
             *GD::Graph::axestype::draw_axes = $curry_draw_axes;
         }
 
