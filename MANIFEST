@@ -48,3 +48,4 @@ t/10_lf.t
 t/11_alf.t
 t/12_cci.t
 t/13_sto.t
+t/14_crsi.t

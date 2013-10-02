@@ -3,13 +3,13 @@
 use strict;
 use Data::Dump qw(dump);
 
-my @tickers = @_;
-push @tickers, "MSFT" unless @tickers;
+my $ticker = shift;
+my $period = "@ARGV" || "6 months";
 
 use Finance::QuoteHist;
 my $q = Finance::QuoteHist->new(
-    symbols    => [@tickers],
-    start_date => '6 months ago',
+    symbols    => [$ticker],
+    start_date => "$period ago",
     end_date   => 'today',
 );
 
