@@ -22,7 +22,7 @@ plot_result();
 sub scan_for_events {
     my $last_row = $quotes->[0];
 
-    local $| = 1; # print immediately, don't buffer lines
+    print "\n-------: scanning for events:\n";
 
     for my $row ( @$quotes[1..$#$quotes] ) {
 
@@ -68,14 +68,14 @@ sub scan_for_events {
             print "$row->{event} ";
         }
 
-        if( $row->{event} eq "DIP" and $row->{lag4} < $row->{lag8} ) {
+        if( $row->{event} eq "DIP" and $row->{lagf} < $row->{lags} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
             $row->{max_age} = 1;
             print "!$row->{event}! ";
         }
 
-        elsif( $row->{event} eq "SPIKE" and $row->{lag4} > $row->{lag8} ) {
+        elsif( $row->{event} eq "SPIKE" and $row->{lagf} > $row->{lags} ) {
             $row->{event}   = "BUY";
             $row->{age}     = 1;
             $row->{max_age} = 1;
@@ -85,15 +85,15 @@ sub scan_for_events {
         $last_row = $row;
     }
 
-    print "\n";
+    print "\n\n";
 }
 
 # }}}
 # {{{ sub find_quotes_for
 sub find_quotes_for {
     our $rsi  ||= Math::Business::RSI->recommended;
-    our $lag4 ||= Math::Business::LaguerreFilter->new(2/(1+4));
-    our $lag8 ||= Math::Business::LaguerreFilter->new(2/(1+8));
+    our $lagf ||= Math::Business::LaguerreFilter->new(2/(1+4));
+    our $lags ||= Math::Business::LaguerreFilter->new(2/(1+8));
 
     my $tick = uc(shift || "MSFT");
     my $time = lc(shift || "6 months");
@@ -114,15 +114,15 @@ sub find_quotes_for {
         my ($symbol, $date, $open, $high, $low, $close, $volume) = @$row;
 
         $rsi->insert( $close );
-        $lag4->insert( $close );
-        $lag8->insert( $close );
+        $lagf->insert( $close );
+        $lags->insert( $close );
 
         my $row = {
             date  => $date,
             close => $close,
             rsi   => $rsi->query,
-            lag4  => $lag4->query,
-            lag8  => $lag8->query,
+            lagf  => $lagf->query,
+            lags  => $lags->query,
         };
 
         # only insert rows that are all defined
@@ -137,6 +137,7 @@ sub find_quotes_for {
 # }}}
 # {{{ sub plot_result
 sub plot_result {
+    print "-------: plotting results:\n";
     # {{{ my $gd_price = do
     my $gd_price = do {
         my @data;
@@ -146,8 +147,8 @@ sub plot_result {
 
             push @{ $data[0] }, ''; # $_->{date};
             push @{ $data[1] }, $_->{close};
-            push @{ $data[2] }, $_->{lag8};
-            push @{ $data[3] }, $_->{lag4};
+            push @{ $data[2] }, $_->{lagf};
+            push @{ $data[3] }, $_->{lags};
         }
 
         my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
@@ -156,7 +157,7 @@ sub plot_result {
         my $width = 100 + 11*@{$data[0]};
 
         my $graph = GD::Graph::lines->new($width, 500);
-           $graph->set_legend(map { sprintf "%6s",$_ } qw(close) );
+           $graph->set_legend(map { sprintf "%6s",$_ } qw(close lagf lags) );
            $graph->set(
                legend_placement  => 'RT',
                y_label           => "dollars $ticker",
@@ -233,6 +234,8 @@ sub plot_result {
 
                         $this->{gdta_x_axis}->set_text(lc $_->{event});
                         $this->{gdta_x_axis}->draw(@lhs, 1.5707);
+
+                        print "labeling $_->{event} on $_->{date}\n";
                     }
                     $x ++;
                 }
@@ -255,8 +258,6 @@ sub plot_result {
     die "something is wrong" unless $gd_price->width == $gd_rsi->width;
 
     my $gd = GD::Image->new( $gd_price->width, $gd_price->height + $gd_rsi->height );
-
-    # $image->copyMergeGray($sourceImage,$dstX,$dstY, $srcX,$srcY,$width,$height,$percent)
 
     $gd->copy( $gd_price, 0,0,                 0,0, $gd_price->width, $gd_price->height);
     $gd->copy( $gd_rsi,   0,$gd_price->height, 0,0, $gd_rsi->width,   $gd_rsi->height);
