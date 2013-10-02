@@ -8,7 +8,7 @@ use Algorithm::NaiveBayes;
 use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
 use Data::Dump qw(dump);
-use GD::Graph::mixed;
+use GD::Graph::lines;
 use List::Util qw(min max);
 
 my $ticker = shift || "JPM";
@@ -146,6 +146,8 @@ sub plot_result {
 
             push @{ $data[0] }, ''; # $_->{date};
             push @{ $data[1] }, $_->{close};
+            push @{ $data[2] }, $_->{lag8};
+            push @{ $data[3] }, $_->{lag4};
         }
 
         my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
@@ -153,15 +155,14 @@ sub plot_result {
 
         my $width = 100 + 11*@{$data[0]};
 
-        my $graph = GD::Graph::mixed->new($width, 500);
+        my $graph = GD::Graph::lines->new($width, 500);
            $graph->set_legend(map { sprintf "%6s",$_ } qw(close) );
            $graph->set(
                legend_placement  => 'RT',
                y_label           => "dollars $ticker",
                x_label           => '',
                transparent       => 0,
-               dclrs             => [qw(dgray)],
-               types             => [qw(lines)],
+               dclrs             => [qw(dblue lblue lgreen)],
                y_min_value       => $min_point-0.2,
                y_max_value       => $max_point+0.2,
                y_number_format   => '%6.2f',
@@ -187,7 +188,7 @@ sub plot_result {
 
         my $width = 100 + 11*@{$data[0]};
 
-        my $graph = GD::Graph::mixed->new($width, 150);
+        my $graph = GD::Graph::lines->new($width, 150);
            $graph->set_legend( map { sprintf "%6s", $_ } qw(rsi) );
            $graph->set(
                legend_placement  => 'RT',
@@ -203,25 +204,38 @@ sub plot_result {
 
            ) or die $graph->error;
 
-        {
-        # NOTE: the right way to do this is a subclass currying is lazy
+        # {{{ LAZY_CURRY_HACK:
+        LAZY_CURRY_HACK: {
+            # NOTE: the right way to do this is a subclass currying is lazy
             my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
             my $curry_draw_axes = sub {
                 my $this = $_[0];
 
                 my $rsi_axis_clr = $this->set_clr(0xaa,0xaa,0xaa);
-                    my @lhs = $this->val_to_pixel(0,50);
-                    my @rhs = $this->val_to_pixel( @{$data[0]}-1, 50 );
+                    my @lhs = $this->val_to_pixel(1,50);
+                    my @rhs = $this->val_to_pixel( @{$data[0]}+0, 50 );
                     $this->{graph}->line(@lhs,@rhs,$rsi_axis_clr);
 
                 $rsi_axis_clr = $this->set_clr(0xdd,0xdd,0xdd);
-                    @lhs = $this->val_to_pixel(0,100);
-                    @rhs = $this->val_to_pixel( @{$data[0]}-1, 70 );
+                    @lhs = $this->val_to_pixel(1,100);
+                    @rhs = $this->val_to_pixel( @{$data[0]}+0, 70 );
                     $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
 
-                    @lhs = $this->val_to_pixel(0,30);
-                    @rhs = $this->val_to_pixel( @{$data[0]}-1, 0 );
+                    @lhs = $this->val_to_pixel(1,30);
+                    @rhs = $this->val_to_pixel( @{$data[0]}+0, 0 );
                     $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
+
+                $this->{gdta_x_axis}->set_align('bottom', 'center');
+                my $x = 1;
+                for(@$quotes[-300..-1]) {
+                    if( exists $_->{event} and $_->{age} == 1 and not $_->{event} ~~ [qw(BUY SELL)]) {
+                        @lhs = $this->val_to_pixel($x,50);
+
+                        $this->{gdta_x_axis}->set_text(lc $_->{event});
+                        $this->{gdta_x_axis}->draw(@lhs, 1.5707);
+                    }
+                    $x ++;
+                }
 
                 ### now call the original
                 $_orig_draw_axes->(@_);
@@ -230,6 +244,8 @@ sub plot_result {
             no warnings 'redefine';
             *GD::Graph::axestype::draw_axes = $curry_draw_axes;
         }
+
+        # }}}
 
         $graph->plot(\@data) or die $graph->error;
     };
