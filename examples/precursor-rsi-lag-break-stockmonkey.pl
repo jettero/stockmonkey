@@ -71,8 +71,6 @@ sub scan_for_events {
             print "$row->{event} ";
         }
 
-        warn "$row->{date} $row->{event} eq 'DIP' and $row->{lagf} < $row->{lags}";
-
         if( $row->{event} eq "DIP" and $row->{lagf} < $row->{lags} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
