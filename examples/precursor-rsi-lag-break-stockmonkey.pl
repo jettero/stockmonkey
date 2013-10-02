@@ -95,8 +95,8 @@ sub scan_for_events {
 # {{{ sub find_quotes_for
 sub find_quotes_for {
     our $rsi  ||= Math::Business::RSI->recommended;
-    our $lagf ||= Math::Business::LaguerreFilter->new(2/(1+$lagf));
-    our $lags ||= Math::Business::LaguerreFilter->new(2/(1+$lags));
+    our $lf   ||= Math::Business::LaguerreFilter->new(2/(1+$lagf));
+    our $ls   ||= Math::Business::LaguerreFilter->new(2/(1+$lags));
 
     my $tick = uc(shift || "SCTY");
     my $time = lc(shift || "6 months");
@@ -117,15 +117,15 @@ sub find_quotes_for {
         my ($symbol, $date, $open, $high, $low, $close, $volume) = @$row;
 
         $rsi->insert( $close );
-        $lagf->insert( $close );
-        $lags->insert( $close );
+        $lf->insert( $close );
+        $ls->insert( $close );
 
         my $row = {
             date  => $date,
             close => $close,
             rsi   => $rsi->query,
-            lagf  => $lagf->query,
-            lags  => $lags->query,
+            lagf  => $lf->query,
+            lags  => $ls->query,
         };
 
         # only insert rows that are all defined
