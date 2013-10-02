@@ -11,7 +11,10 @@ use Data::Dump qw(dump);
 use GD::Graph::lines;
 use List::Util qw(min max);
 
-my $ticker = shift || "JPM";
+my $ticker = shift || "SCTY";
+my $phist  = shift || 150; # final plot history items
+my $lagf   = shift || 4;   # speed of fast laguerre filter
+my $lags   = shift || 8;   # speed of slow laguerre filter
 my $slurpp = "10 years"; # data we want to fetch
 my $quotes = find_quotes_for($ticker=>$slurpp);
 
@@ -22,7 +25,7 @@ plot_result();
 sub scan_for_events {
     my $last_row = $quotes->[0];
 
-    local $| = 1; # print immediately, don't buffer lines
+    print "\n-------: scanning for events:\n";
 
     for my $row ( @$quotes[1..$#$quotes] ) {
 
@@ -68,14 +71,14 @@ sub scan_for_events {
             print "$row->{event} ";
         }
 
-        if( $row->{event} eq "DIP" and $row->{lag4} < $row->{lag8} ) {
+        if( $row->{event} eq "DIP" and $row->{lagf} < $row->{lags} ) {
             $row->{event}   = "SELL";
             $row->{age}     = 1;
             $row->{max_age} = 1;
             print "!$row->{event}! ";
         }
 
-        elsif( $row->{event} eq "SPIKE" and $row->{lag4} > $row->{lag8} ) {
+        elsif( $row->{event} eq "SPIKE" and $row->{lagf} > $row->{lags} ) {
             $row->{event}   = "BUY";
             $row->{age}     = 1;
             $row->{max_age} = 1;
@@ -85,19 +88,19 @@ sub scan_for_events {
         $last_row = $row;
     }
 
-    print "\n";
+    print "\n\n";
 }
 
 # }}}
 # {{{ sub find_quotes_for
 sub find_quotes_for {
     our $rsi  ||= Math::Business::RSI->recommended;
-    our $lag4 ||= Math::Business::LaguerreFilter->new(2/(1+4));
-    our $lag8 ||= Math::Business::LaguerreFilter->new(2/(1+8));
+    our $lagf ||= Math::Business::LaguerreFilter->new(2/(1+$lagf));
+    our $lags ||= Math::Business::LaguerreFilter->new(2/(1+$lags));
 
-    my $tick = uc(shift || "MSFT");
+    my $tick = uc(shift || "SCTY");
     my $time = lc(shift || "6 months");
-    my $fnam = "/tmp/p2-$tick-$time.dat";
+    my $fnam = "/tmp/p2-$tick-$time-$lagf-$lags.dat";
 
     my $res = eval { retrieve($fnam) };
     return $res if $res;
@@ -114,15 +117,15 @@ sub find_quotes_for {
         my ($symbol, $date, $open, $high, $low, $close, $volume) = @$row;
 
         $rsi->insert( $close );
-        $lag4->insert( $close );
-        $lag8->insert( $close );
+        $lagf->insert( $close );
+        $lags->insert( $close );
 
         my $row = {
             date  => $date,
             close => $close,
             rsi   => $rsi->query,
-            lag4  => $lag4->query,
-            lag8  => $lag8->query,
+            lagf  => $lagf->query,
+            lags  => $lags->query,
         };
 
         # only insert rows that are all defined
@@ -137,17 +140,18 @@ sub find_quotes_for {
 # }}}
 # {{{ sub plot_result
 sub plot_result {
+    print "-------: plotting results:\n";
     # {{{ my $gd_price = do
     my $gd_price = do {
         my @data;
 
-        for(@$quotes[-300 .. -1]) {
+        for(@$quotes[-$phist .. -1]) {
             no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
             push @{ $data[0] }, ''; # $_->{date};
             push @{ $data[1] }, $_->{close};
-            push @{ $data[2] }, $_->{lag8};
-            push @{ $data[3] }, $_->{lag4};
+            push @{ $data[2] }, $_->{lagf};
+            push @{ $data[3] }, $_->{lags};
         }
 
         my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
@@ -156,7 +160,7 @@ sub plot_result {
         my $width = 100 + 11*@{$data[0]};
 
         my $graph = GD::Graph::lines->new($width, 500);
-           $graph->set_legend(map { sprintf "%6s",$_ } qw(close) );
+           $graph->set_legend(map { sprintf "%6s",$_ } qw(close lagf lags) );
            $graph->set(
                legend_placement  => 'RT',
                y_label           => "dollars $ticker",
@@ -170,6 +174,39 @@ sub plot_result {
 
            ) or die $graph->error;
 
+        # {{{ LAZY_CURRY_HACK:
+        LAZY_CURRY_HACK: {
+            no warnings 'redefine';
+
+            # NOTE: the right way to do this is a subclass currying is lazy
+            my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
+            my $curry_draw_axes = sub {
+                my $this = $_[0];
+
+                $this->{gdta_x_axis}->set_align('bottom', 'center');
+                my $x = 1;
+                for(@$quotes[-$phist..-1]) {
+                    if( exists $_->{event} and $_->{age} == 1 and $_->{event} ~~ [qw(BUY SELL)]) {
+                        my @lhs = $this->val_to_pixel($x, $_->{lagf}*($_->{event} eq "BUY" ? 0.9 : 1.1));
+
+                        $this->{gdta_x_axis}->set_text(lc $_->{event});
+                        $this->{gdta_x_axis}->draw(@lhs, 1.5707);
+
+                        print "labeling $_->{event} on $_->{date}\n";
+                    }
+                    $x ++;
+                }
+
+                ### now call the original
+                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
+                GD::Graph::axestype::draw_axes(@_);
+            };
+
+            *GD::Graph::axestype::draw_axes = $curry_draw_axes;
+        }
+
+        # }}}
+
         # return gd
         $graph->plot(\@data) or die $graph->error;
     };
@@ -179,7 +216,7 @@ sub plot_result {
     my $gd_rsi = do {
         my @data;
 
-        for(@$quotes[-300..-1]) {
+        for(@$quotes[-$phist..-1]) {
             no warnings 'uninitialized'; # most of the *_P are undefined, and that's ok! treat them as 0
 
             push @{ $data[0] }, $_->{date};
@@ -206,6 +243,8 @@ sub plot_result {
 
         # {{{ LAZY_CURRY_HACK:
         LAZY_CURRY_HACK: {
+            no warnings 'redefine';
+
             # NOTE: the right way to do this is a subclass currying is lazy
             my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
             my $curry_draw_axes = sub {
@@ -227,21 +266,23 @@ sub plot_result {
 
                 $this->{gdta_x_axis}->set_align('bottom', 'center');
                 my $x = 1;
-                for(@$quotes[-300..-1]) {
+                for(@$quotes[-$phist..-1]) {
                     if( exists $_->{event} and $_->{age} == 1 and not $_->{event} ~~ [qw(BUY SELL)]) {
                         @lhs = $this->val_to_pixel($x,50);
 
                         $this->{gdta_x_axis}->set_text(lc $_->{event});
                         $this->{gdta_x_axis}->draw(@lhs, 1.5707);
+
+                        print "labeling $_->{event} on $_->{date}\n";
                     }
                     $x ++;
                 }
 
                 ### now call the original
-                $_orig_draw_axes->(@_);
+                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
+                GD::Graph::axestype::draw_axes(@_);
             };
 
-            no warnings 'redefine';
             *GD::Graph::axestype::draw_axes = $curry_draw_axes;
         }
 
@@ -255,8 +296,6 @@ sub plot_result {
     die "something is wrong" unless $gd_price->width == $gd_rsi->width;
 
     my $gd = GD::Image->new( $gd_price->width, $gd_price->height + $gd_rsi->height );
-
-    # $image->copyMergeGray($sourceImage,$dstX,$dstY, $srcX,$srcY,$width,$height,$percent)
 
     $gd->copy( $gd_price, 0,0,                 0,0, $gd_price->width, $gd_price->height);
     $gd->copy( $gd_rsi,   0,$gd_price->height, 0,0, $gd_rsi->width,   $gd_rsi->height);
