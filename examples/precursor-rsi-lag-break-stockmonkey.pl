@@ -203,19 +203,27 @@ sub plot_result {
 
            ) or die $graph->error;
 
-        my $gd = $graph->plot(\@data) or die $graph->error;
+        {
+        # NOTE: the right way to do this is a subclass currying is lazy
+            my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
+            my $curry_draw_axes = sub {
+                my $this = $_[0];
 
-        my @lhs = $graph->val_to_pixel(0,50);
-        my @rhs = $graph->val_to_pixel( @{$data[0]}-1, 50 );
+                my @lhs = $this->val_to_pixel(0,50);
+                my @rhs = $this->val_to_pixel( @{$data[0]}-1, 50 );
 
-        # XXX: hack alert... {fgci} is the color of the axis
+                my $rsi_axis_clr = $this->set_clr(0xaa,0xaa,0xaa);
 
-        my $rsi_axis_clr = $graph->set_clr(GD::Graph::colour::_rgb('lgrey'));
+                $this->{graph}->line(@lhs,@rhs,$rsi_axis_clr);
 
-        $gd->line(@lhs,@rhs,$rsi_axis_clr);
+                $_orig_draw_axes->(@_);
+            };
 
-        # return
-        $gd;
+            no warnings 'redefine';
+            *GD::Graph::axestype::draw_axes = $curry_draw_axes;
+        }
+
+        $graph->plot(\@data) or die $graph->error;
     };
 
     # }}}
