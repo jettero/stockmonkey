@@ -8,6 +8,7 @@ use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
 use Data::Dump qw(dump);
 use GD::Graph::lines;
+use GD::Graph::Hooks;
 use List::Util qw(min max);
 
 my $ticker = shift || "SCTY";
@@ -173,36 +174,23 @@ sub plot_result {
 
            ) or die $graph->error;
 
-        # {{{ LAZY_CURRY_HACK:
-        LAZY_CURRY_HACK: {
-            no warnings 'redefine';
+        $graph->add_hook( GD::Graph::Hooks::PRE_AXIS => sub {
+            my ($gobj, $gd, $left, $right, $top, $bottom, $gdta_x_axis) = @_;
 
-            # NOTE: the right way to do this is a subclass currying is lazy
-            my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
-            my $curry_draw_axes = sub {
-                my $this = $_[0];
+            $gdta_x_axis->set_align('bottom', 'center');
+            my $x = 1;
+            for(@$quotes[-$phist..-1]) {
+                if( exists $_->{event} and $_->{age} == 1 and $_->{event} ~~ [qw(BUY SELL)]) {
+                    my @lhs = $gobj->val_to_pixel($x, $_->{lagf}*($_->{event} eq "BUY" ? 0.9 : 1.1));
 
-                $this->{gdta_x_axis}->set_align('bottom', 'center');
-                my $x = 1;
-                for(@$quotes[-$phist..-1]) {
-                    if( exists $_->{event} and $_->{age} == 1 and $_->{event} ~~ [qw(BUY SELL)]) {
-                        my @lhs = $this->val_to_pixel($x, $_->{lagf}*($_->{event} eq "BUY" ? 0.9 : 1.1));
+                    $gdta_x_axis->set_text(lc $_->{event});
+                    $gdta_x_axis->draw(@lhs, 1.5707);
 
-                        $this->{gdta_x_axis}->set_text(lc $_->{event});
-                        $this->{gdta_x_axis}->draw(@lhs, 1.5707);
-
-                        print "labeling $_->{event} on $_->{date}\n";
-                    }
-                    $x ++;
+                    print "labeling $_->{event} on $_->{date}\n";
                 }
-
-                ### now call the original
-                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
-                GD::Graph::axestype::draw_axes(@_);
-            };
-
-            *GD::Graph::axestype::draw_axes = $curry_draw_axes;
-        }
+                $x ++;
+            }
+        });
 
         # }}}
 
@@ -240,50 +228,37 @@ sub plot_result {
 
            ) or die $graph->error;
 
-        # {{{ LAZY_CURRY_HACK:
-        LAZY_CURRY_HACK: {
-            no warnings 'redefine';
+        $graph->add_hook( GD::Graph::Hooks::PRE_AXIS => sub {
+            my ($gobj, $gd, $left, $right, $top, $bottom, $gdta_x_axis) = @_;
 
-            # NOTE: the right way to do this is a subclass currying is lazy
-            my $_orig_draw_axes = \&GD::Graph::axestype::draw_axes;
-            my $curry_draw_axes = sub {
-                my $this = $_[0];
+            my $rsi_axis_clr = $gobj->set_clr(0xaa,0xaa,0xaa);
+                my @lhs = $gobj->val_to_pixel(1,50);
+                my @rhs = $gobj->val_to_pixel( @{$data[0]}+0, 50 );
+                $gd->line(@lhs,@rhs,$rsi_axis_clr);
 
-                my $rsi_axis_clr = $this->set_clr(0xaa,0xaa,0xaa);
-                    my @lhs = $this->val_to_pixel(1,50);
-                    my @rhs = $this->val_to_pixel( @{$data[0]}+0, 50 );
-                    $this->{graph}->line(@lhs,@rhs,$rsi_axis_clr);
+            $rsi_axis_clr = $gobj->set_clr(0xdd,0xdd,0xdd);
+                @lhs = $gobj->val_to_pixel(1,100);
+                @rhs = $gobj->val_to_pixel( @{$data[0]}+0, 70 );
+                $gd->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
 
-                $rsi_axis_clr = $this->set_clr(0xdd,0xdd,0xdd);
-                    @lhs = $this->val_to_pixel(1,100);
-                    @rhs = $this->val_to_pixel( @{$data[0]}+0, 70 );
-                    $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
+                @lhs = $gobj->val_to_pixel(1,30);
+                @rhs = $gobj->val_to_pixel( @{$data[0]}+0, 0 );
+                $gd->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
 
-                    @lhs = $this->val_to_pixel(1,30);
-                    @rhs = $this->val_to_pixel( @{$data[0]}+0, 0 );
-                    $this->{graph}->filledRectangle(@lhs,@rhs,$rsi_axis_clr);
+            $gdta_x_axis->set_align('bottom', 'center');
+            my $x = 1;
+            for(@$quotes[-$phist..-1]) {
+                if( exists $_->{event} and $_->{age} == 1 and not $_->{event} ~~ [qw(BUY SELL)]) {
+                    @lhs = $gobj->val_to_pixel($x,50);
 
-                $this->{gdta_x_axis}->set_align('bottom', 'center');
-                my $x = 1;
-                for(@$quotes[-$phist..-1]) {
-                    if( exists $_->{event} and $_->{age} == 1 and not $_->{event} ~~ [qw(BUY SELL)]) {
-                        @lhs = $this->val_to_pixel($x,50);
+                    $gdta_x_axis->set_text(lc $_->{event});
+                    $gdta_x_axis->draw(@lhs, 1.5707);
 
-                        $this->{gdta_x_axis}->set_text(lc $_->{event});
-                        $this->{gdta_x_axis}->draw(@lhs, 1.5707);
-
-                        print "labeling $_->{event} on $_->{date}\n";
-                    }
-                    $x ++;
+                    print "labeling $_->{event} on $_->{date}\n";
                 }
-
-                ### now call the original
-                *GD::Graph::axestype::draw_axes = $_orig_draw_axes;
-                GD::Graph::axestype::draw_axes(@_);
-            };
-
-            *GD::Graph::axestype::draw_axes = $curry_draw_axes;
-        }
+                $x ++;
+            }
+        });
 
         # }}}
 
