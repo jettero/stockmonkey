@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Finance::QuoteHist;
 use Storable qw(store retrieve);
-use Algorithm::NaiveBayes;
 use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
 use Data::Dump qw(dump);
