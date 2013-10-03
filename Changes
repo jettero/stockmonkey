@@ -1,6 +1,7 @@
-2.9300_1: Fri Sep 27 2013
+2.9300_1: Thu Oct 03 2013
    - added ConnorRSI - Still lacks docs and tests
    - added a Bayesian example to the examples directory
+   - added a trading strategy example
 
 2.9200: Sun Sep 22 2013
    - added Stochastics
