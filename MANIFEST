@@ -21,7 +21,6 @@ examples/precursor-rsi-stockmonkey.pl
 examples/slurp_ticker.pl
 jpm-2013-10-02.txt
 lib/Math/Business/StockMonkey.pm
-lib/Math/Business/StockMonkey/Analyzer/RSI.pm
 lib/Math/Business/StockMonkey/CookBook.pod
 lib/Math/Business/StockMonkey/FAQ.pod
 Makefile.PL
