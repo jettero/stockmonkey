@@ -11,7 +11,10 @@ WriteMakefile(
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 
         (MIN_PERL_VERSION => 5.006001,
             META_MERGE => {
-                keywords => [qw(ATR bollinger-bands CCI DMI EMA HMA MACD RSI SMA WMU ParabolicSAR LaguerreFilter)],
+                keywords => [qw(
+                    ATR bollinger bands CCI DMI EMA HMA MACD RSI
+                    SMA WMU ParabolicSAR Laguerre Stochastic ConnorRSI CRSI
+                )],
                 resources=> {
                     repository => 'http://github.com/jettero/stockmonkey',
                 },
