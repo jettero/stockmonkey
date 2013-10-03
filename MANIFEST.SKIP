@@ -2,5 +2,6 @@
 .gitignore
 .graph.png
 .todo
-MANIFEST.SKIP
 dump.txt
+MANIFEST.SKIP
+version-file
