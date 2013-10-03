@@ -255,6 +255,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::Stochastic - Technical Analysis: Stochastic Oscillator
@@ -334,14 +336,6 @@ sense.
 
 To a certain extent, we therefore feel free to pick whatever we want for
 the defaults.
-
-=head1 TESTING DISCLAIMER
-
-Only modern_fast is tested.  It's always true that no two groups will compute a
-technical analysis index the same.  This is especially true of Stochastics.
-For this reason, the only test data to be found that was explicitly tied to
-a specific method was from C<stockcharts.com> and was for the C<%K> of a
-so-called "fast" stochastic 14 day.
 
 =head1 THANKS
 
