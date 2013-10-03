@@ -61,6 +61,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::HMA - Technical Analysis: Hull Moving Average

@@ -103,6 +103,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::ATR - Technical Analysis: Average True Range

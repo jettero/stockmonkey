@@ -93,6 +93,8 @@ sub insert {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::MACD - Technical Analysis: Moving Average Convergence/Divergence

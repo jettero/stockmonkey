@@ -88,6 +88,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::CCI - Technical Analysis: Commodity Channel Index

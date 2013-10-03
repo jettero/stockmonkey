@@ -181,6 +181,8 @@ sub short {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::ParabolicSAR - Technical Analysis: Stop and Reversal (aka SAR)

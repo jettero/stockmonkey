@@ -152,6 +152,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::DMI - Technical Analysis: Directional Movement Index (aka ADX)

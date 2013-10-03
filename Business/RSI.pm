@@ -132,6 +132,8 @@ sub query {
 
 __END__
 
+=encoding utf-8
+
 =head1 NAME
 
 Math::Business::RSI - Technical Analysis: Relative Strength Index
