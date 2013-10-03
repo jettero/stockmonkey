@@ -35,7 +35,7 @@ while( @crsi_from_tradeingview_d_com ) {
 
     my $d = abs($tv_crsi->[1] - $mb_crsi->[1]);
 
-    if( $d < 1 ) {
+    if( $d < 0.5 ) {
         ok( 1 );
 
     } else {

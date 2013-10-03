@@ -30,7 +30,7 @@ sub reset {
 
     $this->{cRSI} = Math::Business::RSI->new($this->{cdays}) if exists $this->{cRSI};
     $this->{sRSI} = Math::Business::RSI->new($this->{sdays}) if exists $this->{sRSI};
-    $this->{prank} = [];
+    $this->{prar} = [];
 }
 
 sub set_cdays {
@@ -73,7 +73,7 @@ sub insert {
 
     my $sRSI  = $this->{sRSI};
     my $cRSI  = $this->{cRSI};
-    my $prnk  = $this->{prank};
+    my $prar  = $this->{prar};
     my $pdays = $this->{pdays};
 
     # we store 1 extra so we can compare $pdays values
@@ -81,21 +81,22 @@ sub insert {
 
     while( defined( my $close_today = shift ) ) {
         if( defined $close_yesterday ) {
-            if( $close_yesterday < $close_today ) {
+            if( $close_yesterday > $close_today ) {
                 $streak = $streak >= 0 ? -1 : $streak-1;
 
-            } elsif( $close_yesterday > $close_today ) {
+            } elsif( $close_yesterday < $close_today ) {
                 $streak = $streak <= 0 ? 1 : $streak+1;
 
             } else {
                 $streak = 0;
             }
 
-            push @$prnk, ($close_today - $close_yesterday)/$close_yesterday;
-            shift @$prnk while @$prnk > $pdaysp1;
+            $sRSI->insert($streak);
+
+            push @$prar, ($close_today - $close_yesterday)/$close_yesterday;
+            shift @$prar while @$prar > $pdaysp1;
         }
 
-        $sRSI->insert($streak) if defined $streak;
         $cRSI->insert($close_today);
 
         $close_yesterday = $close_today;
@@ -104,18 +105,17 @@ sub insert {
     $this->{srsi} = my $srsi = $sRSI->query;
     $this->{crsi} = my $crsi = $cRSI->query;
 
-    if( defined $srsi and defined $crsi and @$prnk==$pdaysp1 ) {
-        my $v = $prnk->[-1];
+    if( defined $srsi and defined $crsi and @$prar==$pdaysp1 ) {
+        my $v = $prar->[-1];
         my $p = 0;
-        my $i = $#$prnk;
+        my $i = $#$prar;
 
         # we skip the first one, cuz that's $v
         while( (--$i) >= 0 ) {
-            $p ++ if $prnk->[$i] < $v;
+            $p ++ if $prar->[$i] < $v;
         }
 
         $this->{prank} = my $PR = 100 * ($p/$pdays);
-
         $this->{connor} = ( $srsi + $crsi + $PR ) / 3;
     }
 
