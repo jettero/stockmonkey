@@ -1,6 +1,6 @@
 package Math::Business::StockMonkey;
 
-our $VERSION = "2.9300_1";
+our $VERSION = "2.9400";
 
 1;
 
