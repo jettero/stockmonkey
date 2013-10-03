@@ -20,6 +20,6 @@ WriteMakefile(
                 },
             },
 
-        LICENSE	=> 'LGPL',
+        LICENSE	=> 'perl-artistic',
     ) : ()),
 );
