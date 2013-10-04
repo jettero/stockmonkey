@@ -1,3 +1,7 @@
+2.9301: Fri Oct 04 2013
+   - added an undocumented (experimental) tag feature,
+     descriptors for the models, mainly for graphing purposes.
+
 2.9300_1: Thu Oct 03 2013
    - added ConnorRSI - Still lacks docs and tests
    - added a Bayesian example to the examples directory

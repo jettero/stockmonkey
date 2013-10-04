@@ -1,6 +1,8 @@
+# vi:syntax=perl:
+
 package Math::Business::StockMonkey;
 
-our $VERSION = "2.9400";
+our $VERSION = "2.9401";
 
 1;
 
