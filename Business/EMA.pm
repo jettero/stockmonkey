@@ -6,6 +6,8 @@ use Carp;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -33,6 +35,8 @@ sub set_days {
     $this->{R}    = 2.0 / (1.0 + $arg);
     $this->{R1}   = (1 - $this->{R});
     $this->{days} = $arg;
+
+    $this->{tag} = "EMA($this->{days})";
 }
 
 sub insert {

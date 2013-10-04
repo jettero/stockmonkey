@@ -8,6 +8,8 @@ use Math::Business::ATR;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
 
@@ -38,6 +40,8 @@ sub set_days {
     $this->{days} = $arg;
     $this->{R}  = ($arg-1)/$arg;
     $this->{R1} = 1/$arg;
+
+    $this->{tag} = "DMI($this->{days})";
 }
 
 sub insert {

@@ -7,6 +7,8 @@ use Math::Business::WMA;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -36,6 +38,8 @@ sub set_days {
         Math::Business::WMA->new($arg),
         Math::Business::WMA->new(int(sqrt($arg))),
     );
+
+    $this->{tag} = "HMA($this->{days})";
 }
 
 sub insert {

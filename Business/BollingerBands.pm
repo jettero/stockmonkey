@@ -6,6 +6,8 @@ use Carp;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
 
@@ -35,6 +37,8 @@ sub set_deviations {
 
     croak "deviations must be a positive non-zero integer" if $arg <= 0;
     $this->{K} = $arg;
+
+    $this->{tag} = "BOLL($this->{K},$this->{N})";
 }
 
 sub set_days {
@@ -50,6 +54,8 @@ sub set_days {
     delete $this->{M};
     delete $this->{U};
     delete $this->{L};
+
+    $this->{tag} = "BOLL($this->{K},$this->{N})";
 }
 
 sub insert {

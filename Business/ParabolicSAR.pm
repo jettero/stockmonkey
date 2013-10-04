@@ -12,6 +12,8 @@ use constant {
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
        $class->new(0.02, 0.20);
@@ -38,6 +40,8 @@ sub set_alpha {
 
     $this->{as} = $as;
     $this->{am} = $am;
+
+    $this->{tag} = "PSAR($as,$am)";
 
     return;
 }

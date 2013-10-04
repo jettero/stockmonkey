@@ -11,6 +11,8 @@ use constant {
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -37,6 +39,8 @@ sub set_days {
     my $alpha = 2/(1+$arg);
     eval { $this->set_alpha( $alpha ) };
     croak "set_days() is basically set_alpha(2/(1+$arg)), which complained: $@" if $@;
+
+    $this->{tag} = "LAG($arg)";
 }
 
 sub set_alpha {
@@ -52,6 +56,9 @@ sub set_alpha {
         [],    # adaptive diff history
         undef, # filter
     );
+
+    my $arg = int ( (1/$alpha)*2-1 ); # pretty sure... gah, algebra
+    $this->{tag} = "LAG($arg)";
 }
 
 sub set_adaptive {

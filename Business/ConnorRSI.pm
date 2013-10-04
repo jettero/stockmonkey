@@ -40,6 +40,7 @@ sub set_cdays {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{cdays} = $arg;
+    $this->{tag} = "CRSI($this->{cdays},$this->{sdays},$this->{pdays})";
 
     $this->reset;
 }
@@ -51,6 +52,7 @@ sub set_sdays {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{sdays} = $arg;
+    $this->{tag} = "CRSI($this->{cdays},$this->{sdays},$this->{pdays})";
 
     $this->reset;
 }
@@ -62,6 +64,7 @@ sub set_pdays {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{pdays} = $arg;
+    $this->{tag} = "CRSI($this->{cdays},$this->{sdays},$this->{pdays})";
 
     $this->reset;
 }
@@ -128,6 +131,8 @@ sub query {
 
     return $this->{connor};
 }
+
+sub tag { (shift)->{tag} }
 
 1;
 

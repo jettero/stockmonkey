@@ -6,6 +6,8 @@ use Carp;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -33,6 +35,8 @@ sub set_days {
         undef,  # the the last numerator
         undef,  # the WMA
     );
+
+    $this->{tag} = "WMA($arg)";
 }
 
 sub insert {

@@ -8,6 +8,8 @@ use Math::Business::EMA;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
 
@@ -44,6 +46,8 @@ sub set_days {
     $this->{slow_EMA}->set_days($slow);
     $this->{fast_EMA}->set_days($fast);
     $this->{trig_EMA}->set_days($trig);
+
+    $this->{tag} = "MACD($fast,$slow,$trig)";
 }
 
 sub query_trig_ema { my $this = shift; return $this->{trig_EMA}->query }

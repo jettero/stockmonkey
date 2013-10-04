@@ -6,6 +6,8 @@ use Carp;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended { croak "no recommendation" }
 
 sub new {
@@ -33,6 +35,7 @@ sub set_days {
     $this->{val} = [];
     delete $this->{SMA};
     $this->{days} = $arg;
+    $this->{tag} = "SMA($this->{days})";
 }
 
 sub insert {

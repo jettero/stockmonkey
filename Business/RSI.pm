@@ -9,6 +9,8 @@ use Math::Business::EMA;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
 
@@ -43,6 +45,7 @@ sub set_alpha {
 
     eval { $this->set_days( $days ) };
     croak "set_alpha() is basically set_days(2*$alpha-1), which complained: $@" if $@;
+    $this->set_tag;
 }
 
 sub set_standard {
@@ -57,6 +60,7 @@ sub set_standard {
             $this->set_days($d);
         }
     }
+    $this->set_tag;
 }
 
 sub set_cutler {
@@ -71,6 +75,7 @@ sub set_cutler {
             $this->set_days($d);
         }
     }
+    $this->set_tag;
 }
 
 sub set_days {
@@ -83,6 +88,18 @@ sub set_days {
     $this->{D}->set_days($arg);
     delete $this->{cy};
     delete $this->{RSI};
+    $this->set_tag;
+}
+
+sub set_tag {
+    my $this = shift;
+
+    if( $this->{U}->isa("Math::Business::EMA") ) {
+        $this->{tag} = "RSI($this->{days})";
+
+    } else {
+        $this->{tag} = "RSI($this->{days},cutler)";
+    }
 }
 
 sub insert {

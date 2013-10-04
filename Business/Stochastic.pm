@@ -8,6 +8,8 @@ use Math::Business::SMA;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 use constant METHOD_LANE => 0;
 use constant METHOD_FAST => 1;
 use constant METHOD_SLOW => 2;
@@ -43,6 +45,7 @@ sub set_days {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{kp} = $arg;
+    $this->set_tag;
 }
 
 sub set_dperiod { 
@@ -52,6 +55,7 @@ sub set_dperiod {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{dp} = $arg;
+    $this->set_tag;
 }
 
 sub set_xperiod { 
@@ -61,6 +65,7 @@ sub set_xperiod {
     croak "days must be a positive non-zero integer" if $arg <= 0;
 
     $this->{xp} = $arg;
+    $this->set_tag;
 }
 
 sub set_method {
@@ -74,7 +79,26 @@ sub set_method {
     delete $this->{ksma};
     delete $this->{dsma};
 
+    $this->set_tag;
+
     return;
+}
+
+sub set_tag {
+    my $this = shift;
+
+    if( $this->{m} == METHOD_FULL ) {
+        $this->{tag} = "FullSTO($this->{kp},$this->{dp},$this->{xp})";
+
+    } elsif( $this->{m} == METHOD_FAST ) {
+        $this->{tag} = "FSTO($this->{kp},$this->{dp})";
+
+    } elsif( $this->{m} == METHOD_SLOW ) {
+        $this->{tag} = "SSTO($this->{kp},$this->{dp})";
+
+    } else {
+        $this->{tag} = "STO($this->{kp},$this->{dp})";
+    }
 }
 
 {

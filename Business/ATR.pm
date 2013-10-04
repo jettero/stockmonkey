@@ -6,6 +6,8 @@ use Carp;
 
 1;
 
+sub tag { (shift)->{tag} }
+
 sub recommended {
     my $class = shift;
 
@@ -30,6 +32,8 @@ sub set_days {
     my $arg  = int(shift);
 
     croak "days must be a positive non-zero integer" if $arg <= 0;
+
+    $this->{tag} = "ATR($arg)";
 
     # NOTE: wilder uses 13/14 * last + 1/14 * current for his exponential average ...
     # probably wouldn't have been my first choice, but that's how ATR is defined.
