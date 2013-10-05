@@ -6,12 +6,13 @@ use Carp;
 use constant {
     ALPHA  =>  2,
     LENGTH =>  3,
-    F      => -1,
+    F      => -2,
+    TAG    => -1,
 };
 
 1;
 
-sub tag { (shift)->{tag} }
+sub tag { (shift)->[TAG] }
 
 sub recommended { croak "no recommendation" }
 
@@ -55,10 +56,11 @@ sub set_alpha {
         0,     # adaptive length
         [],    # adaptive diff history
         undef, # filter
+        undef, # tag
     );
 
     my $arg = int ( (1/$alpha)*2-1 ); # pretty sure... gah, algebra
-    $this->{tag} = "LAG($arg)";
+    $this->[TAG] = "LAG($arg)";
 }
 
 sub set_adaptive {
