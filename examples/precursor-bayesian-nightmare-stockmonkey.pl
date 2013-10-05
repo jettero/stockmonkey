@@ -18,10 +18,7 @@ use Date::Manip;
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
 my $ticker = shift || "SCTY";
 my $phist  = shift || 150; # final plot history items
-my $lagf   = shift || 4;   # speed of fast laguerre filter
-my $lags   = shift || 8;   # speed of slow laguerre filter
 my $slurpp = "10 years"; # data we want to fetch
-
 
 if( $ticker eq "newk" ) {
     $dbo->do("drop table if exists stockplop");
@@ -33,8 +30,8 @@ find_quotes_for($ticker=>$slurpp);
 
 # {{{ sub find_quotes_for
 sub find_quotes_for {
-    our $lf   ||= Math::Business::LaguerreFilter->new(2/(1+$lagf));
-    our $ls   ||= Math::Business::LaguerreFilter->new(2/(1+$lags));
+    our $lf   ||= Math::Business::LaguerreFilter->new(2/(1+4));
+    our $ls   ||= Math::Business::LaguerreFilter->new(2/(1+8));
     our $bb   ||= Math::Business::BollingerBands->recommended;
     our $crsi ||= Math::Business::ConnorRSI->recommended;
     our $rsi  ||= Math::Business::RSI->recommended;
@@ -60,7 +57,6 @@ sub find_quotes_for {
             rowid    int unsigned not null auto_increment primary key,
 
             ticker  char(5) not null,
-            period  int unsigned not null default 86400,
             qtime   datetime not null,
             open    decimal(6,2) unsigned not null,
             high    decimal(6,2) unsigned not null,
@@ -70,25 +66,23 @@ sub find_quotes_for {
 
             @moar_columns
 
-            unique(ticker,period,qtime)
+            unique(ticker,qtime)
         )");
 
         $dbo->do("create table if not exists stockplop_glaciers(
+            ticker  char(5) not null,
             last_qtime date not null,
-            period int unsigned not null default 86400,
             tag varchar(30) not null,
 
             glacier blob,
 
-            primary key(last_qtime,period,tag)
+            primary key(ticker,last_qtime,tag)
         )");
     }
 
     # }}}
 
-    # NOTE: later, this logic will have to be tweaked for periods smaller than 86400
-
-    if( my @fv = grep {defined} $dbo->firstrow("select max(qtime), max(qtime)=now() from stockplop where period=86400 and ticker=?", $tick) ) {
+    if( my @fv = grep {defined} $dbo->firstrow("select max(qtime), max(qtime)=now() from stockplop where ticker=?", $tick) ) {
         return if $fv[1]; # nothing to fetch
 
         $time = $fv[0];
@@ -107,7 +101,7 @@ sub find_quotes_for {
 
     if( $time !~ m/ ago/ ) {
         # we can resurrect the indexes
-        my $sth = $dbo->ready("select glacier from stockplop_glaciers where last_qtime=? and period=86400 and tag=?");
+        my $sth = $dbo->ready("select glacier from stockplop_glaciers where last_qtime=? and tag=?");
 
         for( $rsi, $lf, $ls, $crsi, $bb ) {
             $sth->execute($time, $_->tag);
@@ -118,7 +112,7 @@ sub find_quotes_for {
 
     my $ins;
     PREPARE: {
-        my @columns = ("ticker=?, period=86400, qtime=?, open=?, high=?, low=?, close=?, volume=?");
+        my @columns = ("ticker=?, qtime=?, open=?, high=?, low=?, close=?, volume=?");
         for(@indicies) {
             my $t = $_->tag;
             push @columns, "`$t`=?";
@@ -151,10 +145,10 @@ sub find_quotes_for {
     }
 
     if( $last_qtime ) {
-        my $freezer = $dbo->ready("replace into stockplop_glaciers set last_qtime=?, period=86400, tag=?, glacier=?");
+        my $freezer = $dbo->ready("replace into stockplop_glaciers set ticker=?, last_qtime=?, tag=?, glacier=?");
 
         for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $freezer->execute($last_qtime, $_->tag, freeze($_));
+            $freezer->execute($ticker, $last_qtime, $_->tag, freeze($_));
         }
     }
 }
