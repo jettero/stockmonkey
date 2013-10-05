@@ -13,6 +13,7 @@ use GD::Graph::lines;
 use GD::Graph::Hooks;
 use List::Util qw(min max);
 use MySQL::Easy;
+use Date::Manip;
 
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
 my $ticker = shift || "SCTY";
@@ -20,6 +21,13 @@ my $phist  = shift || 150; # final plot history items
 my $lagf   = shift || 4;   # speed of fast laguerre filter
 my $lags   = shift || 8;   # speed of slow laguerre filter
 my $slurpp = "10 years"; # data we want to fetch
+
+
+if( $ticker eq "newk" ) {
+    $dbo->do("drop table if exists stockplop");
+    $dbo->do("drop table if exists stockplop_glaciers");
+    exit 0;
+}
 
 find_quotes_for($ticker=>$slurpp);
 
@@ -31,54 +39,56 @@ sub find_quotes_for {
     our $crsi ||= Math::Business::ConnorRSI->recommended;
     our $rsi  ||= Math::Business::RSI->recommended;
 
+    # NOTE: if you add to indicies, you probably need to 'newk'
+    my @indicies = ($lf, $ls, $crsi, $rsi, $bb);
+
     my $tick = uc(shift || "SCTY");
     my $time = lc(shift || "6 months");
-    my $fnam = "/tmp/p3-$tick-$time-$lagf-$lags-bb-crsi.dat";
 
-    my $res = eval { retrieve($fnam) };
-    return $res if $res;
+    # {{{ SCHEMA:
+    SCHEMA: {
+        my @moar_columns;
+        for( @indicies ) {
+            my $tag  = $_->tag;
+            my @ret  = $_->query;
+            my $type = @ret == 1 ? "decimal(6,4)" : "varchar(50)";
 
-    $dbo->do("create table if not exists stockplop(
-        rowid    unsigned int not null auto_increment primary key,
+            push @moar_columns, "`$tag` $type,";
+        }
 
-        ticker   char(5) not null,
-        interval unsigned int not null default 86400,
-        qtime    datetime not null,
-        open     unsigned decimal(4,2) not null,
-        high     unsigned decimal(4,2) not null,
-        low      unsigned decimal(4,2) not null,
-        close    unsigned decimal(4,2) not null,
-        volume   unsigned int not null,
+        $dbo->do("create table if not exists stockplop(
+            rowid    int unsigned not null auto_increment primary key,
 
-        unique(ticker,interval,qtime)
-    )");
+            ticker  char(5) not null,
+            period  int unsigned not null default 86400,
+            qtime   datetime not null,
+            open    decimal(6,2) unsigned not null,
+            high    decimal(6,2) unsigned not null,
+            low     decimal(6,2) unsigned not null,
+            close   decimal(6,2) unsigned not null,
+            volume  int unsigned not null,
 
-    $dbo->do("create table if not exists stockplop_attrs(
-        rowid unsigned int not null,
-        tag varchar(30) not null,
+            @moar_columns
 
-        val0 decimal(6,2) not null,
-        val1 decimal(6,2), -- some attrs need more space
-        val2 decimal(6,2),
-        val3 decimal(6,2),
+            unique(ticker,period,qtime)
+        )");
 
-        primary key(rowid,tag)
-    )");
+        $dbo->do("create table if not exists stockplop_glaciers(
+            last_qtime date not null,
+            period int unsigned not null default 86400,
+            tag varchar(30) not null,
 
-    $dbo->do("create table if not exists stockplop_glaciers(
-        last_qtime date not null,
-        interval unsigned int not null default 86400,
-        tag varchar(30) not null,
+            glacier blob,
 
-        glacier blob,
+            primary key(last_qtime,period,tag)
+        )");
+    }
 
-        primary key(last_qtime,interval,tag)
-    )");
+    # }}}
 
-    # NOTE: later, this logic will have to be tweaked for intervals smaller than 86400
+    # NOTE: later, this logic will have to be tweaked for periods smaller than 86400
 
-    if( my @fv = $dbo->firstrow("select max(qtime), iifmax(qtime)=now() from stockplop where interval=86400 and ticker=?", $tick) ) {
-
+    if( my @fv = grep {defined} $dbo->firstrow("select max(qtime), max(qtime)=now() from stockplop where period=86400 and ticker=?", $tick) ) {
         return if $fv[1]; # nothing to fetch
 
         $time = $fv[0];
@@ -86,6 +96,8 @@ sub find_quotes_for {
     } else {
         $time = "$time ago";
     }
+
+    die "fatal start_date parse error" unless $time;
 
     my $q = Finance::QuoteHist->new(
         symbols    => [$tick],
@@ -95,22 +107,25 @@ sub find_quotes_for {
 
     if( $time !~ m/ ago/ ) {
         # we can resurrect the indexes
-        my $sth = $dbo->ready("select glacier from stockplop_glaciers where last_qtime=? and interval=86400 and tag=?");
-           $sth->bind_columns(\my $glacier);
+        my $sth = $dbo->ready("select glacier from stockplop_glaciers where last_qtime=? and period=86400 and tag=?");
 
         for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $sth->execute($_->tag);
+            $sth->execute($time, $_->tag);
+            $sth->bind_columns(\my $glacier);
             $_ = thaw($glacier) if $sth->fetch;
         }
     }
 
-    my $ins = $dbo->ready("insert into stockplop 
-        set ticker=?, interval=86400, qtime=?, open=?, high=?, low=?, close=?, volume=?
-        on duplicate key update");
+    my $ins;
+    PREPARE: {
+        my @columns = ("ticker=?, period=86400, qtime=?, open=?, high=?, low=?, close=?, volume=?");
+        for(@indicies) {
+            my $t = $_->tag;
+            push @columns, "`$t`=?";
+        }
 
-    my $ains = $dbo->ready("insert into stockplop_attrs set rowid=?, interval=86400, tag=?,
-        val0=?, val1=?, val2=?, val3=?
-        on duplicate key update");
+        $ins = $dbo->ready("insert ignore into stockplop set " . join(", ", @columns));
+    }
 
     my $last_qtime;
     my @todump;
@@ -120,22 +135,26 @@ sub find_quotes_for {
         next unless $date = ParseDate("$date 4:30pm");
         $date = UnixDate($date, '%Y-%m-%d %H:%M:%S');
 
-        $ins->execute($symbol, $date, $open, $high, $low, $close, $volume);
-        my $rowid = $ins->last_insert_id;
-
-        for( $rsi, $lf, $ls, $crsi, $bb ) {
+        my @data = ($symbol, $date, $open, $high, $low, $close, $volume);
+        for(@indicies) {
             $_->insert($close);
-            $ains->execute($rowid, $_->tag, $_->query);
+
+            my @r = $_->query;
+            my $r = @r>1 ? join("/", map {defined()?sprintf('%0.4f', $_):'-'} @r) : $r[0];
+
+            push @data, $r;
         }
+
+        $ins->execute(@data);
 
         $last_qtime = $date;
     }
 
     if( $last_qtime ) {
-        my $freezer = $dbo->ready("replace into stockplop_glaciers set last_qtime=?, interval=86400, tag=?, glacier=?");
+        my $freezer = $dbo->ready("replace into stockplop_glaciers set last_qtime=?, period=86400, tag=?, glacier=?");
 
         for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $freezer->execute($_->tag, $_->query, freeze($_));
+            $freezer->execute($last_qtime, $_->tag, freeze($_));
         }
     }
 }
