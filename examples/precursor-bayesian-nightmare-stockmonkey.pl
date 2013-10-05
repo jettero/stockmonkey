@@ -96,7 +96,7 @@ sub find_quotes_for {
     my $q = Finance::QuoteHist->new(
         symbols    => [$tick],
         start_date => $time,
-        end_date   => 'today',
+        end_date   => $ENV{END_DATE_FOR_FQ}||"today",
     );
 
     if( $time !~ m/ ago/ ) {
