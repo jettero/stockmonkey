@@ -87,6 +87,8 @@ sub set_method {
 sub set_tag {
     my $this = shift;
 
+    return if grep { not defined } @$this{qw(kp dp xp)};
+
     if( $this->{m} == METHOD_FULL ) {
         $this->{tag} = "FullSTO($this->{kp},$this->{dp},$this->{xp})";
 
