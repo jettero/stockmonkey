@@ -55,6 +55,7 @@ sub set_days {
     delete $this->{U};
     delete $this->{L};
 
+    no warnings 'uninitialized';
     $this->{tag} = "BOLL($this->{K},$this->{N})";
 }
 

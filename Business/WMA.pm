@@ -6,7 +6,7 @@ use Carp;
 
 1;
 
-sub tag { (shift)->{tag} }
+sub tag { (shift)->[-1] }
 
 sub recommended { croak "no recommendation" }
 
@@ -34,9 +34,11 @@ sub set_days {
         undef,  # the sum of the data
         undef,  # the the last numerator
         undef,  # the WMA
+
+        undef,  # tag must be last
     );
 
-    $this->{tag} = "WMA($arg)";
+    $this->[-1] = "WMA($arg)";
 }
 
 sub insert {
@@ -72,7 +74,7 @@ sub insert {
 sub query {
     my $this = shift;
 
-    return $this->[-1];
+    return $this->[5];
 }
 
 __END__
