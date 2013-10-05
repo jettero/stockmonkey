@@ -101,10 +101,10 @@ sub find_quotes_for {
 
     if( $time !~ m/ ago/ ) {
         # we can resurrect the indexes
-        my $sth = $dbo->ready("select glacier from stockplop_glaciers where last_qtime=? and tag=?");
+        my $sth = $dbo->ready("select glacier from stockplop_glaciers where ticker=? and last_qtime=? and tag=?");
 
         for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $sth->execute($time, $_->tag);
+            $sth->execute($ticker, $time, $_->tag);
             $sth->bind_columns(\my $glacier);
             $_ = thaw($glacier) if $sth->fetch;
         }
