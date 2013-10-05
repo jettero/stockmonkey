@@ -6,6 +6,10 @@ use Carp;
 
 use Math::Business::RSI;
 
+1;
+
+sub tag { (shift)->{tag} }
+
 sub recommended { (shift)->new() }
 
 sub new {
@@ -131,10 +135,6 @@ sub query {
 
     return $this->{connor};
 }
-
-sub tag { (shift)->{tag} }
-
-1;
 
 __END__
 

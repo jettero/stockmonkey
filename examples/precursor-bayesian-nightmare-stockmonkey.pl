@@ -6,6 +6,8 @@ use Finance::QuoteHist;
 use Storable qw(freeze thaw);
 use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
+use Math::Business::BollingerBands;
+use Math::Business::ConnorRSI;
 use Data::Dump qw(dump);
 use GD::Graph::lines;
 use GD::Graph::Hooks;
@@ -87,7 +89,7 @@ sub find_quotes_for {
 
     my $q = Finance::QuoteHist->new(
         symbols    => [$tick],
-        start_date => $time;
+        start_date => $time,
         end_date   => 'today',
     );
 
