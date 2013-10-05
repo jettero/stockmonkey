@@ -36,6 +36,7 @@ sub set_days {
     $this->{sma}->set_days($arg);
     $this->{len} = $arg;
 
+    return unless exists $this->{mul};
     my $s = sprintf("%0.0f", 1/$this->{mul});
     $this->{tag} = "CCI($arg,$s)";
 }
@@ -49,8 +50,9 @@ sub set_scale {
 
     $this->{mul} = 1/$scale;
 
+    return unless exists $this->{len};
     my $s = sprintf("%0.0f", $scale);
-    $this->{tag} = "CCI($arg,$s)";
+    $this->{tag} = "CCI($this->{len},$s)";
 }
 
 sub insert {
