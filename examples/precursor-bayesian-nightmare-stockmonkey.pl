@@ -35,6 +35,7 @@ sub find_quotes_for {
     our $ls   ||= Math::Business::LaguerreFilter->new(2/(1+8));
     our $bb   ||= Math::Business::BollingerBands->recommended;
     our $crsi ||= Math::Business::ConnorRSI->recommended;
+    our $adx  ||= Math::Business::ADX->recommended;
     our $rsi  ||= Math::Business::RSI->recommended;
 
     # NOTE: if you add to indicies, you probably need to 'newk'
