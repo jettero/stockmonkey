@@ -2,7 +2,7 @@
 
 package Math::Business::StockMonkey;
 
-our $VERSION = "2.9401";
+our $VERSION = "2.9402";
 
 1;
 
@@ -36,6 +36,8 @@ L<Math::Business::BollingerBands> - Bollinger Bands
 L<Math::Business::ATR> - Average True Value
 
 L<Math::Business::DMI> - Directional Movement Index (aka ADX)
+
+L<Math::Business::ADX> - Alias for DMI
 
 L<Math::Business::ParabolicSAR> - Parabolic Stop and Reversal
 
