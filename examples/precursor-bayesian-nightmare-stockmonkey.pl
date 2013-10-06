@@ -20,13 +20,9 @@ my $ticker = shift || "SCTY";
 my $phist  = shift || 150; # final plot history items
 my $slurpp = "10 years"; # data we want to fetch
 
-if( $ticker eq "newk" ) {
-    $dbo->do("drop table if exists stockplop");
-    $dbo->do("drop table if exists stockplop_glaciers");
-    exit 0;
-}
+if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
-find_quotes_for($ticker=>$slurpp);
+find_quotes_for($ticker=>$slurpp) unless $ENV{NO_FETCH};
 
 # {{{ sub find_quotes_for
 sub find_quotes_for {
