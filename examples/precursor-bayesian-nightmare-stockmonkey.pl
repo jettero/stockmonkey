@@ -8,6 +8,7 @@ use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
 use Math::Business::BollingerBands;
 use Math::Business::ConnorRSI;
+use Math::Business::ADX;
 use MySQL::Easy;
 use Date::Manip;
 use Algorithm::NaiveBayes;
@@ -39,7 +40,13 @@ sub find_quotes_for {
     our $rsi  ||= Math::Business::RSI->recommended;
 
     # NOTE: if you add to indicies, you probably need to 'newk'
-    my @indicies = ($lf, $ls, $crsi, $rsi, $bb);
+    my @indicies = ($lf, $ls, $crsi, $rsi, $bb, $adx);
+    my %picky_insert = (
+        "$adx" => sub {
+            my ($open, $high, $low, $close, $volume) = @_;
+            $adx->insert([$high, $low, $close]); # curry picky inserts
+        }
+    );
 
     my $tick = uc(shift || "SCTY");
     my $time = lc(shift || "6 months");
@@ -148,7 +155,12 @@ sub find_quotes_for {
 
         my @data = ($symbol, $date, $open, $high, $low, $close, $volume);
         for(@indicies) {
-            $_->insert($close);
+            if( exists $picky_insert{$_} ) {
+                $picky_insert{$_}->($open, $high, $low, $close, $volume);
+
+            } else {
+                $_->insert($close);
+            }
 
             my @r = $_->query;
             my $r = @r>1 ? join("/", map {defined()?sprintf('%0.4f', $_):'-'} @r) : $r[0];
