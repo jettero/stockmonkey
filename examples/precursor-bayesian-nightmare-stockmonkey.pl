@@ -57,7 +57,7 @@ sub find_quotes_for {
             rowid    int unsigned not null auto_increment primary key,
 
             ticker  char(5) not null,
-            qtime   datetime not null,
+            qtime   date not null,
             open    decimal(6,2) unsigned not null,
             high    decimal(6,2) unsigned not null,
             low     decimal(6,2) unsigned not null,
@@ -82,10 +82,29 @@ sub find_quotes_for {
 
     # }}}
 
-    if( my @fv = grep {defined} $dbo->firstrow("select max(qtime), max(qtime)=now() from stockplop where ticker=?", $tick) ) {
+    if( my @fv = grep {defined} $dbo->firstrow("select date_add(max(qtime), interval 1 day),
+        max(qtime)=now(), max(qtime) from stockplop where ticker=?", $tick) ) {
+
         return if $fv[1]; # nothing to fetch
 
+        # fetch time
         $time = $fv[0];
+
+        # we can resurrect the indexes
+        my $sth = $dbo->ready("select glacier from stockplop_glaciers where ticker=? and last_qtime=? and tag=?");
+
+        print "found rows ending with $fv[2].  setting start time to $time and trying to thaw glaciers\n";
+
+        for( @indicies ) {
+            $sth->execute($ticker, $fv[2], $_->tag);
+            $sth->bind_columns(\my $glacier);
+            if ( $sth->fetch ) {
+                $_ = thaw($glacier);
+                my $t = $_->tag;
+                my @r = $_->query;
+                print "thawed $t from $time: @r\n";
+            }
+        }
 
     } else {
         $time = "$time ago";
@@ -99,16 +118,7 @@ sub find_quotes_for {
         end_date   => $ENV{END_DATE_FOR_FQ}||"today",
     );
 
-    if( $time !~ m/ ago/ ) {
-        # we can resurrect the indexes
-        my $sth = $dbo->ready("select glacier from stockplop_glaciers where ticker=? and last_qtime=? and tag=?");
-
-        for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $sth->execute($ticker, $time, $_->tag);
-            $sth->bind_columns(\my $glacier);
-            $_ = thaw($glacier) if $sth->fetch;
-        }
-    }
+    print "fetched quotes\n";
 
     my $ins;
     PREPARE: {
@@ -121,13 +131,15 @@ sub find_quotes_for {
         $ins = $dbo->ready("insert ignore into stockplop set " . join(", ", @columns));
     }
 
+    print "processing rows\n";
+
     my $last_qtime;
     my @todump;
     for my $row ($q->quotes) {
         my ($symbol, $date, $open, $high, $low, $close, $volume) = @$row;
 
-        next unless $date = ParseDate("$date 4:30pm");
-        $date = UnixDate($date, '%Y-%m-%d %H:%M:%S');
+        next unless $date = ParseDate($date);
+        $date = UnixDate($date, '%Y-%m-%d');
 
         my @data = ($symbol, $date, $open, $high, $low, $close, $volume);
         for(@indicies) {
@@ -147,8 +159,11 @@ sub find_quotes_for {
     if( $last_qtime ) {
         my $freezer = $dbo->ready("replace into stockplop_glaciers set ticker=?, last_qtime=?, tag=?, glacier=?");
 
-        for( $rsi, $lf, $ls, $crsi, $bb ) {
-            $freezer->execute($ticker, $last_qtime, $_->tag, freeze($_));
+        for( @indicies ) {
+            my $t = $_->tag;
+            print "saving $t as of $last_qtime\n";
+
+            $freezer->execute($ticker, $last_qtime, $t, freeze($_));
         }
     }
 }
