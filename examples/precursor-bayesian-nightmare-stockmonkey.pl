@@ -42,13 +42,13 @@ sub find_quotes_for {
     # NOTE: if you add to indicies, you probably need to 'newk'
     my @indicies = ($lf, $ls, $crsi, $rsi, $bb, $adx);
     my %picky_insert = (
-        "$adx" => sub {
+        $adx->tag => sub {
             my ($open, $high, $low, $close, $volume) = @_;
             $adx->insert([$high, $low, $close]); # curry picky inserts
         }
     );
 
-    my %has_multi_column_output = ( "$bb" => 1 );
+    my %has_multi_column_output = ( $bb->tag => 1 );
     my $time = $slurpp;
 
     # {{{ SCHEMA:
@@ -56,7 +56,7 @@ sub find_quotes_for {
         my @moar_columns;
         for( @indicies ) {
             my $tag  = $_->tag;
-            my $type = $has_multi_column_output{$_} ? "decimal(6,4)" : "varchar(50)";
+            my $type = $has_multi_column_output{$tag} ? "varchar(50)" : "decimal(6,4)";
 
             push @moar_columns, "`$tag` $type,";
         }
@@ -154,15 +154,16 @@ sub find_quotes_for {
 
         my @data = ($symbol, $date, $open, $high, $low, $close, $volume);
         for(@indicies) {
-            if( exists $picky_insert{$_} ) {
-                $picky_insert{$_}->($open, $high, $low, $close, $volume);
+            my $t = $_->tag;
+            if( exists $picky_insert{$t} ) {
+                $picky_insert{$t}->($open, $high, $low, $close, $volume);
 
             } else {
                 $_->insert($close);
             }
 
             my $r;
-            if( $has_multi_column_output{$_} ) {
+            if( $has_multi_column_output{$t} ) {
                 my @r = $_->query;
                 $r = join("/", map {defined()?sprintf('%0.4f', $_):'-'} @r);
 
@@ -260,6 +261,10 @@ sub annotate_all_tickers {
             if( defined (my $adx = $row->{'ADX(14)'}) ) {
                 $adx = int(100 * $adx);
                 for (10, 20, 30, 40, 50) { $events{"adx_$_"} = 1 if $adx >= $_ }
+            }
+
+            if( defined ( my $bbs = $row->{'BOLL(2,20)'}) ) {
+                warn "todo: $bbs";
             }
 
             if( @last ) {
