@@ -85,7 +85,10 @@ sub find_quotes_for {
     if( my @fv = grep {defined} $dbo->firstrow("select date_add(max(qtime), interval 1 day),
         max(qtime)=now(), max(qtime) from stockplop where ticker=?", $tick) ) {
 
-        return if $fv[1]; # nothing to fetch
+        if( $fv[1] ) {
+            print "no quotes to fetch\n";
+            return;
+        }
 
         # fetch time
         $time = $fv[0];
