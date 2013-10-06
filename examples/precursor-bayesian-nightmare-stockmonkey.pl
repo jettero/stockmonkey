@@ -251,7 +251,8 @@ sub annotate_ticker {
         }
 
         if( defined (my $adx = $row->{'ADX(14)'}) ) {
-            for (0.1, 0.2, 0.3, 0.4, 0.5) { $events{"adx_$_"} = 1 if $adx >= $_ }
+            $adx = int(100 * $adx);
+            for (10, 20, 30, 40, 50) { $events{"adx_$_"} = 1 if $adx >= $_ }
         }
 
         if( @last ) {
@@ -273,7 +274,7 @@ sub annotate_ticker {
                 $events{rsi_down} = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
             }
 
-            for (0.1, 0.2, 0.3, 0.4, 0.5) {
+            for (10, 20, 30, 40, 50) {
                 $events{adx_up}   = 1 if not $events[-1]{"adx_$_"} and     $events{"adx_$_"};
                 $events{adx_down} = 1 if     $events[-1]{"adx_$_"} and not $events{"adx_$_"};
             }
