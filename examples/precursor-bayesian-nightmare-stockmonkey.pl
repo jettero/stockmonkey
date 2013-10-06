@@ -62,7 +62,8 @@ sub find_quotes_for {
         }
 
         $dbo->do("create table if not exists stockplop(
-            rowid    int unsigned not null auto_increment primary key,
+            rowid int unsigned not null auto_increment primary key,
+            seqno int not null default '0',
 
             ticker  char(5) not null,
             qtime   date not null,
@@ -74,7 +75,8 @@ sub find_quotes_for {
 
             @moar_columns
 
-            unique(ticker,qtime)
+            unique(ticker,qtime),
+            index(ticker,seqno)
         )");
 
         $dbo->do("create table if not exists stockplop_glaciers(
@@ -179,6 +181,9 @@ sub find_quotes_for {
         $last_qtime = $date;
     }
 
+    $dbo->do('select @Q:=-1');
+    $dbo->do('update stockplop set seqno=(@Q:=@Q+1) where ticker=? order by qtime asc', $ticker);
+
     if( $last_qtime ) {
         my $freezer = $dbo->ready("replace into stockplop_glaciers set ticker=?, last_qtime=?, tag=?, glacier=?");
 
@@ -222,32 +227,34 @@ sub annotate_all_tickers {
 
             primary key(rowid)
         )^);
-
-        # NOTE: these could maybe be temporary tables instead, but I like to
-        # select from them to double check my work
-
-        $dbo->do("drop table if exists t$_->[0]") for @proj;
-        $dbo->do("create table t$_->[0] select (rowid-$_->[0])rowid,qtime,close from
-            (select rowid,qtime,close from stockplop where ticker=? and rowid>$_->[0] order by qtime desc) sub
-            order by qtime asc", $ticker) for @proj;
     }
 
     my $cols = join(", ", map {"t$_->[0].close t$_->[0]_close"} @proj);
-    my @join = map {"join t$_->[0] using (rowid)"} @proj;
+    my @join = map {"join t$_->[0] using (seqno)"} @proj;
 
     my $sth = $dbo->ready("select stockplop.*, $cols from stockplop @join where ticker=?");
     my $ins = $dbo->ready("insert into stockplop_annotations set rowid=?, description=?");
 
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
-        print "annotating $ticker\n";
+        print "\nannotating $ticker\n";
 
+        for(@proj) {
+            print "creating temporary table t$_->[0]\n";
+            $dbo->do("drop table if exists t$_->[0]");
+            $dbo->do("create temporary table t$_->[0] select (seqno-$_->[0])seqno,qtime,close from
+                (select seqno,qtime,close from stockplop where ticker=? and seqno>$_->[0] order by qtime desc)
+                the_future order by qtime asc", $ticker);
+        }
+
+        print "executing fetch (huge cross product)\n";
         $sth->execute($ticker);
+
+        print "analyzing result rows\n";
 
         my @events;
         my %events;
         my @last;
         while( my $row = $sth->fetchrow_hashref ) {
-
             if( defined (my $rsi = $row->{'RSI(27)'}) ) {
                 for (90,80,70) { $events{"rsi_$_"} = 1 if $rsi >= $_ }
                 for (10,20,30) { $events{"rsi_$_"} = 1 if $rsi <= $_ }
@@ -264,7 +271,9 @@ sub annotate_all_tickers {
             }
 
             if( defined ( my $bbs = $row->{'BOLL(2,20)'}) ) {
-                warn "todo: $bbs";
+                my @v = split m{/}, $bbs;
+                unless( grep {not defined} @v ) {
+                }
             }
 
             if( @last ) {
@@ -305,7 +314,6 @@ sub annotate_all_tickers {
             shift @events if @events > 20;
             %events = ();
         }
-
     }
 }
 
