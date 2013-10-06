@@ -48,16 +48,17 @@ sub find_quotes_for {
         }
     );
 
+    my %has_multi_column_output = ( "$bb" => 1 );
+
     my $tick = uc(shift || "SCTY");
-    my $time = lc(shift || "6 months");
+    my $time = lc(shift || "10 years");
 
     # {{{ SCHEMA:
     SCHEMA: {
         my @moar_columns;
         for( @indicies ) {
             my $tag  = $_->tag;
-            my @ret  = $_->query;
-            my $type = @ret == 1 ? "decimal(6,4)" : "varchar(50)";
+            my $type = $has_multi_column_output{$_} ? "decimal(6,4)" : "varchar(50)";
 
             push @moar_columns, "`$tag` $type,";
         }
@@ -162,8 +163,14 @@ sub find_quotes_for {
                 $_->insert($close);
             }
 
-            my @r = $_->query;
-            my $r = @r>1 ? join("/", map {defined()?sprintf('%0.4f', $_):'-'} @r) : $r[0];
+            my $r;
+            if( $has_multi_column_output{$_} ) {
+                my @r = $_->query;
+                $r = join("/", map {defined()?sprintf('%0.4f', $_):'-'} @r);
+
+            } else {
+                $r = $_->query;
+            }
 
             push @data, $r;
         }
@@ -243,6 +250,10 @@ sub annotate_ticker {
             for (10,20,30) { $events{"rsi_$_"} = 1 if $rsi <= $_ }
         }
 
+        if( defined (my $adx = $row->{'ADX(14)'}) ) {
+            for (0.1, 0.2, 0.3, 0.4, 0.5) { $events{"adx_$_"} = 1 if $adx >= $_ }
+        }
+
         if( @last ) {
             if( defined $last[-1]{"LAG(8)"} and defined $last[-1]{"LAG(4)"} ) {
                 $events{lag_break_up} = 1
@@ -260,6 +271,11 @@ sub annotate_ticker {
             for( 90, 80, 70 ) {
                 $events{rsi_up}   = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
                 $events{rsi_down} = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
+            }
+
+            for (0.1, 0.2, 0.3, 0.4, 0.5) {
+                $events{adx_up}   = 1 if not $events[-1]{"adx_$_"} and     $events{"adx_$_"};
+                $events{adx_down} = 1 if     $events[-1]{"adx_$_"} and not $events{"adx_$_"};
             }
         }
 
