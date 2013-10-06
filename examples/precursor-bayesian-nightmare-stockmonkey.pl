@@ -8,21 +8,25 @@ use Math::Business::RSI;
 use Math::Business::LaguerreFilter;
 use Math::Business::BollingerBands;
 use Math::Business::ConnorRSI;
-use Data::Dump qw(dump);
-use GD::Graph::lines;
-use GD::Graph::Hooks;
-use List::Util qw(min max);
 use MySQL::Easy;
 use Date::Manip;
+#se GD::Graph::lines;
+#se GD::Graph::Hooks;
+#se List::Util qw(min max);
 
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
 my $ticker = shift || "SCTY";
 my $phist  = shift || 150; # final plot history items
 my $slurpp = "10 years"; # data we want to fetch
+my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
+
+# proj is a list of projections 12/20 5/5, etc that are days in advance, over percent gain/loss
+@proj = ([12,20],[5,5]) unless @proj; # dunno why I like 12 days and 20% so much...
 
 if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
 find_quotes_for($ticker=>$slurpp) unless $ENV{NO_FETCH};
+annotate_ticker();
 
 # {{{ sub find_quotes_for
 sub find_quotes_for {
@@ -164,6 +168,65 @@ sub find_quotes_for {
 
             $freezer->execute($ticker, $last_qtime, $t, freeze($_));
         }
+    }
+}
+
+# }}}
+# {{{ sub annotate_ticker
+sub annotate_ticker {
+    my @projections;
+
+    for( @proj ) {
+        next unless $_->[0] > 0 && $_->[1] > 0; # ignore stupid projections
+
+        my $f = "$_->[0]_$_->[1]";
+        push @projections, "
+            p${f}_price    decimal(6,2) unsigned not null,
+            p${f}_qtime    date not null,
+            p${f}_strength tinyint unsigned not null,
+
+            m${f}_price    decimal(6,2) unsigned not null,
+            m${f}_qtime    date not null,
+            m${f}_strength tinyint unsigned not null,
+        ";
+    }
+
+    SCHEMA: {
+        $dbo->do("drop table if exists stockplop_annotations");
+        $dbo->do(qq^create table stockplop_annotations(
+            rowid int unsigned not null,
+
+            @projections
+
+            description text not null,
+
+            primary key(rowid)
+        )^);
+    }
+
+    my $limit = int($phist) || 1; # NOTE: can't bind a limit with ?, so sanitize it first!!
+
+    # NOTE: these could maybe be temporary tables instead, but I like to select from them to double check my work
+
+    $dbo->do("drop table if exists t");
+    $dbo->do("drop table if exists t$_->[0]") for @proj;
+
+    $dbo->do("create table t select * from
+        (select * from stockplop where ticker=? order by qtime desc limit $phist) sub
+        order by qtime asc", $ticker);
+
+    $dbo->do("create table t$_->[0] select (rowid-$_->[0])rowid,qtime,close from
+        (select rowid,qtime,close from stockplop where ticker=? order by qtime desc limit $phist) sub
+        order by qtime asc", $ticker) for @proj;
+
+    my $cols = join(", ", map {"t$_->[0].close t$_->[0]_close"} @proj);
+    my @join = map {"join t$_->[0] using (rowid)"} @proj;
+
+    my $sth = $dbo->ready("select t.*, $cols from t @join");
+    $sth->execute;
+
+    while( my $row = $sth->fetchrow_hashref ) {
+        print "$row->{ticker} $row->{qtime} $row->{close} -> $row->{t5_close} -> $row->{t12_close}\n";
     }
 }
 
