@@ -207,26 +207,44 @@ sub annotate_ticker {
     my $limit = int($phist) || 1; # NOTE: can't bind a limit with ?, so sanitize it first!!
 
     # NOTE: these could maybe be temporary tables instead, but I like to select from them to double check my work
-
-    $dbo->do("drop table if exists t");
     $dbo->do("drop table if exists t$_->[0]") for @proj;
-
-    $dbo->do("create table t select * from
-        (select * from stockplop where ticker=? order by qtime desc limit $phist) sub
-        order by qtime asc", $ticker);
-
     $dbo->do("create table t$_->[0] select (rowid-$_->[0])rowid,qtime,close from
-        (select rowid,qtime,close from stockplop where ticker=? order by qtime desc limit $phist) sub
+        (select rowid,qtime,close from stockplop where ticker=? and rowid>$_->[0] order by qtime desc) sub
         order by qtime asc", $ticker) for @proj;
 
     my $cols = join(", ", map {"t$_->[0].close t$_->[0]_close"} @proj);
     my @join = map {"join t$_->[0] using (rowid)"} @proj;
 
-    my $sth = $dbo->ready("select t.*, $cols from t @join");
+    my $sth = $dbo->ready("select stockplop.*, $cols from stockplop @join");
+    my $ins = $dbo->ready("insert into stockplop_annotations set rowid=?, description=?");
     $sth->execute;
 
+    my %events;
+    my $last;
     while( my $row = $sth->fetchrow_hashref ) {
-        print "$row->{ticker} $row->{qtime} $row->{close} -> $row->{t5_close} -> $row->{t12_close}\n";
+        for my $event (keys %events) {
+            delete $events{$event} unless exists $events{$event}{stopping_case};
+        }
+
+        if( defined $last->{"LAG(8)"} and defined $last->{"LAG(4)"} ) {
+            $events{lag_break_up}{age} = 1
+                if $last->{'LAG(4)'} < $last->{"LAG(8)"} and $row->{'LAG(4)'} > $row->{"LAG(8)"};
+
+            $events{lag_break_down}{age} = 1
+                if $last->{'LAG(4)'} > $last->{"LAG(8)"} and $row->{'LAG(4)'} < $row->{"LAG(8)"};
+        }
+
+        my @desc;
+        for my $event (keys %events) {
+            my $txt = "$event($events{$event}{age})";
+               $txt =~ s/\(1\)$//;
+
+            push @desc, $txt;
+        }
+
+        $ins->execute($row->{rowid}, "@desc");
+
+        $last = $row;
     }
 }
 
