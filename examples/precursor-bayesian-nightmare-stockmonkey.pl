@@ -252,6 +252,11 @@ sub annotate_all_tickers {
                 for (10,20,30) { $events{"rsi_$_"} = 1 if $rsi <= $_ }
             }
 
+            if( defined (my $rsi = $row->{'CRSI(3,2,100)'}) ) {
+                for (90,80,70) { $events{"crsi_$_"} = 1 if $rsi >= $_ }
+                for (10,20,30) { $events{"crsi_$_"} = 1 if $rsi <= $_ }
+            }
+
             if( defined (my $adx = $row->{'ADX(14)'}) ) {
                 $adx = int(100 * $adx);
                 for (10, 20, 30, 40, 50) { $events{"adx_$_"} = 1 if $adx >= $_ }
@@ -267,13 +272,17 @@ sub annotate_all_tickers {
                 }
 
                 for( 10, 20, 30 ) {
-                    $events{rsi_up}   = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
-                    $events{rsi_down} = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
+                    $events{rsi_up}    = 1 if     $events[-1]{"rsi_$_"}  and not $events{"rsi_$_"};
+                    $events{rsi_down}  = 1 if not $events[-1]{"rsi_$_"}  and     $events{"rsi_$_"};
+                    $events{crsi_up}   = 1 if     $events[-1]{"crsi_$_"} and not $events{"crsi_$_"};
+                    $events{crsi_down} = 1 if not $events[-1]{"crsi_$_"} and     $events{"crsi_$_"};
                 }
 
                 for( 90, 80, 70 ) {
-                    $events{rsi_up}   = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
-                    $events{rsi_down} = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
+                    $events{rsi_up}    = 1 if not $events[-1]{"rsi_$_"}  and     $events{"rsi_$_"};
+                    $events{rsi_down}  = 1 if     $events[-1]{"rsi_$_"}  and not $events{"rsi_$_"};
+                    $events{crsi_up}   = 1 if not $events[-1]{"crsi_$_"} and     $events{"crsi_$_"};
+                    $events{crsi_down} = 1 if     $events[-1]{"crsi_$_"} and not $events{"crsi_$_"};
                 }
 
                 for (10, 20, 30, 40, 50) {
