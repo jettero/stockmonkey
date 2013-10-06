@@ -1,3 +1,4 @@
+Business/ADX.pm
 Business/ATR.pm
 Business/BollingerBands.pm
 Business/CCI.pm
@@ -16,6 +17,7 @@ Changes
 examples/forex-macd-rsi-database-populator.pl
 examples/graph-moving-averages.pl
 examples/graph-parabolic-sar.pl
+examples/precursor-bayesian-nightmare-stockmonkey.pl
 examples/precursor-rsi-lag-break-stockmonkey.pl
 examples/precursor-rsi-stockmonkey.pl
 examples/slurp_ticker.pl
@@ -36,6 +38,7 @@ t/03_macd.t
 t/04_rsi.t
 t/04_rsi_amit.t
 t/05_bollinger.t
+t/06_adx.t
 t/06_atr.t
 t/06_bobback_dmi.t
 t/06_dmi.t
@@ -48,4 +51,3 @@ t/11_alf.t
 t/12_cci.t
 t/13_sto.t
 t/14_crsi.t
-examples/precursor-bayesian-nightmare-stockmonkey.pl
