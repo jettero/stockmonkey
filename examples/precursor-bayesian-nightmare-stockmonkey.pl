@@ -27,8 +27,8 @@ my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
 
 if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
-find_quotes_for($ticker=>$slurpp) unless $ENV{NO_FETCH};
-annotate_ticker();
+find_quotes_for() unless $ENV{NO_FETCH};
+annotate_all_tickers();
 
 # {{{ sub find_quotes_for
 sub find_quotes_for {
@@ -49,9 +49,7 @@ sub find_quotes_for {
     );
 
     my %has_multi_column_output = ( "$bb" => 1 );
-
-    my $tick = uc(shift || "SCTY");
-    my $time = lc(shift || "10 years");
+    my $time = $slurpp;
 
     # {{{ SCHEMA:
     SCHEMA: {
@@ -93,7 +91,7 @@ sub find_quotes_for {
     # }}}
 
     if( my @fv = grep {defined} $dbo->firstrow("select date_add(max(qtime), interval 1 day),
-        max(qtime)=now(), max(qtime) from stockplop where ticker=?", $tick) ) {
+        max(qtime)=now(), max(qtime) from stockplop where ticker=?", $ticker) ) {
 
         if( $fv[1] ) {
             print "no quotes to fetch\n";
@@ -126,7 +124,7 @@ sub find_quotes_for {
     die "fatal start_date parse error" unless $time;
 
     my $q = Finance::QuoteHist->new(
-        symbols    => [$tick],
+        symbols    => [$ticker],
         start_date => $time,
         end_date   => $ENV{END_DATE_FOR_FQ}||"today",
     );
@@ -194,7 +192,7 @@ sub find_quotes_for {
 
 # }}}
 # {{{ sub annotate_ticker
-sub annotate_ticker {
+sub annotate_all_tickers {
     my @projections;
 
     for( @proj ) {
@@ -236,58 +234,64 @@ sub annotate_ticker {
     my $cols = join(", ", map {"t$_->[0].close t$_->[0]_close"} @proj);
     my @join = map {"join t$_->[0] using (rowid)"} @proj;
 
-    my $sth = $dbo->ready("select stockplop.*, $cols from stockplop @join");
+    my $sth = $dbo->ready("select stockplop.*, $cols from stockplop @join where ticker=?");
     my $ins = $dbo->ready("insert into stockplop_annotations set rowid=?, description=?");
-    $sth->execute;
 
-    my @events;
-    my %events;
-    my @last;
-    while( my $row = $sth->fetchrow_hashref ) {
+    for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
+        print "annotating $ticker\n";
 
-        if( defined (my $rsi = $row->{'RSI(27)'}) ) {
-            for (90,80,70) { $events{"rsi_$_"} = 1 if $rsi >= $_ }
-            for (10,20,30) { $events{"rsi_$_"} = 1 if $rsi <= $_ }
+        $sth->execute($ticker);
+
+        my @events;
+        my %events;
+        my @last;
+        while( my $row = $sth->fetchrow_hashref ) {
+
+            if( defined (my $rsi = $row->{'RSI(27)'}) ) {
+                for (90,80,70) { $events{"rsi_$_"} = 1 if $rsi >= $_ }
+                for (10,20,30) { $events{"rsi_$_"} = 1 if $rsi <= $_ }
+            }
+
+            if( defined (my $adx = $row->{'ADX(14)'}) ) {
+                $adx = int(100 * $adx);
+                for (10, 20, 30, 40, 50) { $events{"adx_$_"} = 1 if $adx >= $_ }
+            }
+
+            if( @last ) {
+                if( defined $last[-1]{"LAG(8)"} and defined $last[-1]{"LAG(4)"} ) {
+                    $events{lag_break_up} = 1
+                        if $last[-1]{'LAG(4)'} < $last[-1]{"LAG(8)"} and $row->{'LAG(4)'} > $row->{"LAG(8)"};
+
+                    $events{lag_break_down} = 1
+                        if $last[-1]{'LAG(4)'} > $last[-1]{"LAG(8)"} and $row->{'LAG(4)'} < $row->{"LAG(8)"};
+                }
+
+                for( 10, 20, 30 ) {
+                    $events{rsi_up}   = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
+                    $events{rsi_down} = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
+                }
+
+                for( 90, 80, 70 ) {
+                    $events{rsi_up}   = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
+                    $events{rsi_down} = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
+                }
+
+                for (10, 20, 30, 40, 50) {
+                    $events{adx_up}   = 1 if not $events[-1]{"adx_$_"} and     $events{"adx_$_"};
+                    $events{adx_down} = 1 if     $events[-1]{"adx_$_"} and not $events{"adx_$_"};
+                }
+            }
+
+            my @desc = sort keys %events;
+            $ins->execute($row->{rowid}, "@desc");
+
+            push @last, $row;
+            push @events, {%events};
+            shift @last   if @last > 20;
+            shift @events if @events > 20;
+            %events = ();
         }
 
-        if( defined (my $adx = $row->{'ADX(14)'}) ) {
-            $adx = int(100 * $adx);
-            for (10, 20, 30, 40, 50) { $events{"adx_$_"} = 1 if $adx >= $_ }
-        }
-
-        if( @last ) {
-            if( defined $last[-1]{"LAG(8)"} and defined $last[-1]{"LAG(4)"} ) {
-                $events{lag_break_up} = 1
-                    if $last[-1]{'LAG(4)'} < $last[-1]{"LAG(8)"} and $row->{'LAG(4)'} > $row->{"LAG(8)"};
-
-                $events{lag_break_down} = 1
-                    if $last[-1]{'LAG(4)'} > $last[-1]{"LAG(8)"} and $row->{'LAG(4)'} < $row->{"LAG(8)"};
-            }
-
-            for( 10, 20, 30 ) {
-                $events{rsi_up}   = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
-                $events{rsi_down} = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
-            }
-
-            for( 90, 80, 70 ) {
-                $events{rsi_up}   = 1 if not $events[-1]{"rsi_$_"} and     $events{"rsi_$_"};
-                $events{rsi_down} = 1 if     $events[-1]{"rsi_$_"} and not $events{"rsi_$_"};
-            }
-
-            for (10, 20, 30, 40, 50) {
-                $events{adx_up}   = 1 if not $events[-1]{"adx_$_"} and     $events{"adx_$_"};
-                $events{adx_down} = 1 if     $events[-1]{"adx_$_"} and not $events{"adx_$_"};
-            }
-        }
-
-        my @desc = sort keys %events;
-        $ins->execute($row->{rowid}, "@desc");
-
-        push @last, $row;
-        push @events, {%events};
-        shift @last   if @last > 20;
-        shift @events if @events > 20;
-        %events = ();
     }
 }
 
