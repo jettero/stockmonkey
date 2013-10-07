@@ -271,8 +271,10 @@ sub annotate_all_tickers {
             }
 
             if( defined ( my $bbs = $row->{'BOLL(2,20)'}) ) {
-                my @v = split m{/}, $bbs;
-                unless( grep {not defined} @v ) {
+                my ($L, $M, $U) = map {$_ eq "-" ? undef : (0.0+$_)} split m{/}, $bbs;
+                if( defined $L and defined $M and defined $U ) {
+                    $events{boll_overbought} = 1 if $row->{close} >= $U;
+                    $events{boll_oversold}   = 1 if $row->{close} <= $L;
                 }
             }
 
