@@ -202,22 +202,24 @@ sub find_quotes_for {
 sub annotate_all_tickers {
     my @projections;
 
-    for( @proj ) {
-        next unless $_->[0] > 0 && $_->[1] > 0; # ignore stupid projections
-
-        my $f = "$_->[0]_$_->[1]";
-        push @projections, "
-            p${f}_price    decimal(6,2) unsigned not null,
-            p${f}_qtime    date not null,
-            p${f}_strength tinyint unsigned not null,
-
-            m${f}_price    decimal(6,2) unsigned not null,
-            m${f}_qtime    date not null,
-            m${f}_strength tinyint unsigned not null,
-        ";
-    }
+    # BUILD DATABSES
 
     SCHEMA: {
+        for( @proj ) {
+            next unless $_->[0] > 0 && $_->[1] > 0; # ignore stupid projections
+
+            my $f = "$_->[0]_$_->[1]";
+            push @projections, "
+                p${f}_price    decimal(6,2) unsigned not null,
+                p${f}_qtime    date not null,
+                p${f}_strength tinyint unsigned not null,
+
+                m${f}_price    decimal(6,2) unsigned not null,
+                m${f}_qtime    date not null,
+                m${f}_strength tinyint unsigned not null,
+            ";
+        }
+
         $dbo->do("drop table if exists stockplop_annotations");
         $dbo->do(qq^create table stockplop_annotations(
             rowid int unsigned not null,
@@ -230,11 +232,15 @@ sub annotate_all_tickers {
         )^);
     }
 
-    my $cols = join(", ", map {"t$_->[0].close t$_->[0]_close"} @proj);
-    my @join = map {"join t$_->[0] using (seqno)"} @proj;
+    my @pro_cols = map {[$_->[0], "t$_->[0]_close"]} @proj;
+    my $sql_cols = join(", ", map {"t$_->[0].close t$_->[0]_close, t$_->[0].rowid t$_->[0]_rowid"} @proj);
+    my @sql_join = map {"join t$_->[0] using (seqno)"} @proj;
 
-    my $sth = $dbo->ready("select stockplop.*, $cols from stockplop @join where ticker=?");
     my $ins = $dbo->ready("insert into stockplop_annotations set rowid=?, description=?");
+    my $sth = $dbo->ready(my $cross_product_sql =
+        "select stockplop.*, $sql_cols from stockplop @sql_join where ticker=?");
+
+    # DESCRIBE SITUATIONS WITH TECHNICAL ANALYSIS
 
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
         print "\nannotating $ticker\n";
@@ -242,12 +248,16 @@ sub annotate_all_tickers {
         for(@proj) {
             print "creating temporary table t$_->[0]\n";
             $dbo->do("drop table if exists t$_->[0]");
-            $dbo->do("create temporary table t$_->[0] select (seqno-$_->[0])seqno,qtime,close from
-                (select seqno,qtime,close from stockplop where ticker=? and seqno>$_->[0] order by qtime desc)
-                the_future order by qtime asc", $ticker);
+            $dbo->do("create temporary table t$_->[0]
+                select (seqno-$_->[0])seqno,qtime,close,rowid
+                    from (select seqno,qtime,close,rowid from stockplop where ticker=? and seqno>$_->[0]
+                        order by qtime desc)
+                            the_future
+            order by qtime asc", $ticker);
         }
 
-        print "executing fetch (huge cross product)\n";
+        $cross_product_sql =~ s{\?}{'$ticker'};
+        print "executing fetch ($cross_product_sql)\n";
         $sth->execute($ticker);
 
         print "analyzing result rows\n";
@@ -306,10 +316,20 @@ sub annotate_all_tickers {
                     $events{adx_up}   = 1 if not $events[-1]{"adx_$_"} and     $events{"adx_$_"};
                     $events{adx_down} = 1 if     $events[-1]{"adx_$_"} and not $events{"adx_$_"};
                 }
+
+
+                # TODO:
+                # - other concepts like: we had a lag break and there was an rsi break x days ago
+                # - looking for divergences in the various indexes would go here
+                # - support levels on closing prices goes here
             }
 
             my @desc = sort keys %events;
             $ins->execute($row->{rowid}, "@desc");
+
+            for my $p (@pro_cols) {
+                my ($days_from_now, $field_name) = @$p;
+            }
 
             push @last, $row;
             push @events, {%events};
