@@ -17,8 +17,9 @@ use Algorithm::NaiveBayes;
 #se List::Util qw(min max);
 
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
-my $ticker = shift || "SCTY";
-my $phist  = shift || 150; # final plot history items
+my $ticker = shift || "JPM";
+my $phist  = shift || 60; # final plot history items
+my $pfutur = shift || 30; # final plot future projection items
 my $slurpp = "10 years"; # data we want to fetch
 my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
 
