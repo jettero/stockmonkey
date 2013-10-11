@@ -28,8 +28,9 @@ my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
 
 if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
-find_quotes_for() unless $ENV{NO_FETCH};
-annotate_all_tickers();
+find_quotes_for()      unless $ENV{NO_FETCH};
+annotate_all_tickers() unless $ENV{NO_ANNOTATE};
+plot_result();
 
 # {{{ sub find_quotes_for
 sub find_quotes_for {
@@ -382,8 +383,8 @@ sub annotate_all_tickers {
                         $dbo->do("update stockplop_annotations set @f where rowid=?", @v, $row->{rowid});
                         local $| = 1;
                         our $spin;
-                        my $spin = (qw(- \ | /))[ (++$spin)%4 ];
-                        print "\r$spin";
+                        my $s = (qw(- \ | /))[ (++$spin)%4 ];
+                        print "\r$s";
                     }
                 }
             };
@@ -395,6 +396,54 @@ sub annotate_all_tickers {
             %events = ();
         }
         print "\n";
+    }
+}
+
+# }}}
+# {{{ sub plot_result
+sub plot_result {
+    print "\nplot results\n";
+
+    my @sql_cols = map {("p$_", "m$_")} map {"$_->[0]_$_->[1]"} @proj;
+    my $sql_cols = join(", ", @sql_cols);
+    my $sth = $dbo->ready("select seqno-1 idx,qtime,close, $sql_cols
+        from stockplop join stockplop_annotations using(rowid)
+        where ticker=? order by seqno");
+
+    for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
+        $sth->execute($ticker);
+        my @data;
+        while( my $row = $sth->fetchrow_hashref ) {
+            # use Data::Dump qw(dump);
+            # die dump($row);
+            # {
+            #     close  => 36.78,
+            #     m12_20 => 0,
+            #     m5_5   => 0,
+            #     p12_20 => 0,
+            #     p5_5   => 0,
+            #     qtime  => "2003-10-14",
+            #     idx    => 0,
+            # }
+
+            my $r = 0;
+
+            push @{ $data[$r++] }, $row->{qtime};
+
+            for my $c (@sql_cols) {
+                my @d = $c =~ m/([pm])(\d+)_(\d+)/;
+                my $v = $row->{$c};
+
+                my $prediction = $d[0] eq "p" ? 1+($v/100) : 1-($v/100);
+
+                $data[$r++][$row->{seqno} + $d[1]] = $row->{close} * $prediction;
+            }
+
+            push @{ $data[$r++] }, $row->{close}; # put this last to draw last
+
+            use Data::Dump qw(dump);
+            die dump(\@data);
+        }
     }
 }
 
