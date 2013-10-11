@@ -12,9 +12,9 @@ use Math::Business::ADX;
 use MySQL::Easy;
 use Date::Manip;
 use Algorithm::NaiveBayes;
+use List::Util qw(min max);
 #se GD::Graph::lines;
 #se GD::Graph::Hooks;
-#se List::Util qw(min max);
 
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
 my $ticker = shift || "JPM";
@@ -210,13 +210,8 @@ sub annotate_all_tickers {
 
             my $f = "$_->[0]_$_->[1]";
             push @projections, "
-                p${f}_price    decimal(6,2) unsigned not null,
-                p${f}_qtime    date not null,
-                p${f}_strength tinyint unsigned not null,
-
-                m${f}_price    decimal(6,2) unsigned not null,
-                m${f}_qtime    date not null,
-                m${f}_strength tinyint unsigned not null,
+                p${f} tinyint unsigned not null,
+                m${f} tinyint unsigned not null,
             ";
         }
 
@@ -232,7 +227,7 @@ sub annotate_all_tickers {
         )^);
     }
 
-    my @pro_cols = map {[$_->[0], "t$_->[0]_close"]} @proj;
+    my $keep     = max(map($_->[0], @proj));
     my $sql_cols = join(", ", map {"t$_->[0].close t$_->[0]_close, t$_->[0].rowid t$_->[0]_rowid"} @proj);
     my @sql_join = map {"join t$_->[0] using (seqno)"} @proj;
 
@@ -244,6 +239,8 @@ sub annotate_all_tickers {
 
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
         print "\nannotating $ticker\n";
+
+        my $anb = Algorithm::NaiveBayes->new;
 
         for(@proj) {
             print "creating temporary table t$_->[0]\n";
@@ -327,14 +324,56 @@ sub annotate_all_tickers {
             my @desc = sort keys %events;
             $ins->execute($row->{rowid}, "@desc");
 
-            for my $p (@pro_cols) {
-                my ($days_from_now, $field_name) = @$p;
+            # train using items from @last, far enough back to avoid data snooping bias
+            for(@proj) {
+                my ($days, $percent) = @$_;
+                if( @last >= $days ) {
+                    my $_row = $last[-$days]   || die "bad maths";
+                    my $_ev  = $events[-$days] || die "bad maths";
+
+                    if( keys %$_ev ) {
+                        if( $row->{close} >= $_row->{close} * (1 + ($percent/100)) ) {
+                            $anb->add_instance( my %d = (attributes=>$_ev, label=>"p$_->[0]_$_->[1]") );
+                            use Data::Dump qw(dump);
+                            print "instanced: ", dump(\%d), "\n";
+                        }
+
+                        elsif( $row->{close} <= $_row->{close} * (1 - ($percent/100)) ) {
+                            $anb->add_instance( my %d = (attributes=>$_ev, label=>"m$_->[0]_$_->[1]") );
+                            use Data::Dump qw(dump);
+                            print "instanced: ", dump(\%d), "\n";
+                        }
+                    }
+                }
+            }
+
+            $anb->train;
+
+            # predict from here into the future
+            if( my $result = eval {$anb->predict(attributes=>\%events)} ) {
+
+                use Data::Dump qw(dump);
+                print "resulted: ", dump($result), "\n";
+
+                my (@f, @v);
+                for my $k (keys %$result) {
+                    push @f, "$k=?";               # $k is (eg) p12_20 or 20% increase in 12 days
+                    push @v, $result->{$k} * 255;  # or maybe (eg) m5_7, a 5% decrease in 7 days
+                }
+
+                if( @f ) {
+                    print "predicted\n";
+
+                    # TODO: this could maybe be prepared earlier, rather than built/executed for every row
+                    local $" = ", ";
+                    $dbo->ready("update stockplop_annotations set @f where rowid=?", @v, $row->{rowid});
+                }
             }
 
             push @last, $row;
             push @events, {%events};
-            shift @last   if @last > 20;
-            shift @events if @events > 20;
+            shift @last   if @last > $keep;
+            shift @events if @events > $keep;
             %events = ();
         }
     }
