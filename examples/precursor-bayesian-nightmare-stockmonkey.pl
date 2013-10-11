@@ -262,7 +262,6 @@ sub annotate_all_tickers {
         my @events;
         my %events;
         my @last;
-        my $predictions = 0;
         while( my $row = $sth->fetchrow_hashref ) {
             if( defined (my $rsi = $row->{'RSI(27)'}) ) {
                 for (90,80,70) { $events{"rsi_$_"} = 1 if $rsi >= $_ }
@@ -380,10 +379,11 @@ sub annotate_all_tickers {
                     if( @f ) {
                         # TODO: this could maybe be prepared earlier, rather than built/executed for every row
                         local $" = ", ";
-                        $predictions +=
                         $dbo->do("update stockplop_annotations set @f where rowid=?", @v, $row->{rowid});
                         local $| = 1;
-                        print "$predictions ";
+                        our $spin;
+                        my $spin = (qw(- \ | /))[ (++$spin)%4 ];
+                        print "\r$spin";
                     }
                 }
             };
