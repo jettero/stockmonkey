@@ -240,7 +240,7 @@ sub annotate_all_tickers {
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
         print "\nannotating $ticker\n";
 
-        my $anb = Algorithm::NaiveBayes->new;
+        my %instance_history;
 
         for(@proj) {
             print "creating temporary table t$_->[0]\n";
@@ -262,6 +262,7 @@ sub annotate_all_tickers {
         my @events;
         my %events;
         my @last;
+        my $predictions = 0;
         while( my $row = $sth->fetchrow_hashref ) {
             if( defined (my $rsi = $row->{'RSI(27)'}) ) {
                 for (90,80,70) { $events{"rsi_$_"} = 1 if $rsi >= $_ }
@@ -333,42 +334,59 @@ sub annotate_all_tickers {
 
                     if( keys %$_ev ) {
                         if( $row->{close} >= $_row->{close} * (1 + ($percent/100)) ) {
-                            $anb->add_instance( my %d = (attributes=>$_ev, label=>"p$_->[0]_$_->[1]") );
-                            use Data::Dump qw(dump);
-                            print "instanced: ", dump(\%d), "\n";
+                            my %d = (attributes=>$_ev, label=>my $l = "p$_->[0]_$_->[1]");
+                            push @{$instance_history{$l}}, \%d;
                         }
 
                         elsif( $row->{close} <= $_row->{close} * (1 - ($percent/100)) ) {
-                            $anb->add_instance( my %d = (attributes=>$_ev, label=>"m$_->[0]_$_->[1]") );
-                            use Data::Dump qw(dump);
-                            print "instanced: ", dump(\%d), "\n";
+                            my %d = (attributes=>$_ev, label=>my $l = "m$_->[0]_$_->[1]");
+                            push @{$instance_history{$l}}, \%d;
                         }
                     }
                 }
             }
 
-            $anb->train;
+            eval {
+                # NOTE: This is a stupid way to do this.  We should have one
+                # object that we feed more corpus data to on each iteration,
+                # but the module can't handle training on each loop and ends up
+                # crashing all the time because there aren't enough instance
+                # items, causing division by 0 and log of 0 errors.
+                #
+                # ... so, since the module has no internal handlers for this
+                # sort of thing I build a new object on every loop and
+                # add_instance for everything we have so far to the new object.
+                #
+                # ... it's a dumb work around.  Don't copy this example.
+                # 
+                # slow, wrong, awful, slow, wrong, awful
 
-            # predict from here into the future
-            if( my $result = eval {$anb->predict(attributes=>\%events)} ) {
+                my $anb = Algorithm::NaiveBayes->new;
 
-                use Data::Dump qw(dump);
-                print "resulted: ", dump($result), "\n";
-
-                my (@f, @v);
-                for my $k (keys %$result) {
-                    push @f, "$k=?";               # $k is (eg) p12_20 or 20% increase in 12 days
-                    push @v, $result->{$k} * 255;  # or maybe (eg) m5_7, a 5% decrease in 7 days
+                for my $v (map {@$_} values %instance_history) {
+                    $anb->add_instance(%$v);
                 }
 
-                if( @f ) {
-                    print "predicted\n";
+                $anb->train;
 
-                    # TODO: this could maybe be prepared earlier, rather than built/executed for every row
-                    local $" = ", ";
-                    $dbo->ready("update stockplop_annotations set @f where rowid=?", @v, $row->{rowid});
+                # predict from here into the future
+                if( my $result = eval {$anb->predict(attributes=>\%events)} ) {
+                    my (@f, @v);
+                    for my $k (keys %$result) {
+                        push @f, "$k=?";               # $k is (eg) p12_20 or 20% increase in 12 days
+                        push @v, $result->{$k} * 255;  # or maybe (eg) m5_7, a 5% decrease in 7 days
+                    }
+
+                    if( @f ) {
+                        # TODO: this could maybe be prepared earlier, rather than built/executed for every row
+                        local $" = ", ";
+                        $predictions +=
+                        $dbo->do("update stockplop_annotations set @f where rowid=?", @v, $row->{rowid});
+                        local $| = 1;
+                        print "$predictions ";
+                    }
                 }
-            }
+            };
 
             push @last, $row;
             push @events, {%events};
@@ -376,6 +394,7 @@ sub annotate_all_tickers {
             shift @events if @events > $keep;
             %events = ();
         }
+        print "\n";
     }
 }
 
