@@ -429,20 +429,19 @@ sub plot_result {
             my $r = 0;
 
             push @{ $data[$r++] }, $row->{qtime};
+            push @{ $data[$r++] }, $row->{close};
 
             for my $c (@sql_cols) {
-                my @d = $c =~ m/([pm])(\d+)_(\d+)/;
-                my $v = $row->{$c};
+                my ($dir,$days,$percent) = $c =~ m/([pm])(\d+)_(\d+)/;
+                my $strength = $row->{$c};
 
-                my $prediction = $d[0] eq "p" ? 1+($v/100) : 1-($v/100);
+                # TODO: draw a line from seqno to seqno+days shaded to suit strength of prediction
+                # for now, just draw the prediction
 
-                $data[$r++][$row->{seqno} + $d[1]] = $row->{close} * $prediction;
+                my $prediction = $dir eq "p" ? 1+($percent/100) : 1-($percent/100);
+
+                $data[$r++][$row->{seqno} + $days] = $row->{close} * $prediction;
             }
-
-            push @{ $data[$r++] }, $row->{close}; # put this last to draw last
-
-            use Data::Dump qw(dump);
-            die dump(\@data);
         }
     }
 }
