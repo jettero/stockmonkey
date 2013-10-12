@@ -442,7 +442,7 @@ sub plot_result {
                 }
             }
 
-            my $pr = $r++;
+            my $pr = $r++; $r++; # skip a row for pr-lag
             if( defined $data[$pr][$m->[2]] ) { 
                 print "data[$pr][$m->[2]] = ($data[$pr][$m->[2]] + $m->[1])/2 = ";
 
@@ -457,6 +457,14 @@ sub plot_result {
             }
 
             push @{ $data[$r++] }, $row->{close};
+        }
+
+        my $lag = Math::Business::LaguerreFilter->dnew(4);
+        my $pa  = $data[-3];
+        $data[-2] = my $la = [];
+        for my $v (@$pa) {
+            $lag->insert($v);
+            push @$la, $lag->query;
         }
 
         my $row_length = max( map{ (@$_)+0 } @data );
@@ -474,12 +482,12 @@ sub plot_result {
         my $width = 100 + 11*@{$data[0]};
 
         my $graph = GD::Graph::lines->new($width, 500);
-           $graph->set_legend(qw(prediction close));
+           $graph->set_legend(qw(prediction prediction-lag close));
            $graph->set(
                y_label           => "dollars $ticker",
                x_label           => 'date',
                transparent       => 0,
-               dclrs             => [qw(lgray dblue)],
+               dclrs             => [qw(lgray dgray dblue)],
                y_min_value       => $min_point-0.2,
                y_max_value       => $max_point+0.2,
                y_number_format   => '%6.2f',
