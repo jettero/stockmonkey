@@ -16,6 +16,14 @@ sub tag { (shift)->[TAG] }
 
 sub recommended { croak "no recommendation" }
 
+sub dnew {
+    my $class = shift;
+    my $days  = int shift; $days = 4 unless $days > 1;
+    my $this  = $class->new(2/(1+$days));
+
+    return $this;
+}
+
 sub new {
     my $class = shift;
     my $this  = bless [], $class;
