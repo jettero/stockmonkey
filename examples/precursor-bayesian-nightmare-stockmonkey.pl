@@ -13,18 +13,18 @@ use MySQL::Easy;
 use Date::Manip;
 use Algorithm::NaiveBayes;
 use List::Util qw(min max);
-#se GD::Graph::lines;
-#se GD::Graph::Hooks;
+use GD::Graph::lines;
+use GD::Graph::Hooks;
 
 my $dbo    = MySQL::Easy->new("scratch"); # reads .my.cnf for password and host
 my $ticker = shift || "JPM";
-my $phist  = shift || 60; # final plot history items
-my $pfutur = shift || 30; # final plot future projection items
+my $phist  = shift || 180; # final plot history items
 my $slurpp = "10 years"; # data we want to fetch
 my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
 
 # proj is a list of projections 12/20 5/5, etc that are days in advance, over percent gain/loss
-@proj = ([12,20],[5,5]) unless @proj; # dunno why I like 12 days and 20% so much...
+# program will crash if you predict two different percentages for the same number of days (ie, 5/20 5/17)
+@proj = ([5,5],[6,7],[3,5],[10,7],[15,20],[20,20]);
 
 if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
@@ -211,8 +211,8 @@ sub annotate_all_tickers {
 
             my $f = "$_->[0]_$_->[1]";
             push @projections, "
-                p${f} tinyint unsigned not null,
-                m${f} tinyint unsigned not null,
+                p${f} decimal(6,6) unsigned not null,
+                m${f} decimal(6,6) unsigned not null,
             ";
         }
 
@@ -373,8 +373,8 @@ sub annotate_all_tickers {
                 if( my $result = eval {$anb->predict(attributes=>\%events)} ) {
                     my (@f, @v);
                     for my $k (keys %$result) {
-                        push @f, "$k=?";               # $k is (eg) p12_20 or 20% increase in 12 days
-                        push @v, $result->{$k} * 255;  # or maybe (eg) m5_7, a 5% decrease in 7 days
+                        push @f, "$k=?";         # $k is (eg) p12_20 or 20% increase in 12 days
+                        push @v, $result->{$k};  # or maybe (eg) m5_7, a 5% decrease in 7 days
                     }
 
                     if( @f ) {
@@ -406,12 +406,12 @@ sub plot_result {
 
     my @sql_cols = map {("p$_", "m$_")} map {"$_->[0]_$_->[1]"} @proj;
     my $sql_cols = join(", ", @sql_cols);
-    my $sth = $dbo->ready("select seqno-1 idx,qtime,close, $sql_cols
+    my $sth = $dbo->ready("select * from (select seqno-1 idx,qtime,close, $sql_cols
         from stockplop join stockplop_annotations using(rowid)
-        where ticker=? order by seqno");
+        where ticker=? order by seqno desc limit ?) blarg order by qtime");
 
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
-        $sth->execute($ticker);
+        $sth->execute($ticker, $phist);
         my @data;
         while( my $row = $sth->fetchrow_hashref ) {
             # use Data::Dump qw(dump);
@@ -429,20 +429,72 @@ sub plot_result {
             my $r = 0;
 
             push @{ $data[$r++] }, $row->{qtime};
-            push @{ $data[$r++] }, $row->{close};
 
+            my $m  = [ 0,$row->{close}, 0 ];
             for my $c (@sql_cols) {
                 my ($dir,$days,$percent) = $c =~ m/([pm])(\d+)_(\d+)/;
                 my $strength = $row->{$c};
+                my $loc = $#{ $data[0] } + $days;
+                my $new = $row->{close} * ($dir eq "p" ? 1+($percent/100) : 1-($percent/100));
 
-                # TODO: draw a line from seqno to seqno+days shaded to suit strength of prediction
-                # for now, just draw the prediction
-
-                my $prediction = $dir eq "p" ? 1+($percent/100) : 1-($percent/100);
-
-                $data[$r++][$row->{seqno} + $days] = $row->{close} * $prediction;
+                if( $m->[0] < $strength ) {
+                    $m = [ $strength, $new, $loc ];
+                }
             }
+
+            my $pr = $r++;
+            if( defined $data[$pr][$m->[2]] ) { 
+                print "data[$pr][$m->[2]] = ($data[$pr][$m->[2]] + $m->[1])/2 = ";
+
+                $data[$pr][$m->[2]] = ($data[$pr][$m->[2]] + $m->[1]) / 2;
+
+                print "$data[$pr][$m->[2]]\n";
+
+            } else {
+                $data[$pr][$m->[2]] = $m->[1];
+
+                print "data[$pr][$m->[2]] = $data[$pr][$m->[2]]\n";
+            }
+
+            push @{ $data[$r++] }, $row->{close};
         }
+
+        my $row_length = max( map{ (@$_)+0 } @data );
+        my $first_row  = @{ $data[0] };
+
+        my $plus = 0;
+        while( @{$data[0]} < $row_length ) {
+            push @{$data[0]}, "+$plus";
+            $plus ++;
+        }
+
+        my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
+        my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
+
+        my $width = 100 + 11*@{$data[0]};
+
+        my $graph = GD::Graph::lines->new($width, 500);
+           $graph->set_legend(qw(prediction close));
+           $graph->set(
+               y_label           => "dollars $ticker",
+               x_label           => 'date',
+               transparent       => 0,
+               dclrs             => [qw(lgray dblue)],
+               y_min_value       => $min_point-0.2,
+               y_max_value       => $max_point+0.2,
+               y_number_format   => '%6.2f',
+               x_labels_vertical => 1,
+
+           ) or die $graph->error;
+
+        my $gd = $graph->plot(\@data) or die $graph->error;
+
+        open my $img, '>', ".graph.png" or die $!;
+        binmode $img;
+        print $img $gd->png;
+        close $img;
+
+        system(qw(eog .graph.png));
     }
 }
 
