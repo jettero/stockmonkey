@@ -12,7 +12,7 @@ use Math::Business::ADX;
 use MySQL::Easy;
 use Date::Manip;
 use Algorithm::NaiveBayes;
-use List::Util qw(min max);
+use List::Util qw(min max sum);
 use GD::Graph::lines;
 use GD::Graph::Hooks;
 
@@ -424,6 +424,7 @@ sub plot_result {
         my @data;
         my @lines;
         my $mincolor = 0x77;
+        my @str;
         while( my $row = $sth->fetchrow_hashref ) {
             # use Data::Dump qw(dump);
             # die dump($row);
@@ -458,10 +459,15 @@ sub plot_result {
             $_days /= $_str;
             $_val  /= $_str;
 
+            push @str, $_str;
+
             push @lines, {
+                str => $_str,
                 lhs => [ @{$data[0]}+0, $row->{close} ], # val_to_pixel is (1..) not (0..)
                 rhs => [ @{$data[0]}+$_days, $_val ],
-            };
+            }
+
+            if abs($_val-$row->{close})/$row->{close} > 0.01;
 
         }
 
