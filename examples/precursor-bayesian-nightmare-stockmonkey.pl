@@ -424,7 +424,6 @@ sub plot_result {
         my @data;
         my @lines;
         my $mincolor = 0x77;
-        my @str;
         while( my $row = $sth->fetchrow_hashref ) {
             # use Data::Dump qw(dump);
             # die dump($row);
@@ -458,8 +457,6 @@ sub plot_result {
 
             $_days /= $_str;
             $_val  /= $_str;
-
-            push @str, $_str;
 
             push @lines, {
                 str => $_str,
@@ -502,6 +499,7 @@ sub plot_result {
             my ($gobj, $gd, $left, $right, $top, $bottom, $gdta_x_axis) = @_;
 
             my $clr = $gobj->set_clr(0xaa, 0xaa, 0xaa);
+
             for my $line (@lines) {
                 my @lhs = $gobj->val_to_pixel(@{ $line->{lhs} });
                 my @rhs = $gobj->val_to_pixel(@{ $line->{rhs} });
