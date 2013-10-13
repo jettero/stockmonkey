@@ -22,9 +22,12 @@ my $phist  = shift || 180; # final plot history items
 my $slurpp = "10 years"; # data we want to fetch
 my @proj   = map {[map {int $_} split m{/}]} @ARGV; # projections
 
-# proj is a list of projections 12/20 5/5, etc that are days in advance, over percent gain/loss
-# program will crash if you predict two different percentages for the same number of days (ie, 5/20 5/17)
-@proj = ([5,5],[6,7],[3,5],[10,7],[15,20],[20,20]);
+# proj is a list of projections to consider, days/percent
+@proj = (
+    [10,2],[10, 7],[10,12],
+    [15,2],[15, 7],[15,12],
+    [20,2],[20, 7],[20,12],
+);
 
 if( $ENV{NEWK} ) { $dbo->do("drop table if exists stockplop"); $dbo->do("drop table if exists stockplop_glaciers") }
 
@@ -211,8 +214,8 @@ sub annotate_all_tickers {
 
             my $f = "$_->[0]_$_->[1]";
             push @projections, "
-                p${f} decimal(6,6) unsigned not null,
-                m${f} decimal(6,6) unsigned not null,
+                p${f} decimal(6,6) unsigned,
+                m${f} decimal(6,6) unsigned,
             ";
         }
 
@@ -228,9 +231,10 @@ sub annotate_all_tickers {
         )^);
     }
 
-    my $keep     = max(map($_->[0], @proj));
-    my $sql_cols = join(", ", map {"t$_->[0].close t$_->[0]_close, t$_->[0].rowid t$_->[0]_rowid"} @proj);
-    my @sql_join = map {"join t$_->[0] using (seqno)"} @proj;
+    my $keep     = max(map($_->[0], @proj)); my %uniq;
+    my @proj_ud  = grep {!$uniq{$_->[0]}++} @proj;
+    my $sql_cols = join(", ", map {"t$_->[0].close t$_->[0]_close, t$_->[0].rowid t$_->[0]_rowid"} @proj_ud);
+    my @sql_join = map {"join t$_->[0] using (seqno)"} @proj_ud;
 
     my $ins = $dbo->ready("insert into stockplop_annotations set rowid=?, description=?");
     my $sth = $dbo->ready(my $cross_product_sql =
@@ -243,7 +247,7 @@ sub annotate_all_tickers {
 
         my %instance_history;
 
-        for(@proj) {
+        for(@proj_ud) {
             print "creating temporary table t$_->[0]\n";
             $dbo->do("drop table if exists t$_->[0]");
             $dbo->do("create temporary table t$_->[0]
@@ -404,6 +408,11 @@ sub annotate_all_tickers {
 sub plot_result {
     print "\nplot results\n";
 
+    @proj = sort {
+           ($b->[0] <=> $a->[0])           # first,  draw longer predictions first
+        || (abs($b->[1]) <=> abs($b->[1])) # second, draw taller predictions first
+    } @proj;
+
     my @sql_cols = map {("p$_", "m$_")} map {"$_->[0]_$_->[1]"} @proj;
     my $sql_cols = join(", ", @sql_cols);
     my $sth = $dbo->ready("select * from (select seqno-1 idx,qtime,close, $sql_cols
@@ -413,6 +422,8 @@ sub plot_result {
     for my $ticker ($dbo->firstcol("select distinct(ticker) from stockplop")) {
         $sth->execute($ticker, $phist);
         my @data;
+        my @lines;
+        my $mincolor = 0x77;
         while( my $row = $sth->fetchrow_hashref ) {
             # use Data::Dump qw(dump);
             # die dump($row);
@@ -429,71 +440,69 @@ sub plot_result {
             my $r = 0;
 
             push @{ $data[$r++] }, $row->{qtime};
+            push @{ $data[$r++] }, $row->{close};
 
-            my $m  = [ 0,$row->{close}, 0 ];
+            my $_days = 0;
+            my $_val  = 0;
+            my $_str  = 0;
             for my $c (@sql_cols) {
                 my ($dir,$days,$percent) = $c =~ m/([pm])(\d+)_(\d+)/;
-                my $strength = $row->{$c};
-                my $loc = $#{ $data[0] } + $days;
-                my $new = $row->{close} * ($dir eq "p" ? 1+($percent/100) : 1-($percent/100));
+                my $probability = $row->{$c};
+                my $val = $row->{close} * ($dir eq "p" ? 1+($percent/100) : 1-($percent/100));
 
-                if( $m->[0] < $strength ) {
-                    $m = [ $strength, $new, $loc ];
-                }
+                $_days += $days * $probability;
+                $_val  += $val  * $probability;
+                $_str  += $probability;
             }
 
-            my $pr = $r++; $r++; # skip a row for pr-lag
-            if( defined $data[$pr][$m->[2]] ) { 
-                print "data[$pr][$m->[2]] = ($data[$pr][$m->[2]] + $m->[1])/2 = ";
+            $_days /= $_str;
+            $_val  /= $_str;
 
-                $data[$pr][$m->[2]] = ($data[$pr][$m->[2]] + $m->[1]) / 2;
+            push @lines, {
+                lhs => [ @{$data[0]}+0, $row->{close} ], # val_to_pixel is (1..) not (0..)
+                rhs => [ @{$data[0]}+$_days, $_val ],
+            };
 
-                print "$data[$pr][$m->[2]]\n";
-
-            } else {
-                $data[$pr][$m->[2]] = $m->[1];
-
-                print "data[$pr][$m->[2]] = $data[$pr][$m->[2]]\n";
-            }
-
-            push @{ $data[$r++] }, $row->{close};
         }
 
-        my $lag = Math::Business::LaguerreFilter->dnew(4);
-        my $pa  = $data[-3];
-        $data[-2] = my $la = [];
-        for my $v (@$pa) {
-            $lag->insert($v);
-            push @$la, $lag->query;
+        my $max_pro = max( map{$_->[0]} @proj );
+        for( 1 .. $max_pro ) {
+            push @{$data[0]}, "+$_";
         }
 
-        my $row_length = max( map{ (@$_)+0 } @data );
-        my $first_row  = @{ $data[0] };
+        my @d = grep {defined} map {@$_} @data[1..$#data];
+        my @p = grep {defined} map {($_->{lhs}[1], $_->{rhs}[1])} @lines;
 
-        my $plus = 0;
-        while( @{$data[0]} < $row_length ) {
-            push @{$data[0]}, "+$plus";
-            $plus ++;
-        }
-
-        my $min_point = min( grep {defined} map {@$_} @data[1..$#data] );
-        my $max_point = max( grep {defined} map {@$_} @data[1..$#data] );
+        my $min_point = min( @d,@p );
+        my $max_point = max( @d,@p );
 
         my $width = 100 + 11*@{$data[0]};
 
         my $graph = GD::Graph::lines->new($width, 500);
-           $graph->set_legend(qw(prediction prediction-lag close));
+           $graph->set_legend(qw(close prediction));
            $graph->set(
                y_label           => "dollars $ticker",
                x_label           => 'date',
                transparent       => 0,
-               dclrs             => [qw(lgray dgray dblue)],
+               dclrs             => [qw(dblue lgray)],
                y_min_value       => $min_point-0.2,
                y_max_value       => $max_point+0.2,
                y_number_format   => '%6.2f',
                x_labels_vertical => 1,
 
            ) or die $graph->error;
+
+        $graph->add_hook( GD::Graph::Hooks::PRE_DATA => sub {
+            my ($gobj, $gd, $left, $right, $top, $bottom, $gdta_x_axis) = @_;
+
+            my $clr = $gobj->set_clr(0xaa, 0xaa, 0xaa);
+            for my $line (@lines) {
+                my @lhs = $gobj->val_to_pixel(@{ $line->{lhs} });
+                my @rhs = $gobj->val_to_pixel(@{ $line->{rhs} });
+
+                $gd->line(@lhs,@rhs,$clr);
+            }
+        });
 
         my $gd = $graph->plot(\@data) or die $graph->error;
 
