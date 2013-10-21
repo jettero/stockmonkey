@@ -46,8 +46,8 @@ while(<DATA>) {
         ok(2);
 
     } else {
-        ok( $K, $theirK );
-        ok( $D, $k3 );
+        ok( 1 > abs($K - $theirK) );
+        ok( 1 > abs($D - $k3) );
     }
 
     ($D,$K) = $ssto->query;
@@ -56,8 +56,8 @@ while(<DATA>) {
         ok(2);
 
     } else {
-        ok( $K, $k3 );
-        ok( $D, $k33 );
+        ok( 1 > abs($K - $k3) );
+        ok( 1 > abs($D - $k33) );
     }
 
     ($D,$K) = $sful->query;
@@ -66,8 +66,8 @@ while(<DATA>) {
         ok(2);
 
     } else {
-        ok( $K, $k5 );
-        ok( $D, $k55 );
+        ok( 1 > abs($K - $k5) );
+        ok( 1 > abs($D - $k55) );
     }
 }
 
