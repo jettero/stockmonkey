@@ -1,4 +1,4 @@
-package Math::Business::Stochastic;
+package Math::Business::SM::Stochastic;
 
 use strict;
 use warnings;
@@ -285,30 +285,30 @@ __END__
 
 =head1 NAME
 
-Math::Business::Stochastic - Technical Analysis: Stochastic Oscillator
+Math::Business::SM::Stochastic - Technical Analysis: Stochastic Oscillator
 
 =head1 SYNOPSIS
 
-  use Math::Business::Stochastic;
+  use Math::Business::SM::Stochastic;
 
-  my $sto = new Math::Business::Stochastic;
+  my $sto = new Math::Business::SM::Stochastic;
      $sto->set_days(5);     # Lane uses 5 in his examples (if any)
      $sto->set_dperiod(30); # Lane
-     $sto->set_method( Math::Business::Stochastic::METHOD_LANE );
+     $sto->set_method( Math::Business::SM::Stochastic::METHOD_LANE );
      # methods: METHOD_LANE, METHOD_SLOW, METHOD_FAST, METHOD_FULL
      $sto->set_xperiod(3); # used only by METHOD_FULL 
 
 
   # Lane's version
-  my $sto = Math::Business::Stochastic->recommended;
+  my $sto = Math::Business::SM::Stochastic->recommended;
 
 
   # Probably more like what you expect (ie, matches up with
   # Yahoo/Google/Ameritrade, etc)
 
-  my $sto_slow = Math::Business::Stochastic->modern_slow;
-  my $sto_fast = Math::Business::Stochastic->modern_fast;
-  my $sto_full = Math::Business::Stochastic->modern_full;
+  my $sto_slow = Math::Business::SM::Stochastic->modern_slow;
+  my $sto_fast = Math::Business::SM::Stochastic->modern_fast;
+  my $sto_full = Math::Business::SM::Stochastic->modern_full;
 
 
   # basic usage
@@ -374,6 +374,20 @@ Paul Miller C<< <jettero@cpan.org> >>
 I am using this software in my own projects...  If you find bugs, please please
 please let me know.  There is a mailing list with very light traffic that you
 might want to join: L<http://groups.google.com/group/stockmonkey/>.
+
+=head1 WTF SM?
+
+Well, this is the StockMonkey project afterall.  It seems
+L<http://search.cpan.org/~yukinobu/> built a Stochastics module before
+I did and I hadn't noticed.  In the olden days, when I first started,
+I honestly expected to have a flood of these modules from dozens of
+authors.  It never really happened, and when I got a request for
+Stochastics ... I didn't even look first.  I just wrote one.  Fail.
+
+I got an email from EMILY STARCK asking why my module was marked C<<
+** UNAUTHORIZED RELEASE ** >>, so I renamed this module and pushed the
+real L<Math::Business::Stochastic> to my C<< PREREQ_PM >>.  Problem
+solved.
 
 =head1 COPYRIGHT
 

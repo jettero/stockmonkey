@@ -11,7 +11,7 @@ Business/MACD.pm
 Business/ParabolicSAR.pm
 Business/RSI.pm
 Business/SMA.pm
-Business/Stochastic.pm
+Business/SM/Stochastic.pm
 Business/WMA.pm
 Changes
 examples/forex-macd-rsi-database-populator.pl

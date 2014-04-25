@@ -5,7 +5,7 @@ use ExtUtils::MakeMaker;
 WriteMakefile(
     NAME         => 'Math::Business',
     DISTNAME     => 'stockmonkey',
-    PREREQ_PM    => { constant => 1.05 },
+    PREREQ_PM    => { constant => 1.05, 'Math::Business::Stochastic' },
     VERSION_FROM => 'lib/Math/Business/StockMonkey.pm',
 
     ($ExtUtils::MakeMaker::VERSION ge '6.48'? 

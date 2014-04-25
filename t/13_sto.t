@@ -2,15 +2,15 @@
 use Test;
 use strict;
 no warnings;
-use Math::Business::Stochastic;
+use Math::Business::SM::Stochastic;
 use Math::Business::SMA;
 
 my $number = 30*6;
 plan tests => $number;
 
-my $fsto = Math::Business::Stochastic->method_fast(14,3);
-my $ssto = Math::Business::Stochastic->method_slow(14,3);
-my $sful = Math::Business::Stochastic->method_full(14,3,5);
+my $fsto = Math::Business::SM::Stochastic->method_fast(14,3);
+my $ssto = Math::Business::SM::Stochastic->method_slow(14,3);
+my $sful = Math::Business::SM::Stochastic->method_full(14,3,5);
 
 my $K3  = Math::Business::SMA->new(3);
 my $K33 = Math::Business::SMA->new(3);

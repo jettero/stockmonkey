@@ -2,7 +2,7 @@
 
 package Math::Business::StockMonkey;
 
-our $VERSION = "2.9403";
+our $VERSION = "2.9405";
 
 1;
 
@@ -45,7 +45,7 @@ L<Math::Business::CCI> - Commodity Channel Index
 
 L<Math::Business::ConnorRSI> - Connor's 3 tuple average RSI with PriceRank
 
-L<Math::Business::Stochastic> -Stochastic Oscillator
+L<Math::Business::SM::Stochastic> -Stochastic Oscillator
 
 =head1 CONTACT
 

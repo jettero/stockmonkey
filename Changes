@@ -1,3 +1,8 @@
+2.9305: Fri Apr 25 2014
+   - I never noticed http://search.cpan.org/perldoc?Math%3A%3ABusiness%3A%3AStochastic
+     and accidentally tried to steal his FCFS namespace.  Woops.  Moved to Math::Business::SM::Stochastic.
+     Fail.
+
 2.9303: Mon Oct 21 2013
    - lazy test in t/13: https://rt.cpan.org/Ticket/Display.html?id=89645
 
