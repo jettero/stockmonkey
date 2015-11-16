@@ -1,0 +1,15 @@
+Algorithm::NaiveBayes
+Algorithm::NaiveBayes
+Data::Dump
+Date::Manip
+DBD::SQLite
+Finance::QuoteHist
+Finance::QuoteHist
+GD::Graph::Hooks
+GD::Graph::lines
+GD::Graph::mixed
+JSON
+List::Util
+MySQL::Easy
+Storable
+WWW::Mechanize
