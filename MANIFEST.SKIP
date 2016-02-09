@@ -1,4 +1,5 @@
 .git
+examples/.modules
 .gitignore
 .graph.png
 .todo
