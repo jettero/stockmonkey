@@ -15,7 +15,9 @@ for my $data (@data) {
     $max = $data if $data > $max;
 }
 
-plan tests => 1*@data;
+plan tests => 1*@data
+    + 2 # invocations
+    ;
 
 my $ok = 1;
 for my $data (@data) {
@@ -38,3 +40,9 @@ for my $data (@data) {
         ok($ok);
     }
 }
+
+my $rv = eval { my $lag = Math::Business::LaguerreFilter->new(0.2,9); 3 };
+ok "$rv $@", "3 ";
+
+my $rv = eval { my $lag = Math::Business::LaguerreFilter->new; 3 };
+ok "$rv $@", "3 ";

@@ -1,3 +1,6 @@
+2.9306: Tue Feb 09 2016
+   - patches for https://rt.cpan.org/Ticket/Display.html?id=111834
+
 2.9305: Fri Apr 25 2014
    - I never noticed http://search.cpan.org/perldoc?Math::Business::Stochastic and
      accidentally tried to steal his FCFS namespace.  Woops.  Moved to

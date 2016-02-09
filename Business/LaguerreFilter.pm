@@ -26,12 +26,18 @@ sub dnew {
 
 sub new {
     my $class = shift;
-    my $this  = bless [], $class;
+    my $this  = bless [
+        [],    # [0] P-hist
+        [],    # [1] L0-L4
+        0,     # [2] alpha
+        0,     # [3] adaptive length
+        [],    # [4] adaptive diff history
+        undef, # [5] filter
+        undef, # [6] tag
+    ], $class;
 
     my $alpha = shift;
-    if( defined $alpha ) {
-        $this->set_alpha( $alpha );
-    }
+    $this->set_alpha( $alpha // 0.5 );
 
     my $length = shift;
     if( defined $length ) {
@@ -39,6 +45,14 @@ sub new {
     }
 
     return $this;
+}
+
+sub reset {
+    my $this = shift;
+    $this->[0] = [];
+    $this->[1] = [];
+    $this->[4] = [];
+    return
 }
 
 sub set_days {
@@ -49,7 +63,8 @@ sub set_days {
     eval { $this->set_alpha( $alpha ) };
     croak "set_days() is basically set_alpha(2/(1+$arg)), which complained: $@" if $@;
 
-    $this->{tag} = "LAG($arg)";
+    $this->[TAG] = "LAG($arg)";
+    $this->reset
 }
 
 sub set_alpha {
@@ -57,18 +72,10 @@ sub set_alpha {
     my $alpha = 0+shift;
 
     croak "alpha must be a real between >=0 and <=1" unless $alpha >= 0 and $alpha <= 1;
-    @$this = (
-        [],    # P-hist
-        [],    # L0-L4
-        $alpha,
-        0,     # adaptive length
-        [],    # adaptive diff history
-        undef, # filter
-        undef, # tag
-    );
-
     my $arg = int ( (1/$alpha)*2-1 ); # pretty sure... gah, algebra
+
     $this->[TAG] = "LAG($arg)";
+    $this->reset
 }
 
 sub set_adaptive {
@@ -77,6 +84,7 @@ sub set_adaptive {
 
     croak "adaptive length must be an non-negative integer" unless $that >= 0;
     $this->[LENGTH] = $that;
+    $this->reset
 }
 
 sub insert {
