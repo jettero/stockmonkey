@@ -1,3 +1,6 @@
+2.9307: Fri Feb 12 2016
+   - No sense using // in exactly one spot and spoiling the perl5.8 tests for no reason
+
 2.9306: Tue Feb 09 2016
    - patches for https://rt.cpan.org/Ticket/Display.html?id=111834
 
