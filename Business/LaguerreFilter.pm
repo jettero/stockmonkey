@@ -37,7 +37,8 @@ sub new {
     ], $class;
 
     my $alpha = shift;
-    $this->set_alpha( $alpha // 0.5 );
+    $alpha = 0.5 if not defined $alpha;
+    $this->set_alpha( $alpha );
 
     my $length = shift;
     if( defined $length ) {
