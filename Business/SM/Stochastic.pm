@@ -330,7 +330,7 @@ The stochastic (among other things) purports to indicate an "overbought"
 situation where the C<%K> is above 80 and "oversold" when below 20.
 
 There are "divergences" and "convergences" to look for too, however.  If
-there is a higher high or a lower low in the C<%K>, this can apperntly
+there is a higher high or a lower low in the C<%K>, this can apparently
 indicate trend changes.  This concept is not easy to pin down explicitly,
 and so is not described here.
 
@@ -354,11 +354,10 @@ smothing on C<%D> and thus produce something like:
   $SMA->insert($K);
   $D = $SMA->query;
 
-The main problem getting this right is that Lane himself hasn't really
-spelled it out in publication.  "Do this, then this, then that."  The
-reason seems to be the lecture circuit.  He teaches this stuff in classes
-and seminars (or tought) and hasn't really published it in the traditional
-sense.
+The main problem getting this right is that Lane himself hasn't really spelled
+it out in publication.  "Do this, then this, then that."  The reason seems to be
+the lecture circuit.  He teaches (taught?) this stuff in classes and seminars
+and hasn't really published it in the traditional sense.
 
 To a certain extent, we therefore feel free to pick whatever we want for
 the defaults.
@@ -384,10 +383,9 @@ I honestly expected to have a flood of these modules from dozens of
 authors.  It never really happened, and when I got a request for
 Stochastics ... I didn't even look first.  I just wrote one.  Fail.
 
-I got an email from EMILY STARCK asking why my module was marked C<<
-** UNAUTHORIZED RELEASE ** >>, so I renamed this module and pushed the
-real L<Math::Business::Stochastic> to my C<< PREREQ_PM >>.  Problem
-solved.
+I got an email from EMILY STARCK asking why my module was marked
+C<< ** UNAUTHORIZED RELEASE ** >>, so I renamed this module and pushed the real
+L<Math::Business::Stochastic> to my C<< PREREQ_PM >>.  Problem solved.
 
 =head1 COPYRIGHT
 
