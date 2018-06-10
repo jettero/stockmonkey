@@ -140,12 +140,25 @@ sub insert_lane {
             my $L = $l->[0]; for( 1 .. $#$l ) { $L = $l->[$_] if $l->[$_] < $L };
             my $H = $h->[0]; for( 1 .. $#$h ) { $H = $h->[$_] if $h->[$_] > $H };
 
-            $K = 100 * ($t_close - $L)/($H-$L);
+            if( $H != $L ) {
+                $K = 100 * ($t_close - $L)/($H-$L);
+            } else {
+                # added 2018-06-10 per Marcel Ebbrecht, to avoid division by
+                # zero we don't really have any notes from Lane on this, so
+                # K=100 seems reasonable; but I admit I have no idea what the
+                # the "correct" behavior might be, if there is one.
+                $K = 100;
+            }
 
             $L = $l->[-$dp]; for( (-$dp+1) .. -1 ) { $L = $l->[$_] if $l->[$_] < $L };
             $H = $h->[-$dp]; for( (-$dp+1) .. -1 ) { $H = $h->[$_] if $h->[$_] > $H };
 
-            $D = 100 * $H / $L;
+            if( $L != 0 ) {
+                $D = 100 * $H / $L;
+            } else {
+                # also added 2018-06-10 (see above comment)
+                $D = 100;
+            }
         }
     }
 
